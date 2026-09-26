@@ -6,7 +6,8 @@
   "scripts": {
     "build": "tsc -p tsconfig.json && node scripts/copy-renderer-assets.js",
     "start": "npm run build && electron .",
-    "simular": "npm run build && node scripts/simular.js"
+    "simular": "npm run build && node scripts/simular.js",
+    "test": "npm run build && node --test scripts/testar-jornada.js"
   },
   "devDependencies": {
     "@types/node": "^20.14.0",

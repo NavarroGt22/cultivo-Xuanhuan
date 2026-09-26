@@ -19,6 +19,7 @@ import { MundoState, avancarMundo, createMundo } from './worldState';
 import { atualizarQuadro } from './bounties';
 import { processarFaccao } from './faction';
 import { processarPatrimonio } from './market';
+import { RegistroJornada, registrarJornada } from './journal';
 
 export interface Teste {
   atributo: AttributeKey;
@@ -77,6 +78,9 @@ export interface DesfechoExibido {
 }
 
 export interface StoryState {
+  /** Campos opcionais para compatibilidade com saves anteriores. */
+  diario?: RegistroJornada[];
+  marcosDiario?: Record<string, string>;
   turno: number;
   noAtual: StoryNode;
   desfecho: DesfechoExibido | null;
@@ -235,6 +239,8 @@ export function resolverEscolha(character: Character, state: StoryState, indice:
   const escolha = state.noAtual.escolhas[indice];
   if (!escolha || state.desfecho || descreverEscolha(character, escolha).bloqueio) return;
   state.desfecho = executarEscolha(character, escolha);
+  registrarJornada(character, state, 'historia', state.noAtual.titulo,
+    `${escolha.texto}\n${state.desfecho.texto}`);
 }
 
 function passarTempo(character: Character, meses: number): string[] {

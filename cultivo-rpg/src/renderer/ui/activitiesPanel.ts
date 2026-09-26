@@ -9,6 +9,7 @@ import {
 import { DesfechoExibido, ENERGIA_POR_ESTACAO, StoryState, descreverEscolha, executarEscolha, gastarEnergia } from '../../game/story';
 import { criarOverlay, escapeHtml } from './dom';
 import { renderEnergia, renderResultado } from './resultView';
+import { registrarJornada } from '../../game/journal';
 
 /** Atividades organizadas em pastas; cada uma custa energia e repetir demais tem consequências. */
 export function abrirAtividades(character: Character, historia: StoryState, aoAlterar: () => void): void {
@@ -92,6 +93,7 @@ export function abrirAtividades(character: Character, historia: StoryState, aoAl
 
     historia.contagemAtividades[item.atividade.id] = item.vezes + 1;
     resultado = executarEscolha(character, item.escolha);
+    registrarJornada(character, historia, 'atividade', item.escolha.texto, resultado.texto);
     aoAlterar();
     render();
     overlay.querySelector('.painel')?.scrollTo({ top: 0 });

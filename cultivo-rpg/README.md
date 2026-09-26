@@ -1,47 +1,50 @@
-# Xuanhuan RPG — Protótipo
+# Xuanhuan RPG
 
-Esqueleto inicial de um RPG de texto/narrativo em **TypeScript + Node.js + Electron**: escolhas de texto, atributos, testes de dado, classes, equipamentos, alinhamento e múltiplos finais.
+RPG narrativo de cultivo em **TypeScript + Electron**, com escolhas, evolução por reinos, seitas, relações, heranças, combate, comércio e profissões.
 
-## Requisitos
+## Executar
 
-- Node.js 18 ou superior instalado
-
-## Como rodar
+Na pasta `cultivo-rpg`, com Node.js 18 ou superior:
 
 ```bash
 npm install
 npm start
 ```
 
-`npm start` compila o TypeScript e abre a janela do Electron.
+`npm start` compila o projeto e abre a janela do Electron. O save fica em `save.json` na pasta de execução; conserve esse arquivo ao atualizar o código.
+
+## A interface
+
+- **Jornada:** evento atual, personagem, próximo objetivo e energia disponível.
+- **Navegação lateral:** atividades, missões, mundo, rankings, relações, ocupação, ofícios disponíveis, mercado e inventário.
+- **Diário:** escolhas, atividades e marcos, com pesquisa e filtros. Mantém os 300 registros mais recentes da vida atual; em saves anteriores, começa a partir desta atualização.
+- **Guia do cultivador:** fundamentos, 13 reinos e cinco regiões, com pesquisa que ignora acentos.
+- **Opções de leitura:** texto ampliado, alto contraste e redução de animações, lembrados no dispositivo.
+
+O jogo salva ao atualizar o estado. Um aviso aparece se não for possível gravar. No menu, iniciar outra vida pede confirmação antes de substituir o save; cancelar a criação conserva a vida anterior.
+
+## Comandos de verificação
+
+```bash
+npm run build
+npm test
+npm run simular -- 5
+```
+
+Os testes cobrem a compatibilidade do diário, escolhas bloqueadas, cliques duplicados, marcos e limite de registros.
 
 ## Estrutura
 
-```
-src/
-  main/        processo principal do Electron (abre a janela do jogo)
-  renderer/    interface — HTML/CSS/TS puro, sem framework por enquanto
-  game/        toda a lógica de sistemas:
-                 attributes.ts   → Força, Destreza, Inteligência etc.
-                 dice.ts         → testes de atributo (d20 + atributo vs. dificuldade)
-                 classes.ts      → classes de personagem
-                 equipment.ts    → itens equipáveis e seus bônus
-                 alignment.ts    → eixo de alinhamento (-100 a 100)
-                 inventory.ts    → itens carregados
-                 character.ts    → junta tudo isso num personagem
-                 story.ts        → nós de história, escolhas, testes e finais
-                 saveLoad.ts     → salva/carrega o progresso em save.json
-  shared/      tipos usados em mais de um lugar (ex: formato do save)
-assets/        ilustrações referenciadas pelos nós da história
-```
+- `src/main/`: janela do Electron.
+- `src/game/`: regras, dados, narrativa, saves e diário.
+- `src/renderer/`: navegação, telas e estilos.
+- `src/renderer/ui/`: painéis, HUD, guia, preferências e funções de acessibilidade.
+- `src/shared/`: formato compartilhado de saves.
+- `scripts/`: build, testes e simulação.
+- `assets/`: retratos e cenas opcionais.
 
-## Próximos passos sugeridos
+A análise desta atualização e os limites da verificação estão em `../docs/INTERFACE-JORNADA.md`.
 
-1. **Trocar o conteúdo de exemplo em `src/game/story.ts`** pelo conteúdo real do seu GDD — reinos de cultivo, seitas supremas, mundos perdidos, raças não-humanas etc.
-2. **Adicionar mais classes/equipamentos** em `classes.ts` e `equipment.ts` conforme os sistemas do GDD (alquimista, inscricionista, domador de bestas...).
-3. Se a narrativa crescer muito e ficar difícil de gerenciar como objeto TypeScript, considere migrar para **Ink** (`inkjs`) — uma linguagem feita pra roteiro ramificado, que separa a escrita da história do código do jogo.
-4. Se quiser uma interface visual mais rica (animações, transições), dá pra adicionar **React + Vite** por cima do que já existe, sem precisar reescrever a lógica de `src/game/`.
+## Ambiente local
 
-## Nota de segurança
-
-Este protótipo usa `nodeIntegration: true` e `contextIsolation: false` no Electron para simplificar o acesso a arquivos (save/load) sem precisar configurar um preload script com `contextBridge`. Isso é aceitável para um jogo local, single-player, que não carrega nenhum conteúdo remoto. Se algum dia o jogo passar a carregar conteúdo de fora (ex: mods baixados, um site), troque para o padrão mais seguro com preload script antes disso.
+O Electron usa `nodeIntegration: true` e `contextIsolation: false` para acessar arquivos locais. Caso o projeto passe a carregar páginas remotas, esse acesso precisará ser isolado com preload e `contextBridge`.

@@ -3,10 +3,12 @@ import * as path from 'path';
 
 function createWindow(): void {
   const win = new BrowserWindow({
-    width: 1100,
-    height: 750,
+    width: 1440,
+    minWidth: 760,
+    minHeight: 600,
+    height: 920,
     title: 'Xuanhuan RPG',
-    backgroundColor: '#14100d',
+    backgroundColor: '#0d1515',
     webPreferences: {
       // Simplificado para um jogo local, single-player, sem conteúdo remoto.
       // Se algum dia carregar conteúdo de fora, troque para contextBridge + preload.

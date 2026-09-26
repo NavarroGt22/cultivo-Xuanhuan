@@ -27,11 +27,30 @@ import { torneioAberto } from '../game/tournaments';
 import { criarHerdeiro, herdeirosDisponiveis } from '../game/heirs';
 import { grauRaizInfo } from '../game/spiritualRoot';
 import { escapeHtml } from './ui/dom';
+import { atualizarMarcos } from '../game/journal';
+import { abrirDiario, abrirGuia } from './ui/journeyPanel';
+import { aplicarPreferencias, abrirPreferencias } from './ui/preferences';
+import { icone, renderPainelJornada } from './ui/journeyDashboard';
 
 const app = document.getElementById('app') as HTMLElement;
 
 let character: Character;
 let historia: StoryState;
+let avisoSave = '';
+
+function notificar(texto: string): void {
+  document.querySelector('.toast')?.remove();
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.setAttribute('role', 'status');
+  toast.textContent = texto;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3500);
+}
+
+function botaoNav(id: string, texto: string, badge = ''): string {
+  return `<button id="btn-${id}" class="nav-item">${icone(id)}<span>${texto}</span>${badge ? `<small class="nav-badge">${badge}</small>` : ''}</button>`;
+}
 
 /** Texto de evento: parágrafos separados por linha em branco e **negrito**. */
 function formatarTexto(texto: string): string {
@@ -64,17 +83,26 @@ function continuarJogo(): void {
 
 function renderTelaInicial(): void {
   const temSave = hasSave();
+  const dados = temSave ? loadGame() : null;
   app.innerHTML = `
-    <div class="tela-inicial">
-      <h1>Xuanhuan RPG</h1>
-      <button id="btn-continuar" class="primario" ${temSave ? '' : 'disabled title="Nenhum jogo salvo ainda"'}>Continuar</button>
-      <button id="btn-novo">Novo Jogo</button>
-      <p class="dica">O jogo salva automaticamente a cada escolha.</p>
-    </div>
-  `;
-
-  document.getElementById('btn-novo')?.addEventListener('click', iniciarNovoJogo);
+    <main class="tela-inicial">
+      <div class="paisagem" aria-hidden="true"><div class="sol"></div><div class="montanha distante"></div><div class="montanha media"></div><div class="montanha perto"></div></div>
+      <div class="intro-jogo"><p class="eyebrow">Crônicas de um mundo imortal</p><div class="selo-dao" aria-hidden="true">${icone('jornada')}</div>
+        <h1>XUANHUAN</h1><p class="intro-subtitulo">Entre o céu e a eternidade.</p>
+        <p class="intro-descricao">Cultive seu poder. Escreva seu destino.<br>Deixe um legado que atravesse gerações.</p>
+        <div class="menu-acoes"><button id="btn-continuar" class="primario" ${temSave ? '' : 'disabled title="Nenhum jogo salvo ainda"'}>Continuar jornada <span aria-hidden="true">→</span></button>
+        ${dados ? `<p class="save-resumo">${escapeHtml(dados.character.nome)} · ${Math.floor(dados.character.idadeMeses / 12)} anos · Capítulo ${dados.historia.turno + 1}</p>` : ''}
+        <button id="btn-novo">Iniciar uma nova vida</button></div>
+        <div class="intro-links"><button id="btn-guia" class="link-botao">Guia do cultivador</button><span>·</span><button id="btn-opcoes" class="link-botao">Opções de leitura</button></div>
+      </div><footer class="intro-rodape"><span>13 reinos · 5 regiões · Infinitos destinos</span><span>Salvamento automático a cada escolha</span></footer>
+    </main>`;
+  document.getElementById('btn-novo')?.addEventListener('click', () => {
+    if (temSave && !confirm('Iniciar uma nova vida substituirá o save atual quando a criação for concluída. Deseja continuar?')) return;
+    iniciarNovoJogo();
+  });
   document.getElementById('btn-continuar')?.addEventListener('click', continuarJogo);
+  document.getElementById('btn-guia')?.addEventListener('click', abrirGuia);
+  document.getElementById('btn-opcoes')?.addEventListener('click', abrirPreferencias);
 }
 
 function renderEvento(): string {
@@ -89,7 +117,7 @@ function renderEvento(): string {
       const detalhe = info.bloqueio ?? info.detalhe;
       return `
         <button class="escolha" data-indice="${indice}" ${info.bloqueio ? 'disabled' : ''}>
-          <span>${escapeHtml(escolha.texto)}</span>
+          <span class="escolha-titulo"><small class="numero-escolha">${String(indice + 1).padStart(2, '0')}</small>${escapeHtml(escolha.texto)}<span class="seta-escolha" aria-hidden="true">↗</span></span>
           ${detalhe ? `<small>${escapeHtml(detalhe)}</small>` : ''}
         </button>`;
     })
@@ -111,7 +139,7 @@ function renderEvento(): string {
     ${cena}
     <h2 class="titulo-evento">${escapeHtml(no.titulo)}</h2>
     ${texto}
-    <div class="escolhas">${escolhas}</div>`;
+    <p class="eyebrow escolha-rotulo">Qual será sua decisão?</p><div class="escolhas">${escolhas}</div>`;
 }
 
 function renderDesfecho(): string {
@@ -166,34 +194,54 @@ function renderFimDeVida(): string {
 }
 
 function salvar(): void {
-  saveGame({ character, historia, criadoEm: new Date().toISOString() });
+  try {
+    saveGame({ character, historia, criadoEm: new Date().toISOString() });
+    avisoSave = '';
+  } catch {
+    avisoSave = 'Não foi possível salvar. Verifique o espaço e a permissão da pasta do jogo.';
+  }
 }
 
 /** Toda mudança de estado passa por aqui, então salvar aqui é o autosave. */
 function renderJogo(): void {
+  atualizarMarcos(character, historia);
   salvar();
   const temRecompensa = estadoCampanha(character, historia.mundo).some((e) => e.status === 'concluido');
   app.innerHTML = `
     <div class="jogo">
-      ${renderHud(character)}
-      <main class="painel-narrativa">
-        ${historia.desfecho ? renderDesfecho() : renderEvento()}
-      </main>
-      <nav class="barra-inferior">
-        <button id="btn-atividades" ${historia.energia > 0 ? 'class="destaque"' : ''}>Atividades (${historia.energia}/${ENERGIA_POR_ESTACAO})</button>
-        <button id="btn-missoes" ${temRecompensa ? 'class="destaque"' : ''}>Missões${temRecompensa ? ' ★' : ''}</button>
-        <button id="btn-mundo" ${torneioAberto(historia) && character.idadeMeses >= 14 * 12 ? 'class="destaque"' : ''}>Mundo</button>
-        <button id="btn-rankings">Rankings</button>
-        <button id="btn-relacoes">Relações</button>
-        <button id="btn-ocupacao">${ehDiscipulo(character) ? 'Seita e Ocupação' : 'Ocupação'}</button>
-        ${temOficio(character) ? '<button id="btn-alquimia">Ofícios</button>' : ''}
-        <button id="btn-mercado">Mercado</button>
-        <button id="btn-inventario">Inventário</button>
-        <button id="btn-salvar">Salvar</button>
-        <button id="btn-menu">Menu</button>
-      </nav>
-    </div>
-  `;
+      <aside class="sidebar">
+        <a class="marca" href="#narrativa" aria-label="Ir para a narrativa"><span class="marca-selo">${icone('jornada')}</span><span>XUANHUAN<small>CRÔNICAS DO CULTIVO</small></span></a>
+        <nav class="navegacao" aria-label="Navegação do jogo"><p class="nav-grupo">Sua jornada</p>
+          <a href="#narrativa" class="nav-item atual" aria-current="page">${icone('jornada')}<span>Jornada</span><span class="ponto-atual"></span></a>
+          ${botaoNav('atividades', 'Atividades', String(historia.energia))}
+          ${botaoNav('missoes', 'Missões', temRecompensa ? '★' : '')}
+          ${botaoNav('diario', 'Diário')}
+          <p class="nav-grupo">Além dos portões</p>
+          ${botaoNav('mundo', 'Mundo', torneioAberto(historia) && character.idadeMeses >= 14 * 12 ? '•' : '')}
+          ${botaoNav('rankings', 'Rankings')}
+          ${botaoNav('relacoes', 'Relações')}
+          ${botaoNav('ocupacao', ehDiscipulo(character) ? 'Seita e ocupação' : 'Ocupação')}
+          ${temOficio(character) ? botaoNav('alquimia', 'Ofícios') : ''}
+          ${botaoNav('mercado', 'Mercado')}
+          ${botaoNav('inventario', 'Inventário')}
+        </nav>
+        <div class="sidebar-rodape">${botaoNav('guia', 'Guia do cultivador')}${botaoNav('opcoes', 'Opções de leitura')}${botaoNav('menu', 'Menu inicial')}</div>
+      </aside>
+      <div class="area-jogo">
+        <header class="topbar"><div><span class="eyebrow">O livro da sua vida</span><h1>Sua jornada</h1></div><div class="topbar-direita"><span class="save-status ${avisoSave ? 'erro' : ''}" role="status">${avisoSave ? 'Falha ao salvar' : 'Progresso salvo'}</span><button id="btn-salvar" class="botao-salvar">${icone('salvar')} Salvar</button></div></header>
+        ${avisoSave ? `<p class="erro-save" role="alert">${escapeHtml(avisoSave)}</p>` : ''}
+        ${renderHud(character)}
+        <div class="conteudo-jogo">
+          <main class="painel-narrativa" id="narrativa" tabindex="-1">
+            <div class="banner-jornada"><div class="paisagem" aria-hidden="true"><div class="sol"></div><div class="montanha distante"></div><div class="montanha media"></div><div class="montanha perto"></div></div>
+              <div class="banner-texto"><span class="eyebrow">Capítulo ${String(historia.turno + 1).padStart(2, '0')}</span><p>Cada escolha ecoa<br>pela eternidade.</p></div><span class="banner-selo" aria-hidden="true">${icone('jornada')}</span></div>
+            <article class="evento-conteudo">${historia.desfecho ? renderDesfecho() : renderEvento()}</article>
+            <footer class="narrativa-rodape"><span>Uma vida. Mil possibilidades.</span><button class="link-botao" data-abrir="diario">Abrir crônicas →</button></footer>
+          </main>
+          ${renderPainelJornada(character, historia)}
+        </div>
+      </div>
+    </div>`;
 
   const areaCombate = document.getElementById('reproducao-combate');
   if (areaCombate && historia.desfecho?.combate) {
@@ -235,10 +283,17 @@ function renderJogo(): void {
 
   document.getElementById('btn-salvar')?.addEventListener('click', () => {
     salvar();
-    alert('Jogo salvo!');
+    notificar(avisoSave || 'Jornada salva com sucesso.');
+    const status = document.querySelector('.save-status');
+    if (status) { status.textContent = avisoSave ? 'Falha ao salvar' : 'Progresso salvo'; status.classList.toggle('erro', Boolean(avisoSave)); }
   });
 
+  document.getElementById('btn-diario')?.addEventListener('click', () => abrirDiario(historia));
+  document.getElementById('btn-guia')?.addEventListener('click', abrirGuia);
+  document.getElementById('btn-opcoes')?.addEventListener('click', abrirPreferencias);
+  document.querySelectorAll<HTMLElement>('[data-abrir]').forEach(botao => botao.addEventListener('click', () => document.getElementById(`btn-${botao.dataset.abrir}`)?.click()));
   document.getElementById('btn-menu')?.addEventListener('click', renderTelaInicial);
 }
 
+aplicarPreferencias();
 renderTelaInicial();
