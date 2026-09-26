@@ -1,0 +1,4 @@
+Coloque aqui as ilustrações do jogo (ex: fronteira.png) e os retratos de personagens (ex: protagonista.png, discipulo_wen_rui.png).
+- Imagem de CENA: referencie no campo "imagem" de um StoryNode em src/game/story.ts.
+- Retrato de PERSONAGEM (aparece com nome em destaque numa caixa de diálogo): referencie no campo "personagem.retrato" de um StoryNode.
+- Retrato do PROTAGONISTA (aparece no painel lateral): passe como terceiro argumento de createCharacter() em src/renderer/renderer.ts.

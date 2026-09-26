@@ -1,0 +1,21 @@
+IMAGENS DO JOGO (todas opcionais — sem elas o jogo funciona normalmente)
+
+assets/retratos/
+  protagonista*.png   -> retratos que você pode escolher na criação de personagem
+                         (ex: protagonista-1.png, protagonista-guerreira.png)
+  rival.png           -> o rival (evento "O Rival")
+  mestre-errante.png  -> o velho de roupas gastas
+  alquimista.png      -> o alquimista da guilda
+  domador.png         -> o domador itinerante
+  adivinho.png        -> o adivinho cego
+  ferreiro.png        -> o mestre ferreiro (ensina a forja)
+
+assets/cenas/
+  <id-do-evento>.png  -> ilustração que aparece no topo do evento
+  Exemplos de ids: prologo, despertar, tribulacao, periodo-tranquilo, mercador, rival,
+  besta, bandidos, ruina, mestre-errante, recrutamento, missao-seita, politica-cla,
+  torneio, leilao, chuva-espiritual, tumulo-ancestral, achado-de-sorte, vinganca,
+  escola-estilo, pavilhao-tecnicas, aprender-alquimia, aprender-domador, velhice,
+  memoria-vida-passada, cacadores-de-ecos, adivinho-cego, mestre-ferreiro
+
+Formatos aceitos: .png (cenas e retratos de personagens), .png/.jpg/.webp (protagonista).

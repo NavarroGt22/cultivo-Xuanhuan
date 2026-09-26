@@ -1,0 +1,16 @@
+{
+  "name": "xuanhuan-rpg",
+  "version": "0.1.0",
+  "description": "RPG de texto/narrativo com atributos, dados, classes, equipamentos, alinhamento e múltiplos finais.",
+  "main": "dist/main/main.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node scripts/copy-renderer-assets.js",
+    "start": "npm run build && electron .",
+    "simular": "npm run build && node scripts/simular.js"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "electron": "^31.0.0",
+    "typescript": "^5.5.4"
+  }
+}
