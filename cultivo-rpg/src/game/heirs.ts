@@ -151,7 +151,8 @@ export function criarHerdeiro(pai: Character, historia: StoryState, filhoId: str
 
   // A facção fundada passa ao herdeiro, que vira o novo líder.
   if (pai.faccao) {
-    herdeiro.faccao = { ...pai.faccao, instalacoes: { ...pai.faccao.instalacoes } };
+    // A família do pai continua como membros comuns; a do herdeiro entra quando ele formar a sua.
+    herdeiro.faccao = { ...pai.faccao, instalacoes: { ...pai.faccao.instalacoes }, familia: [] };
     herdeiro.afiliacao = {
       tipo: pai.faccao.tipo,
       nome: pai.faccao.nome,
@@ -161,6 +162,15 @@ export function criarHerdeiro(pai: Character, historia: StoryState, filhoId: str
     };
     legado.push(`a liderança ${pai.faccao.tipo === 'cla' ? 'do' : 'da'} ${pai.faccao.nome} (${pai.faccao.membros} membros)`);
   }
+
+  // As Seitas Supremas lembram da família: metade da reputação do pai passa ao herdeiro.
+  const reputacaoHerdada = Object.entries(pai.reputacaoSupremas ?? {})
+    .map(([nome, valor]) => [nome, Math.round(valor / 2)] as const)
+    .filter(([, valor]) => valor !== 0);
+  if (reputacaoHerdada.length) herdeiro.reputacaoSupremas = Object.fromEntries(reputacaoHerdada);
+
+  // O que a família aprendeu sobre as bestas fica nos cadernos da casa.
+  if (pai.conhecimentoBestas) herdeiro.conhecimentoBestas = JSON.parse(JSON.stringify(pai.conhecimentoBestas));
 
   herdeiro.moradia = pai.moradia ?? null;
   herdeiro.campos = (pai.campos ?? []).map(campo => ({ ...campo }));

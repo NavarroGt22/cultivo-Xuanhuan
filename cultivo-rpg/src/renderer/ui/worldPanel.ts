@@ -41,6 +41,8 @@ import {
 import { criarOverlay, escapeHtml } from './dom';
 import { abrirResultado, avisar, renderEnergia } from './resultView';
 import { renderRixas, resumoRixas, tratarCliqueRixa } from './feudsView';
+import { renderSupremas, resumoSupremas } from './supremeSectsView';
+import { bloqueioSupremaAnfitria } from '../../game/supremeSects';
 
 function pasta(id: string, titulo: string, resumo: string, conteudo: string, aberta: boolean): string {
   return `
@@ -59,6 +61,7 @@ function renderTorre(character: Character, historia: StoryState): { resumo: stri
   const proximo = atual + 1;
   const topo = atual >= torre.andares;
   const semEnergia = historia.energia < ENERGIA_ANDAR;
+  const proibido = bloqueioSupremaAnfitria(character);
 
   const outras = (Object.keys(TORRES) as RegiaoId[])
     .filter((r) => r !== torre.regiao)
@@ -74,7 +77,7 @@ function renderTorre(character: Character, historia: StoryState): { resumo: stri
       <div class="objetivo">
         <div><strong>${proximo}º andar — ${NOME_TIPO_ANDAR[tipoDoAndar(proximo)]}</strong><small>${escapeHtml(descreverCultivo(rank, estagio))}</small></div>
         <p><small>${escapeHtml(info.detalhe ?? '')}</small></p>
-        <button class="primario" data-acao="andar" ${semEnergia ? 'disabled' : ''}>${semEnergia ? 'Sem energia' : `Subir (${ENERGIA_ANDAR} de energia)`}</button>
+        <button class="primario" data-acao="andar" ${semEnergia || proibido ? 'disabled' : ''}>${escapeHtml(proibido ?? (semEnergia ? 'Sem energia' : `Subir (${ENERGIA_ANDAR} de energia)`))}</button>
       </div>`;
   }
 
@@ -92,13 +95,14 @@ function renderTorneio(character: Character, historia: StoryState): { resumo: st
   const aberto = torneioAberto(historia);
   const faltam = historia.mundo.proximoTorneio - historia.turno;
   const bloqueio =
-    historia.energia < ENERGIA_TORNEIO
+    bloqueioSupremaAnfitria(character) ??
+    (historia.energia < ENERGIA_TORNEIO
       ? `Requer ${ENERGIA_TORNEIO} de energia`
       : character.inventario.pedrasEspirituais < TAXA_INSCRICAO
         ? `Requer ${TAXA_INSCRICAO} pedras de inscrição`
         : character.idadeMeses < 14 * 12
           ? 'Requer 14 anos'
-          : null;
+          : null);
   return {
     resumo: aberto ? 'inscrições abertas!' : `próximo em ${faltam} estação(ões)`,
     conteudo: `
@@ -242,6 +246,7 @@ export function abrirMundo(character: Character, historia: StoryState, aoAlterar
         ${renderEnergia(historia.energia, ENERGIA_POR_ESTACAO)}
         ${pasta('guerra', 'Guerra de Clãs', guerra.resumo, guerra.conteudo, pastaAberta === 'guerra')}
         ${pasta('rixas', 'Rixas de Sangue e Vassalos', resumoRixas(character), renderRixas(character, historia), pastaAberta === 'rixas')}
+        ${pasta('supremas', 'Seitas Supremas', resumoSupremas(character), renderSupremas(character), pastaAberta === 'supremas')}
         ${pasta('torre', 'Torre de Prova', torre.resumo, torre.conteudo, pastaAberta === 'torre')}
         ${pasta('torneio', 'Torneio Regional', torneio.resumo, torneio.conteudo, pastaAberta === 'torneio')}
         ${pasta('alquimia', 'Torneio de Alquimia', alquimia.resumo, alquimia.conteudo, pastaAberta === 'alquimia')}
@@ -298,12 +303,12 @@ export function abrirMundo(character: Character, historia: StoryState, aoAlterar
     if (acao?.dataset.acao === 'andar') {
       const torre = TORRES[character.local.regiao];
       const proximo = andarAtual(historia.mundo, torre.regiao) + 1;
-      if (proximo > torre.andares || !gastarEnergia(historia, ENERGIA_ANDAR)) return;
+      if (proximo > torre.andares || bloqueioSupremaAnfitria(character) || !gastarEnergia(historia, ENERGIA_ANDAR)) return;
       resultado = executarEscolha(character, escolhaDoAndar(character, torre, proximo));
       if (resultado.sucesso) historia.mundo.torres[torre.regiao] = proximo;
       mensagens = [];
     } else if (acao?.dataset.acao === 'torneio') {
-      if (!torneioAberto(historia) || !gastarEnergia(historia, ENERGIA_TORNEIO)) return;
+      if (!torneioAberto(historia) || bloqueioSupremaAnfitria(character) || !gastarEnergia(historia, ENERGIA_TORNEIO)) return;
       resultado = disputarTorneio(character, historia);
       mensagens = [];
     } else if (acao?.dataset.acao === 'torneio-alquimia') {

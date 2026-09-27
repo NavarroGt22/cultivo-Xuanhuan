@@ -671,6 +671,44 @@ Complementa a seção 10: o poder de uma besta vem da **espécie** e da **idade*
 - **Fases de vida**: Filhote (não rompe reinos e luta com pouca força), Jovem, Adulta (alcança o teto da espécie) e Anciã (pode passar do teto).
 - Um filhote divino já nasce acima de um aprendiz — mas ainda é um filhote. Bestas de famílias domadoras crescem junto com o personagem.
 - O **Bestiário** reúne todas as espécies do mundo.
+- Documentos próprios: **`GDD_Historias_Xuanhuan.docx`** (histórias roteirizadas; HIS-001 *Renascimento do Demônio Celestial*, escolhida na criação ao lado da *História do Pequeno Herói*) e **`GDD_Qi_Tecnicas_Pilulas_Xuanhuan.docx`** (naturezas Yin, Yang e Demoníaca, circulação, compatibilidade de técnicas e pílulas). Textos em `.txt` ao lado.
+- O aprofundamento do bestiário — ecologia, papel ecológico, grau de ameaça, conhecimento gradual, encontros vivos, combate com identidade, vínculo e memória, materiais e economia, variantes e as fichas das 28 espécies — está no documento próprio **`GDD_Bestiario_Profundo_Xuanhuan.docx`** (texto em `GDD_Bestiario_Profundo_Xuanhuan.txt`).
+
+### 16.10 Tornar-se Mestre (seus próprios discípulos)
+
+O ciclo de 16.2 se fecha: quem chega longe passa a ensinar.
+
+- A partir do **3º reino** (Two Force Realm), com alguma reputação, jovens talentos vêm pedir para ser seus discípulos. Um discípulo no 3º reino, mais um a cada reino (até cinco).
+- Discípulos cultivam sozinhos e crescem mais rápido quando você os ensina — mas **nunca passam do reino do mestre**.
+- Cada reino que um discípulo rompe aumenta a fama do mestre. Um discípulo indigno pode ser expulso.
+
+### 16.11 Provocar uma Guerra
+
+Nem toda guerra é declarada contra você. Quem quer ver o próprio clã ou seita crescer pode **provocar** um rival do mesmo tipo (clã contra clã, seita contra seita) — humilhando um herdeiro, reivindicando uma veia de pedras.
+
+- Rival mais fraco: mais seguro. Parelho ou mais forte: mais glorioso.
+- Vencer faz a facção crescer em membros, eleva o prestígio da família (seção 13) e transforma o rival em vassalo. Provocar pesa no alinhamento.
+
+### 16.12 Clãs × Seitas (quem é maior)
+
+Seitas acolhem talentos de qualquer lugar; clãs dependem do próprio sangue. Por isso **um clã raramente é maior que uma seita** — só os raros clãs ancestrais rivalizam com elas. Os rankings de cada região separam Seitas e Clãs, e o patriarca de um clã sempre carrega o sobrenome da casa.
+
+### 16.13 Seitas Supremas Roubando Discípulos
+
+O direito de recrutamento livre (seção 9) tem um lado sombrio: as Seitas Supremas **tiram os melhores discípulos das seitas menores** da região — e da facção do personagem, se ela for fraca demais para protegê-los. Um discípulo talentoso de seita menor pode ser procurado em segredo por uma Suprema: aceitar, recusar com lealdade ou fingir aceitar e espionar.
+
+### 16.14 Grandes Grupos Mercadores
+
+Casas comerciais mais antigas que muitas seitas, espalhadas pelas cinco regiões (liga direto com as Rotas Comerciais, 14.4): uma câmara de leilões na Planície Central, uma caravana do deserto no Oeste, um pavilhão de artefatos no Leste e uma liga de minérios e núcleos no Norte.
+
+- **Cotas**: parte do grupo, que paga dividendos a cada estação conforme a riqueza dele.
+- **Contratos**: trabalhos para o grupo que rendem pedras e reputação — ou ferimentos, se derem errado.
+- **Reputação**: Cliente → Parceiro → Associado → Conselheiro, com desconto crescente em todo o mercado.
+- As riquezas dos grupos sobem e descem com o tempo e têm ranking próprio.
+
+### 16.15 Campos Espirituais da Família
+
+Os campos de ervas (seção 4) são patrimônio, não tarefa: servos da família plantam e colhem sozinhos, e o chefe da casa só decide o que cada campo cultiva. Os campos passam aos herdeiros.
 
 ---
 
@@ -691,4 +729,4 @@ Complementa a seção 10: o poder de uma besta vem da **espécie** e da **idade*
 - [x] Prestígio Familiar, Fama por Profissão e Duelo Demoníaco
 - [x] Sistemas Adicionais (Torres de Prova, Cicatrizes, Reencarnação, Rotas Comerciais, Torneios Regionais, Divinação)
 - [x] Sistemas Adicionais II (Reputação por Facção, Estações, Companheiros de Jornada, Karma, Codex)
-- [x] Sistemas Adicionais III (Método de Cultivo, Mestre e Discípulo, Autodidatas, Traços da Vida, Alma Antiga e Herança Escondida, Noivado Arranjado, Guerra de Clãs, Rankings por Região, Linhagem e Idade das Bestas)
+- [x] Sistemas Adicionais III (Método de Cultivo, Mestre e Discípulo, Autodidatas, Traços da Vida, Alma Antiga e Herança Escondida, Noivado Arranjado, Guerra de Clãs, Rankings por Região, Linhagem e Idade das Bestas, Tornar-se Mestre, Provocar Guerra, Clãs × Seitas, Seitas Supremas Roubando Discípulos, Grandes Grupos Mercadores, Campos da Família)

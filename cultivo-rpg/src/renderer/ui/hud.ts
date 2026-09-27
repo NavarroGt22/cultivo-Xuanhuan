@@ -7,6 +7,8 @@ import { getCargo } from '../../game/occupations';
 import { REGIOES } from '../../game/world';
 import { influenciaFamilia, influenciaPessoal } from '../../game/influence';
 import { ehDiscipulo } from '../../game/sect';
+import type { MundoState } from '../../game/worldState';
+import { climaAtual, descreverEstacao, estacaoAtual } from '../../game/seasons';
 import { imagemOpcional } from './assets';
 import { escapeHtml, formatarNumero } from './dom';
 
@@ -60,7 +62,7 @@ function barra(classe: string, percentual: number, texto: string, dica: string):
     </div>`;
 }
 
-export function renderHud(character: Character): string {
+export function renderHud(character: Character, mundo?: MundoState): string {
   const atributos = getEffectiveAttributes(character);
   const stats = getCharacterStats(character);
   const valorAlinhamento = character.alinhamento.valor;
@@ -88,6 +90,7 @@ export function renderHud(character: Character): string {
               ? `Deveres de discípulo · Contribuição ${character.contribuicao}`
               : 'Sem ocupação'
         }</div>
+        <div class="hud-reino" title="${escapeHtml(`${estacaoAtual(mundo).descricao}; ${climaAtual(mundo).descricao}`)}">${escapeHtml(descreverEstacao(character, mundo))}</div>
         <div class="hud-reino" title="${escapeHtml(`${familia.alcance} / ${pessoal.alcance}`)}">
           Influência — Família: <strong>${escapeHtml(familia.nome)}</strong> · Pessoal: <strong>${escapeHtml(pessoal.nome)}</strong>
         </div>

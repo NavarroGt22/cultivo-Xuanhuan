@@ -6,6 +6,8 @@ import { RegiaoId } from './world';
 import type { MissaoQuadro } from './bounties';
 import { FaccaoMundo, avancarFaccoes, faccoesDaRegiao } from './regionalFactions';
 import { avancarMercadores } from './merchantGroups';
+import type { ClimaId } from './seasons';
+import type { CategoriaCodex } from './codex';
 
 /** Tudo do mundo que precisa persistir entre sessões. */
 export interface MundoState {
@@ -28,6 +30,11 @@ export interface MundoState {
   cronicaFaccoes?: string[];
   /** Riqueza atual de cada grande grupo mercador (merchantGroups.ts). */
   riquezaMercadores?: Record<string, number>;
+  /** Calendário do mundo (0 = início da primavera) e clima espiritual da estação (seasons.ts). */
+  mesDoAno?: number;
+  clima?: ClimaId;
+  /** O que você já descobriu, por categoria (codex.ts). */
+  codex?: Partial<Record<CategoriaCodex, string[]>>;
 }
 
 export function createMundo(): MundoState {

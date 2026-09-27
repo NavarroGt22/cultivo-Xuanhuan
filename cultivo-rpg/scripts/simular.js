@@ -26,6 +26,8 @@ const { TORRES, andarAtual, escolhaDoAndar } = require('../dist/game/towers');
 const { disputarTorneio, torneioAberto } = require('../dist/game/tournaments');
 const { PRODUTOS_REGIONAIS, comprarProduto, venderProduto } = require('../dist/game/trade');
 const { REGIOES } = require('../dist/game/world');
+const { nivelKarma } = require('../dist/game/karma');
+const { nivelReputacao } = require('../dist/game/supremeSects');
 const torneios = { total: 0, titulos: 0 };
 const comercio = { lucro: 0 };
 const andaresFinais = [];
@@ -40,6 +42,8 @@ const cargosFinais = {};
 
 const vidas = Number(process.argv[2] ?? 20);
 const eventos = {};
+const karmas = {};
+const reputacoes = {};
 let lutas = 0;
 let vitorias = 0;
 
@@ -191,6 +195,12 @@ for (let v = 0; v < vidas; v++) {
   extras.filhos += character.relacoes.filter((r) => r.tipo === 'Filho(a)').length;
   rankingFinal.push(`forca #${posicaoJogador(historia.mundo, character, 'forca')}`);  const cargo = character.ocupacao ? getCargo(character.ocupacao).nome : 'sem ocupação';
   cargosFinais[cargo] = (cargosFinais[cargo] ?? 0) + 1;
+  const karma = nivelKarma(character).nome;
+  karmas[karma] = (karmas[karma] ?? 0) + 1;
+  for (const valor of Object.values(character.reputacaoSupremas ?? {})) {
+    const nivel = nivelReputacao(valor);
+    reputacoes[nivel] = (reputacoes[nivel] ?? 0) + 1;
+  }
 
   console.log(
     `${(ESTILO_IDS.filter((id) => character.estilos[id].nivel > 0).map((id) => ESTILOS[id].nome.split(" ")[0] + character.estilos[id].nivel).join(",") || "-").padEnd(24)} | tec ${character.tecnicas.length} | ${descreverOrigem(character.origem).padEnd(70)} | raiz ${character.raizEspiritual.grau} | ` +
@@ -201,6 +211,7 @@ for (let v = 0; v < vidas; v++) {
 
 console.log(`\nLutas: ${lutas}, vitórias: ${vitorias} (${Math.round((vitorias / Math.max(1, lutas)) * 100)}%)`);
 console.log('Eventos:', eventos);
+console.log('Karma ao morrer:', JSON.stringify(karmas), '· Reputação com Seitas Supremas (por seita conhecida):', JSON.stringify(reputacoes));
 console.log('Atividades:', atividadesFeitas);
 console.log('Cargo ao morrer:', cargosFinais);
 console.log('Promoções na seita:', postos);

@@ -5,6 +5,7 @@ import { REGIOES } from '../../game/world';
 import { precisaTribulacao } from '../../game/cultivation';
 import { DICA_SEM_METODO, metodoDeCultivo } from '../../game/cultivationMethod';
 import { escapeHtml } from './dom';
+import { CENA_PAUSA, capituloDaCena, marcasVisiveis } from '../../game/narrative';
 
 export function icone(nome: string): string {
   const desenhos: Record<string, string> = {
@@ -25,6 +26,7 @@ export function icone(nome: string): string {
     saves: '<rect x="3" y="3" width="18" height="5" rx="1"/><rect x="3" y="10" width="18" height="5" rx="1"/><path d="M3 18v3h18v-3M7 5.5h.1M7 12.5h.1"/>',
     campos: '<path d="M3 21h18M12 21V9M12 14C5 14 4 9 4 5c5 0 8 3 8 9ZM12 11c0-5 3-8 8-8 0 5-3 8-8 8Z"/>',
     bestiario: '<circle cx="12" cy="15" r="4"/><circle cx="5.5" cy="10" r="2"/><circle cx="18.5" cy="10" r="2"/><circle cx="9" cy="5.5" r="2"/><circle cx="15" cy="5.5" r="2"/>',
+    codex: '<path d="M4 4h11a3 3 0 0 1 3 3v13H7a3 3 0 0 1-3-3z"/><path d="M4 17a3 3 0 0 1 3-3h11"/><path d="M8 8h6"/>',
     menu: '<path d="M10 3H4v18h6m-1-9h12m-4-4 4 4-4 4"/>',
   };
   return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${desenhos[nome] ?? desenhos.jornada}</svg>`;
@@ -41,15 +43,25 @@ export function renderPainelJornada(c: Character, h: StoryState): string {
     : precisaTribulacao(c.cultivo) ? 'Você alcançou o ápice deste reino. Prepare-se para uma Tribulação Celestial.'
     : h.energia === 0 ? 'Sua energia acabou. Continue a história para avançar o tempo e recuperar energia.'
     : 'Aproveite sua energia para cultivar, explorar ou desenvolver um ofício antes de avançar a história.';
+  const capitulo = c.narrativa ? capituloDaCena(c.narrativa.pausadaEm && c.narrativa.cena === CENA_PAUSA ? c.narrativa.pausadaEm : c.narrativa.cena) : undefined;
+  const marcas = marcasVisiveis(c);
+  const cardHistoria = c.narrativa
+    ? `<section class="card-jornada"><p class="eyebrow">Renascimento do Demônio Celestial</p>
+      <div class="card-heading"><h2>${capitulo ? `Capítulo ${capitulo.numero} — ${escapeHtml(capitulo.titulo)}` : 'A história continua…'}</h2>${icone('missoes')}</div>
+      ${c.narrativa.cena === CENA_PAUSA ? '<p class="dica">Você chegou ao fim do que já foi escrito. O save continua daqui quando os próximos capítulos chegarem.</p>' : ''}
+      ${marcas.length ? `<p class="dica">O que você carrega:</p><ul class="ficha">${marcas.map((m) => `<li>${escapeHtml(m)}</li>`).join('')}</ul>` : '<p class="dica">Suas escolhas ficam registradas e voltam anos depois.</p>'}
+    </section>`
+    : '';
   return `<aside class="painel-jornada-lateral" aria-label="Resumo da jornada">
-    <section class="card-jornada"><p class="eyebrow">Seu próximo passo</p>
+    ${cardHistoria}
+    ${c.narrativa ? '' : `<section class="card-jornada"><p class="eyebrow">Seu próximo passo</p>
       <div class="card-heading"><h2>O caminho adiante</h2>${icone('missoes')}</div>
       <div class="progresso-campanha"><span style="width:${completos / objetivos.length * 100}%"></span></div>
       <p class="dica">${completos} de ${objetivos.length} objetivos resgatados</p>
       ${objetivo ? `<h3>${escapeHtml(objetivo.objetivo.titulo)}</h3><p>${escapeHtml(objetivo.objetivo.descricao)}</p>
       <div class="recompensa"><small>RECOMPENSA</small>${escapeHtml(objetivo.objetivo.textoRecompensa)}</div>
       <button class="largo ${objetivo.status === 'concluido' ? 'primario' : ''}" data-abrir="missoes">${objetivo.status === 'concluido' ? 'Resgatar recompensa' : 'Ver missões'} <span aria-hidden="true">→</span></button>` : '<p>Todos os objetivos desta campanha foram cumpridos.</p>'}
-    </section>
+    </section>`}
     <section class="card-jornada"><p class="eyebrow">Ritmo da jornada</p><div class="card-heading"><h2>Energia disponível</h2><strong>${h.energia}<small>/${ENERGIA_POR_ESTACAO}</small></strong></div>
       <div class="energia-segmentos" aria-label="${h.energia} de ${ENERGIA_POR_ESTACAO} pontos">${Array.from({length: ENERGIA_POR_ESTACAO}, (_, i) => `<span class="${i < h.energia ? 'cheio' : ''}"></span>`).join('')}</div>
       <p>${conselho}</p><button class="link-botao" data-abrir="atividades">Explorar atividades →</button>

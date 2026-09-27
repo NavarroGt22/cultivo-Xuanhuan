@@ -9,7 +9,7 @@ Legenda: **[x]** feito · **[~]** parcial · **[ ]** não feito
 ## Base técnica
 
 - [x] Electron + TypeScript, interface em HTML/CSS/TS puro
-- [x] Save/load em `save.json` com versão (saves de versões antigas são ignorados)
+- [x] Save/load em `save.json` com versão
 - [x] Salvamento automático a cada escolha + botão **Continuar** no menu
 - [x] Simulador de vidas para testar equilíbrio (`npm run simular -- 30`)
 - [x] **Migração de saves antigos**: saves de versões anteriores são atualizados automaticamente (campos novos recebem valores padrão) em vez de descartados
@@ -37,11 +37,29 @@ Legenda: **[x]** feito · **[~]** parcial · **[ ]** não feito
 - [x] **Rolagem de Herança no nascimento** (Ouro Negro/Lendário: pingente selado ou Constituição Especial)
 - [x] Estilo marcial removido da criação — o primeiro estilo vem da escolha de infância
 
+## Histórias (`GDD_Historias_Xuanhuan.docx`)
+
+- [x] Opção **História** na criação: **História do Pequeno Herói** (o jogo aberto de sempre) ou **Renascimento do Demônio Celestial** (HIS-001, campanha roteirizada)
+- [x] Motor narrativo (`src/game/narrative.ts`): capítulos, cenas, escolhas com o id do GDD, variáveis (Humanidade, Fúria, Vontade, Verdade, Reputação, Vínculo com Mo, Dívida Demoníaca e as do Ato 1) e flags; cada escolha registrada com cena e idade; requisitos mostrados com o motivo ("Exige Pulso da Vida…"); cenas do mesmo dia não passam estação nem renovam energia; eventos aleatórios suspensos durante a campanha
+- [x] HIS-001 começa aos 8 anos na Aldeia do Campo Sereno (Leste), família camponesa, **Raiz do Vazio** lida como raiz inútil, sem pedras
+- [x] **Ato 1 — Cinzas da vida mortal** (`src/game/his001.ts`): Capítulo 1 *A Criança de Raiz Inútil* · Capítulo 2 *Quatro Colheitas* (8→12 anos) · Capítulo 3 *Mantos Brancos sobre o Campo* (as quatro rotas: Resistência, Evacuação, Evidência e Família) · Capítulo 4 *O Único Sobrevivente* (sete dias com Fome, Frio, Ferimento e Rastro)
+- [x] Painel da jornada mostra o capítulo e o que o personagem carrega (Memória Nítida, competência, Âncora Familiar, objeto da família, promessa, provas); os números ficam ocultos, como pede o GDD
+- [x] Ao fim do que está escrito, a campanha **pausa** num aviso; quando novos capítulos entrarem, o save continua sozinho de onde parou
+- [ ] Capítulos 5 a 24 (Mo Wutian, provações da herança, Nascente Cinzenta, Aurora, fragmentos, Guerra dos Nove Céus), organização, nove finais e epílogos; HIS-002
+
+## Qi, Técnicas e Pílulas (`GDD_Qi_Tecnicas_Pilulas_Xuanhuan.docx`)
+
+- [x] **Fase 1 — Perfil de Qi** (`src/game/qiNature.ts`): natureza **Yin** ou **Yang** sorteada no nascimento (corpo feminino 70% Yin, masculino 30%; parâmetros configuráveis; RNG injetável); Qi Demoníaco nunca é sorteado para humanos; Chakra/Star continuam o recurso (a natureza é o tipo de energia)
+- [x] As 25 técnicas classificadas pela tabela de migração (Universal, Yin, Yang, Demoníaca Yin/Yang) sem mudar números de combate; o Sangue Fervente é Yang proibida humana, não demoníaca
+- [x] Ficha e manuais mostram a compatibilidade na linguagem do GDD (Seguro, Adaptável, Perigoso, Demoníaco, Desconhecido); humanos leem manuais demoníacos mas não completam a circulação ("Somente demônios podem completar este ciclo") e o manual não é gasto
+- [x] Saves antigos ficam com a natureza **pendente** (sem sorteio silencioso): a ficha oferece Yin, Yang ou "deixar o corpo decidir"; migração idempotente
+- [ ] Fases 2–8: execução e adaptação de técnicas opostas, circulação (capacidade, vazão, pureza, controle, estabilidade), pílulas por natureza (tolerância e conflitos), demonização (estados, fome, âncora), novos catálogos, facções e missões
+
 ## Interface
 
 - [x] A história fica no centro: a cada escolha a tela centraliza o evento (ou alinha o começo do texto, se ele for maior que a tela), e as **escolhas grudam no rodapé** enquanto o texto rola; banner e barra do topo mais baixos
 - [x] Nenhum painel volta ao topo ao clicar: todos os modais guardam a rolagem e o foco quando se redesenham
-- [x] Resultados de lutas e testes (Atividades, Missões, Mundo, Relações) abrem numa janela própria por cima do painel; mensagens curtas (compras, conversas, refino, ocupação, campos) aparecem num aviso flutuante — o painel de baixo não se mexe
+- [x] Resultados de lutas e testes (Atividades, Missões, Mundo, Relações) abrem numa janela própria por cima do painel; mensagens curtas (compras, conversas, refino, ocupação, campos) aparecem num aviso flutuante pequeno no canto superior direito — o painel de baixo não se mexe
 - [x] Confirmações dentro do jogo no lugar do `confirm()` nativo (romper com o mestre, nova vida, substituir slot)
 - [x] "Terminar / romper": com parceiro(a) vira Ex; com amigos, conhecidos e ex corta os laços (a pessoa sai de Relações)
 - [x] HUD: nome, idade/expectativa de vida, reino e estágio, afiliação, local, ocupação, influência da família e pessoal
@@ -62,7 +80,7 @@ Legenda: **[x]** feito · **[~]** parcial · **[ ]** não feito
 - [x] 13 ranks com estágios e expectativa de vida
 - [x] Transição Chakra → Star no Rank 2
 - [x] Tribulação Celestial a cada rank (pode adiar; falha fere; 1 natural mata)
-- [x] Progresso mais lento a cada rank (×1,8 por rank)
+- [x] Progresso mais lento a cada rank (×1,7 por rank); nos reinos altos o talento pesa mais: cada grau de raiz acima do 3º dá +4% de cultivo por reino acima do 1º (raiz 5 no 5º reino: +32%)
 - [x] Poder de combate multiplicado pelo reino
 - [~] Desvio de qi: no cultivo intensivo e ao repetir cultivo demais na estação; ainda não é um estado persistente
 - [ ] Compressão de rank (vencer quem está acima) como mecânica explícita
@@ -140,7 +158,8 @@ Legenda: **[x]** feito · **[~]** parcial · **[ ]** não feito
 - [~] Torneio do Dragão Duplo só como boato
 - [x] Ranking de seitas e clãs por região (Seitas Supremas incluídas), com líder, membros e poder
 - [ ] Torneio do Dragão Duplo jogável
-- [ ] Rixas históricas entre regiões, tributação
+- [~] Tributação: só a facção fundada paga tributo anual às Supremas (ver 15.1)
+- [ ] Rixas históricas entre regiões
 
 ### 10. Bestas e Raças
 - [x] Bestas espirituais da fauna regional, com faixa e cultivo visíveis; núcleos de besta
@@ -150,6 +169,15 @@ Legenda: **[x]** feito · **[~]** parcial · **[ ]** não feito
 - [x] O reino da besta vem da espécie, não do domador: filhotes nascem no reino da linhagem (1º a 4º); adultas selvagens ficam na faixa da espécie; encontros escolhem espécies do reino de quem as encontra
 - [x] **Fases de vida**: Filhote (não rompe reinos, 40% da força) → Jovem (75%) → Adulta (100%, até o teto da espécie) → Anciã (110%, pode passar do teto); linhagens nobres cultivam mais rápido
 - [x] Bestas de famílias domadoras crescem e viram adultas junto com o personagem; a Evolução Conjunta sobe com você só até o teto da fase
+- [x] **Bestiário Profundo — Fase 1** (`GDD_Bestiario_Profundo_Xuanhuan.docx`, dados em `src/game/bestiaryDeep.ts`): as 28 espécies ganharam ficha de identidade (nicho e habitat, comportamento, técnica de assinatura, fraqueza e leitura, materiais, vínculo, variante e gancho, papel ecológico e grau de ameaça I–VI); as 5 pilotos (Coelho de Jade, Lobo de Presas de Gelo, Pantera da Névoa, Carpa do Portão do Dragão, Camelo de Duas Almas) também têm habitats, dieta, atividade, estrutura social, temperamento, inteligência, habilidades com sinal/efeito/resposta, resistências, fraquezas e materiais com origem e renovabilidade
+- [x] **Bestiário Profundo — Fase 2: conhecimento** (`src/game/beastKnowledge.ts`)
+  - Cada espécie tem um nível de 0 a 5: **Desconhecida** (só silhueta e codinome, como "Predadora das águas", e a região) → **Reconhecida** (nome, aparência, reinos, ameaça) → **Estudada** (nicho, comportamento, habitat, dieta, atividade) → **Compreendida** (assinatura, fraqueza, habilidades com sinal e resposta) → **Dominada** (materiais, vínculo, temperamento) → **Lendária** (variantes, lendas, impacto no mundo); campos acima do nível aparecem como perguntas trancadas
+  - Como avançar: rumor ou aparecer na história (1); "Seguir rastros" no Bestiário, teste de Inteligência mais difícil para linhagens nobres, ou 3 encontros (2); vencer a besta 2 vezes ou concluir o estudo dos rastros (3); domar (4); companheira adulta com vínculo 90+ (5)
+  - **Rumores de caçadores** (1 de energia, 3 pedras): verdadeiros, exagerados ou falsos, marcados como "relato provável/duvidoso"; ao compreender a espécie, viram "confirmado" ou "desmentido" (riscado, sem apagar o histórico) e cada correção dá reputação
+  - **Conhecimento tem valor em combate**: a partir de "Compreendida", a besta luta com 10% menos força e o jogo diz qual fraqueza você explorou
+  - Nível efetivo = o maior entre o registrado e o deduzido do save (Codex, doma, companheira): saves antigos migram sem escrita e recarregar não duplica pistas nem rumores; o herdeiro herda os cadernos da família
+  - [ ] Fases 3–5: novo painel com abas; encontros contextuais (bioma, hora, clima, intenção, rastros); habilidades, sinais, fraquezas e moral no combate; soluções não letais
+  - [ ] Fases 6–8: necessidades, estados emocionais e memória da companheira; materiais por método de coleta; população regional e consequências de facção; missões-modelo (O Corredor Branco, A Pena Ausente…); estruturar as 23 espécies restantes
 - [ ] Raça Demoníaca, Meio-Bestas, Espíritos Elementais, Cultivadores de Alma
 
 ### 11. Linha do Tempo
@@ -167,7 +195,7 @@ Legenda: **[x]** feito · **[~]** parcial · **[ ]** não feito
 - [x] Heranças se **acumulam** (nenhuma apaga a outra); em combate vale a técnica mais forte de cada categoria, e as passivas de corpo/movimento usam a melhor que você conhece
 - [x] 12 novas técnicas (Punho da Montanha, Lâmina do Vento, Lótus Carmesim, Pele de Ferro, Orvalho Celestial, Passo Relâmpago, Ossos de Jade, Sutra do Lótus Azul + 4 de herança)
 - [x] **Domadores Hereditários**: família de domadores dá uma besta desde a infância — **Vínculo de Nascença**
-- [x] **Evolução Conjunta** (a besta acompanha o seu rank) × **Evolução Independente** (cultiva no próprio ritmo, pode te ultrapassar ou ficar para trás, e às vezes acha tesouros sozinha) — escolha por besta no painel Relações
+- [x] **Evolução Conjunta** (a besta acompanha o seu rank) × **Evolução Independente** (cultiva no próprio ritmo, pode te ultrapassar ou ficar para trás, e às vezes acha tesouros sozinha) — escolha por besta no Bestiário
 - [x] **Combate em Conjunto**: barra de **Sincronia** sobe a cada rodada; **Ataque Combinado** (técnica humana + besta) e **Técnica de Fusão** (teto de sincronia, só com Vínculo de Nascença ou vínculo perfeito)
 - [ ] Rolagem de Herança própria da besta (hoje ela só encontra frutos espirituais)
 - [ ] Mais heranças (uma por elemento/profissão), heranças incompletas, rivais disputando o mesmo túmulo
@@ -180,7 +208,7 @@ Legenda: **[x]** feito · **[~]** parcial · **[ ]** não feito
   - A vítima vira mortal para sempre (NPC perde o cultivo); você perde alinhamento (−25) e se fere (fica exposto)
   - Gera um **Inimigo Jurado** (o clã/seita da vítima), que manda vingadores (evento "Rixa de Sangue")
   - Seitas ortodoxas expulsam quem faz isso (tabu)
-- [x] **Fim da rixa de sangue** (Relações → card do Inimigo Jurado). Cada rixa tem um Patriarca 2 reinos acima da vítima:
+- [x] **Fim da rixa de sangue** (Mundo → Rixas de Sangue e Vassalos). Cada rixa tem um Patriarca 2 reinos acima da vítima:
   - **Exterminar a família/clã**: 3 lutas seguidas (portões, salão dos anciões, câmara do Patriarca); vitória encerra a rixa, rende o tesouro do clã e muita fama, mas −30 de alinhamento
   - **Intimidação**: 2 reinos acima do Patriarca (ou influência "Mito continental"), eles não ousam mais mandar vingadores
   - **Impor submissão**: acima do Patriarca (ou "Lenda do reino"), a família vira **Vassala** e paga tributo por estação
@@ -210,6 +238,30 @@ Legenda: **[x]** feito · **[~]** parcial · **[ ]** não feito
 - [ ] Torneios de nível acima (continental) e o Torneio do Dragão Duplo jogável
 - [ ] Profecias maiores sobre o destino do personagem (arco de campanha próprio)
 
+### 15. Sistemas Adicionais II
+- [x] **15.1 Reputação por facção** com cada uma das 9 Seitas Supremas (−100 a 100: Hostil → Desconfiada → Neutra → Favorável → Aliada), em Mundo → Seitas Supremas
+  - Atos justos agradam as ortodoxas da região e irritam a demoníaca (e vice-versa); recrutamento, aliciamento e os eventos "Um Pedido da Seita Suprema" (caçar uma besta para as ortodoxas; silenciar uma testemunha para as demoníacas — ajudar uma irrita as rivais) mexem na reputação; discípulos de uma Suprema ganham a confiança dela aos poucos
+  - Aliada recruta você mesmo sem raiz excepcional; Hostil nunca recruta, manda discípulos atrás de você (lutar, fugir ou pagar "desculpas") e, se for a Suprema que organiza a Torre de Prova e o Torneio Regional, proíbe a entrada
+  - Preços do Mercado na região: de −6% (Aliada) a +20% (Hostil)
+  - A facção fundada paga tributo anual às Supremas da região (meia pedra por membro); sem pedras, a reputação cai
+  - O herdeiro herda metade da reputação
+- [x] **15.2 Estações e clima espiritual**: calendário do mundo (continua com o herdeiro) mostrado no HUD
+  - Primavera → Madeira, Verão → Fogo, Outono → Metal, Inverno → Água: +15% de cultivo passivo se o elemento da estação está na sua raiz (Terra, a transição, +5% o ano todo)
+  - A cada estação, um clima espiritual: Céu calmo, **Maré de Qi** (+20% de cultivo) ou **Seca Espiritual** (−15%)
+  - Janelas que só abrem numa época: Chuva de Orvalho (primavera), Flor do Sol Poente (verão), Feira da Colheita (outono), Lótus de Gelo e o **Selo Enfraquecido** de uma ruína da Era Dourada (no pico do inverno)
+  - [ ] Estação afetando técnicas elementais em combate
+- [x] **15.3 Companheiros de jornada** (Relações → Companheiros de jornada): até 2 (3 com influência "Lenda do reino")
+  - Convide um amigo (relação 50+) ou aceite um viajante na estrada; cada um tem um papel — Guerreiro (+2 FOR/+2 CON), Batedor (+2 DES, −30% emboscadas), Curandeiro (+2 ESP, +15% de vida por estação), Erudito (+2 INT, +5% de cultivo) — e um caminho (ortodoxo ou demoníaco)
+  - **Lealdade** própria: cai aos poucos, sobe ao dividir espólios e atender aos pedidos do companheiro (defender uma vila; assaltar uma caravana), reage aos seus atos conforme o caminho dele; caminhos opostos brigam
+  - Lealdade 90+: **Irmão de Armas** (bônus em dobro); abaixo de 25, aviso; abaixo de 15, pode trair e fugir com 10% das pedras
+  - Continuam sendo pessoas: podem virar namorados, cônjuges ou Companheiros(as) de Dao sem sair do grupo
+- [x] **15.4 Karma**: separado do alinhamento, calculado pelos feitos (crueldades ×3 e mortes ×0,5 pesam; boas ações ×1,5 aliviam). Seis níveis, de Abençoado pelo Céu (−3 na dificuldade da Tribulação Celestial) a Amaldiçoado pelo Céu (+10); a tribulação avisa quando o karma pesa. Aparece na ficha do Inventário
+- [x] **15.5 Codex** (barra lateral): registra sozinho, lendo os textos de cada evento, as regiões, Seitas Supremas, seitas e clãs, técnicas, bestas e heranças que você encontra (mais as pessoas de Relações), com busca e abas; avisa as novidades; o conhecimento fica no mundo e passa ao herdeiro
+
+### 16. Sistemas Adicionais III
+- [x] Método de cultivo, Mestre e Discípulo, Autodidatas, Traços da Vida, Alma Antiga e Herança Escondida, Noivado Arranjado, Guerra de Clãs, Rankings por Região e Bestiário (detalhes nas seções acima e abaixo)
+- [x] Discípulos do jogador, provocar guerra, Grandes Grupos Mercadores e Seitas Supremas roubando discípulos (ver "Mundo vivo" e "Atividades")
+
 ---
 
 ## Vida de Discípulo de Seita
@@ -230,7 +282,8 @@ Legenda: **[x]** feito · **[~]** parcial · **[ ]** não feito
 ## Fundar Clã ou Seita
 
 - [x] Painel **Ocupação → Fundar Clã ou Seita**: clã exige 3º reino, 300 pedras e reputação 40; seita exige 4º reino, 600 pedras e reputação 80; você escolhe o nome
-- [x] Fundador deixa a afiliação antiga (Patriarca Fundador / Mestre da Seita), não é mais discípulo e vive da **renda dos membros** (seita rende 1,5× por membro)
+- [x] Fundador deixa a afiliação antiga (Patriarca Fundador / Mestre da Seita), não é mais discípulo e vive da **renda dos membros** (seita rende 1,5× por membro; +30% por membro a cada reino do fundador acima do 1º) e das **ofertas pela sua fama** (1 pedra a cada 15 de reputação, por estação)
+- [x] Cônjuges, Companheiros(as) de Dao e filhos entram sozinhos na facção e contam como membros (aparece "membro da …" em Relações); quem deixa de ser família sai da contagem
 - [x] Recrutar membros (custo cresce com o tamanho); a fama atrai membros sozinha
 - [x] 3 instalações até o nível 3 (com manutenção): Sala de Cultivo (+8% de cultivo passivo), Biblioteca (−2 na dificuldade de estudar manuais), Muralhas (−25% de ataques de vingadores e bandidos)
 - [x] O tamanho da facção eleva a influência da família; herdeiros nascem dentro dela e a herdam
@@ -316,7 +369,7 @@ Legenda: **[x]** feito · **[~]** parcial · **[ ]** não feito
 
 1. Mundos Perdidos de verdade (selo temporal, colapso, disputa entre seitas) e **Torneio do Dragão Duplo** jogável
 2. Anciões com nome para a facção fundada, Patriarca em Reclusão e Anciões Convidados (que podem trair); território disputado nas guerras de clãs
-3. Técnicas elementais e elementos superiores (Raio, Vento, Luz, Trevas, Espaço, Tempo)
+3. Técnicas elementais e elementos superiores (Raio, Vento, Luz, Trevas, Espaço, Tempo) — e a estação favorecendo-as em combate
 4. Filhos que cultivam e agem por conta própria enquanto o pai vive; missões para discípulos
 5. Demais categorias de ocupação e o `ocupacoes.md` reescrito em listas
 6. Imagens (retratos e cenas) e som

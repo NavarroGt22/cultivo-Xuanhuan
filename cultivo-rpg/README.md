@@ -20,6 +20,12 @@ npm start
 - **Layout centralizado:** largura limitada em monitores grandes, coluna de leitura e adaptação para janelas menores.
 - **Campos espirituais:** compra e herança dos lotes; plantio e colheita automáticos (a semente pode ser fixada).
 - **Relações:** só laços pessoais (família, noivado, mestre, discípulos, parceiros); a besta companheira fica no Bestiário, rixas e vassalos no Mundo, a hierarquia da seita em Ocupação.
+- **Mundo → Seitas Supremas:** reputação com cada uma das 9 Supremas (recrutamento, preços, ataques, acesso à torre e ao torneio, tributo). O **karma** aparece na ficha do Inventário e pesa na Tribulação Celestial.
+- **História na criação:** *História do Pequeno Herói* (jogo aberto) ou *Renascimento do Demônio Celestial* (campanha roteirizada; Ato 1, capítulos 1–4).
+- **Natureza do Qi:** Yin ou Yang na ficha; técnicas e manuais mostram a compatibilidade (as demoníacas exigem ser demônio).
+- **Estações:** calendário do mundo no HUD; a estação favorece um elemento e sorteia um clima espiritual (Maré de Qi, Seca Espiritual).
+- **Relações → Companheiros de jornada:** até 2–3 companheiros com papel e lealdade própria (Irmãos de Armas ou traição).
+- **Codex** (barra lateral): registro automático de regiões, Supremas, facções, técnicas, bestas, heranças e pessoas.
 - **Mundo → Guerra de Clãs:** provocar guerra contra um rival para fazer seu clã ou seita crescer.
 - **Mercado → Grandes Grupos Mercadores:** cotas, contratos e desconto por reputação.
 - **Rankings:** abas de cultivadores, Seitas, Clãs e Grupos Mercadores, com notícias do mundo das facções.

@@ -1349,9 +1349,9 @@ button.primario:hover:not(:disabled) { background: #e0c891; border-color: #f2da9
 .preferencia select { width: 155px; font-size: .88rem; }
 .preferencia input { width: 20px; height: 20px; accent-color: #aabe90; flex-shrink: 0; }
 .preferencia small { display: block; color: var(--texto-suave); font-size: .75rem; margin-top: .25rem; }
-.toast { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); z-index: 50; border: 1px solid #7f9978; color: #e6e8d6; background: #203728; padding: .8rem 1.4rem; box-shadow: 0 6px 30px #0008; border-radius: 8px; }
-.toast-mensagens { max-width: min(620px, 92vw); cursor: pointer; }
-.toast-mensagens p { margin: .2rem 0; }
+.toast { position: fixed; top: 16px; right: 16px; z-index: 50; border: 1px solid #7f9978; color: #e6e8d6; background: #203728ee; padding: .5rem .8rem; box-shadow: 0 4px 18px #0008; border-radius: 7px; font-size: .78rem; line-height: 1.35; }
+.toast-mensagens { max-width: min(340px, 88vw); max-height: 45vh; overflow-y: auto; cursor: pointer; }
+.toast-mensagens p { margin: .15rem 0; }
 .painel-resultado { width: 100%; max-width: 720px; }
 .painel-confirmacao { width: 100%; max-width: 480px; }
 .painel-resultado .acoes, .painel-confirmacao .acoes { display: flex; justify-content: flex-end; gap: .6rem; margin-top: 1rem; }
@@ -1443,3 +1443,7 @@ html[data-fonte="grande"] { font-size: 18px; }
   .tela-inicial h1 { font-size: clamp(2rem, 9vw, 3rem); }
   .preferencia { flex-wrap: wrap; gap: .6rem; }
 }
+
+.ficha-besta { margin-top: .6rem; border-top: 1px solid var(--borda-escura); padding-top: .5rem; }
+.ficha-besta summary { cursor: pointer; font-size: .8rem; color: #d8c48a; }
+.ficha-besta p, .ficha-besta li { font-size: .85rem; margin: .35rem 0; }

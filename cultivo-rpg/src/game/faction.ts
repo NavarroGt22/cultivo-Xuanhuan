@@ -28,6 +28,47 @@ export interface Faccao {
   ortodoxa: boolean;
   fundadaIdadeMeses: number;
   instalacoes: Instalacoes;
+  /** Ids das relações da família (cônjuges, Companheiros de Dao, filhos) já contadas nos membros. */
+  familia?: string[];
+}
+
+const TIPOS_FAMILIA = ['Cônjuge', 'Companheiro(a) de Dao', 'Filho(a)'];
+
+/**
+ * A família do fundador faz parte da facção sem precisar ser recrutada: cada cônjuge, Companheiro(a)
+ * de Dao e filho conta como membro. Quem deixa de ser família (divórcio, morte) sai da contagem.
+ */
+export function sincronizarFamilia(character: Character): string[] {
+  const faccao = character.faccao;
+  if (!faccao) return [];
+  const atuais = character.relacoes.filter((r) => TIPOS_FAMILIA.includes(r.tipo));
+  const idsAtuais = new Set(atuais.map((r) => r.id));
+  const antes = faccao.familia ?? [];
+  const saiu = antes.filter((id) => !idsAtuais.has(id));
+  const novos = atuais.filter((r) => !antes.includes(r.id));
+  faccao.familia = [...antes.filter((id) => idsAtuais.has(id)), ...novos.map((r) => r.id)];
+  faccao.membros = Math.max(1, faccao.membros + novos.length - saiu.length);
+  if (!novos.length) return [];
+  const artigo = faccao.tipo === 'cla' ? 'do' : 'da';
+  return [`${novos.map((r) => r.nome).join(', ')} agora ${novos.length > 1 ? 'fazem' : 'faz'} parte ${artigo} ${faccao.nome} (membros ${faccao.membros}).`];
+}
+
+export function membrosDaFamilia(character: Character): number {
+  return character.faccao?.familia?.length ?? 0;
+}
+
+/**
+ * Renda do fundador por estação: cada membro contribui mais quanto mais alto o reino do líder
+ * (+30% por reino acima do 1º; seitas rendem 1,5×), e a fama traz ofertas de discípulos e
+ * admiradores (1 pedra a cada 15 de reputação).
+ */
+export function rendaFaccao(character: Character, estacoes = 1): { membros: number; prestigio: number; total: number } {
+  const faccao = character.faccao;
+  if (!faccao) return { membros: 0, prestigio: 0, total: 0 };
+  const porMembro = (faccao.tipo === 'seita' ? 1.5 : 1) * (1 + 0.3 * (character.cultivo.rank - 1));
+  const membros = Math.round(faccao.membros * porMembro * estacoes);
+  const prestigio = Math.max(0, Math.floor(character.reputacao / 15)) * estacoes;
+  return { membros, prestigio, total: membros + prestigio };
 }
 
 export const NOME_INSTALACAO: Record<keyof Instalacoes, string> = {
@@ -85,11 +126,13 @@ export function fundarFaccao(character: Character, tipo: TipoFaccao, nomeDigitad
   };
   character.contribuicao = 0;
   character.reputacao += 15;
+  const familia = sincronizarFamilia(character);
 
   return [
     `Você funda ${tipo === 'cla' ? 'o' : 'a'} **${nome}**${ortodoxa ? '' : ' (não-ortodoxa)'}! ${character.afiliacao.posto}: ${character.nome}.`,
     antiga && antiga !== nome ? `Você deixa ${antiga} para trás.` : '',
     `Os primeiros ${character.faccao.membros} membros juram lealdade. Reputação +15.`,
+    ...familia,
   ].filter(Boolean);
 }
 
@@ -128,12 +171,13 @@ export function melhorarInstalacao(character: Character, instalacao: keyof Insta
 export function processarFaccao(character: Character, estacoes: number): string[] {
   const faccao = character.faccao;
   if (!faccao) return [];
+  const mensagens = sincronizarFamilia(character);
   const { salaCultivo, biblioteca, muralhas } = faccao.instalacoes;
-  const renda = Math.round(faccao.membros * (faccao.tipo === 'seita' ? 1.5 : 1) * estacoes);
+  const renda = rendaFaccao(character, estacoes);
   const manutencao = (salaCultivo + biblioteca + muralhas) * 3 * estacoes;
-  addPedrasEspirituais(character.inventario, renda - manutencao);
+  addPedrasEspirituais(character.inventario, renda.total - manutencao);
 
-  const mensagens = [`${faccao.nome}: renda dos membros +${renda}, manutenção −${manutencao} pedras.`];
+  mensagens.push(`${faccao.nome}: renda dos membros +${renda.membros}, ofertas pela sua fama +${renda.prestigio}, manutenção −${manutencao} pedras.`);
   // Uma seita pequena perde talentos para as Seitas Supremas; sua fama segura parte deles.
   const supremas = REGIOES[character.local.regiao].seitasSupremas;
   if (faccao.tipo === 'seita' && supremas.length && faccao.membros > 10 && Math.random() < 0.05 * estacoes * Math.max(0.3, 1 - influenciaPessoal(character).nivel * 0.12)) {

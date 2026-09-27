@@ -1,0 +1,1224 @@
+﻿
+CULTIVO XUANHUAN
+GDD DO QI, TÉCNICAS E PÍLULAS
+Naturezas Yin, Yang e Demoníaca • circulação • compatibilidade • alquimia
+Documento de expansão sistêmica e narrativaVersão 1.0 • Setembro de 2026
+“O reino mede quanto poder alguém possui. A natureza do Qi decide como esse poder deseja se mover — e o preço cobrado quando é forçado a seguir o caminho errado.”
+
+1. Visão geral
+Este sistema aprofunda três pilares já presentes no projeto: métodos e técnicas classificados por grau, progressão de Chakra para Star e alquimia com toxina residual. Yin, Yang e Demoníaco não substituem Chakra ou Star. Eles definem a natureza, a polaridade e o comportamento da energia que está sendo refinada.
+1.1 Regra fundamental
+Campo
+Regra de design
+Qi
+Nome geral da energia vital e espiritual existente no mundo e nos seres vivos.
+Chakra
+Qi bruto e instável usado no Rank 1. É o reservatório inicial antes da condensação.
+Star
+Qi condensado e estabilizado a partir do Rank 2. Mantém sua natureza Yin, Yang ou Demoníaca.
+Natureza
+Yin, Yang ou Demoníaca. Controla compatibilidade, comportamento e risco das técnicas.
+Elemento
+Fogo, água, madeira, metal, terra, raio, vento e outros. É diferente da natureza do Qi.
+Método
+Forma ensinada de absorver, circular, refinar e condensar energia.
+
+1.2 Objetivos
+Fazer a natureza do Qi limitar e especializar técnicas, sem transformar sexo em bloqueio absoluto.
+Fazer circulação ser uma escolha mecânica: rota, ritmo, direção, pressão e retorno.
+Diferenciar caminho não ortodoxo de caminho demoníaco. Crueldade não produz Qi Demoníaco por si só.
+Exigir que usuários de Qi Demoníaco sejam demônios verdadeiros ou tenham concluído uma transformação demoníaca.
+Dar às pílulas compatibilidade, impurezas, tolerância e consequências além de um bônus instantâneo.
+Preservar as categorias e os cinco graus de técnica já presentes no jogo.
+1.3 Vocabulário
+A grafia adotada será Yang, e não “Yan”. Yin e Yang não significam mulher e homem; representam tendências energéticas. No mundo do jogo, corpos femininos nascem com Qi Yin com maior frequência e corpos masculinos com Qi Yang com maior frequência, mas existem exceções naturais, linhagens especiais, corpos duais e transformações.
+
+2. As três naturezas de Qi
+Natureza
+Princípio
+Forças
+Riscos
+Qi Yang
+Expansão, calor, movimento, vitalidade e manifestação.
+Explosão, resistência, purificação, força física, fogo, raio e luz.
+Meridianos queimados, agressividade, consumo rápido e colapso cardíaco.
+Qi Yin
+Contração, frio, silêncio, preservação, percepção e interiorização.
+Controle, precisão, espírito, gelo, água, sombra, cura delicada e selamento.
+Estagnação, frio interno, perda emocional e congelamento dos meridianos.
+Qi Demoníaco
+Desejo condensado, inversão das leis humanas e adaptação predatória.
+Conversão, regeneração, ruptura de limites, técnicas de sangue, alma e devoração.
+Erosão da identidade, fome, mutação, tribulações hostis e perda de controle.
+
+2.1 Qi Yang
+Circula melhor com ritmo crescente, respiração aberta e liberação pelos membros.
+É favorecido pelo sol, esforço físico, emoções declaradas e ambientes de fogo ou raio.
+Técnicas Yang tendem a ser diretas, visíveis e de alto consumo.
+Um cultivador Yang pode usar água, sombra ou gelo se a técnica converter esses elementos para uma expressão Yang — vapor, impacto, cristalização ou purificação.
+Seu defeito clássico é produzir mais energia do que o corpo consegue devolver ao dantian.
+2.2 Qi Yin
+Circula melhor com ritmo estável, respiração curta, concentração interna e retorno profundo.
+É favorecido pela lua, quietude, água, frio, memória, silêncio e percepção espiritual.
+Técnicas Yin costumam acumular efeito, ocultar intenção, selar movimentos ou atacar espírito e meridianos.
+Uma cultivadora Yin pode dominar fogo se ele for tratado como chama fria, combustão interna ou fogo espiritual que consome alma.
+Seu defeito clássico é preservar tanto a energia que a circulação se torna lenta ou congelada.
+2.3 Qi Demoníaco
+Não é escolhido na criação de um humano comum e não nasce simplesmente de raiva, assassinato ou técnica proibida.
+Surge naturalmente em raças demoníacas ou depois que alguém forma um Núcleo Demoníaco estável e deixa de ser totalmente humano.
+Mantém uma base Yin ou Yang. Portanto, existem Qi Demoníaco Yin e Qi Demoníaco Yang.
+Converte emoções, sangue, pactos, memórias ou energia inimiga em combustível, conforme a linhagem.
+Não é automaticamente maligno. A moral depende das ações; o perigo vem da fome e da transformação.
+2.4 O que não é Qi Demoníaco
+Fenômeno
+Classificação correta
+Cultivador cruel usando técnica ortodoxa
+Qi Yin ou Yang comum; moral não altera a natureza.
+Arte proibida que sacrifica vida
+Qi comum sob custo extremo, salvo se formar Núcleo Demoníaco.
+Corrupção passageira
+Qi contaminado. Pode causar mutação, mas ainda não é Qi Demoníaco estável.
+Membro de seita não ortodoxa
+Pode continuar humano e usar técnicas comuns ou proibidas.
+Demônio pacífico
+Continua portador de Qi Demoníaco; espécie não determina moral.
+
+
+3. Constituição, sexo e probabilidade
+O sistema usa o sexo corporal apenas como modificador de frequência, nunca como proibição. Identidade, aparência e papel social não determinam a natureza do Qi. A exceção deve ser rara o bastante para gerar história, mas comum o suficiente para existir em seitas e clãs sem ser tratada como erro.
+3.1 Distribuição recomendada
+Nascimento humano
+Qi Yin
+Qi Yang
+Observação
+Corpo feminino
+70%
+30%
+Yin é majoritário, mas quase uma em cada três pode nascer Yang.
+Corpo masculino
+30%
+70%
+Yang é majoritário, mas Qi Yin masculino é conhecido e estudado.
+Corpo especial ou linhagem rara
+Definido pelo corpo
+Definido pelo corpo
+Pode inverter probabilidades ou sustentar duas polaridades.
+
+Os percentuais são parâmetros de balanceamento, não lei cósmica. Podem ser ajustados sem mudar o lore central. Qi Demoníaco não participa desse sorteio para humanos comuns.
+3.2 Pureza e tendência
+Grau
+Descrição
+Efeito
+Suave
+Polaridade presente, mas flexível.
+Aprende técnicas universais e adapta técnicas opostas com custo moderado.
+Definida
+Polaridade clara e estável.
+Excelente compatibilidade própria; adaptação oposta é arriscada.
+Pura
+Corpo especializado em uma polaridade.
+Grande poder e eficiência; técnicas opostas normalmente bloqueadas.
+Extrema
+Corpo Yin Absoluto ou Yang Absoluto.
+Potencial lendário e risco de morte sem método adequado.
+
+3.3 Corpos especiais
+Campo
+Regra de design
+Corpo Yin Absoluto
+Produz frio interno crescente. Sem técnica ou parceiro de equilíbrio, congela órgãos e emoções.
+Corpo Yang Solar
+Produz vitalidade explosiva. Sem liberação, queima meridianos e reduz longevidade.
+Corpo de Harmonia
+Mantém Yin e Yang separados em dois reservatórios; raro, versátil e difícil de evoluir.
+Corpo de Eclipse
+Alterna a polaridade conforme céu, estação ou estado emocional; poderoso e imprevisível.
+Corpo Vazio
+Não possui polaridade estável; aprende lentamente, mas pode receber uma natureza por herança.
+
+3.4 Consequências sociais
+Seitas tradicionais podem separar pavilhões por técnica, não por sexo; isso cria preconceito quando confundem frequência com obrigação.
+Um homem Yin pode ser disputado por seitas lunares, curadores espirituais ou assassinos de sombra.
+Uma mulher Yang pode ser valorizada por forjas solares, exércitos e linhagens de fênix.
+Casamentos políticos tentam combinar polaridades para herdeiros, mas herança não é determinística.
+Métodos de dupla cultivação exigem consentimento e compatibilidade energética; não são cura automática nem obrigação romântica.
+
+4. Anatomia da circulação
+Cultivar é mover energia por um circuito completo. Absorver muito sem conseguir refinar e devolver energia ao dantian gera desvio. A qualidade do circuito vale tanto quanto a quantidade absorvida.
+4.1 Estruturas
+Estrutura
+Função
+Falha comum
+Pontos de entrada
+Absorvem qi ambiental por respiração, pele e sentidos.
+Entrada contaminada ou acima da capacidade.
+Meridianos
+Canais que transportam e imprimem ritmo à energia.
+Ruptura, queimadura, congelamento ou obstrução.
+Dantian inferior
+Reservatório principal e centro de condensação.
+Vazamento, núcleo rachado ou mistura incompatível.
+Dantian médio
+Integra energia com sangue, respiração e emoções.
+Frenesi Yang ou fome demoníaca.
+Dantian superior
+Controle, percepção, alma e intenção.
+Ilusão, perda de memória ou invasão espiritual.
+Núcleo
+Estrutura estável formada em reinos adequados.
+Impureza, polaridade forçada ou colapso durante avanço.
+
+4.2 Ciclo completo
+Sentir: reconhecer o qi externo e separar energia útil de impurezas.
+Absorver: permitir entrada sem exceder a largura dos meridianos.
+Conduzir: mover pela rota do método, mantendo ritmo e direção.
+Refinar: remover assinatura externa e adaptar energia à própria natureza.
+Condensar: comprimir Chakra ou Star no dantian sem criar rachaduras.
+Distribuir: alimentar corpo, sentidos, técnicas e recuperação.
+Retornar: trazer o excesso ao dantian e encerrar o ciclo. Pular esta etapa causa desvio.
+4.3 Parâmetros mecânicos
+Campo
+Regra de design
+Capacidade
+Quantidade máxima segura por ciclo.
+Vazão
+Velocidade com que o qi atravessa meridianos.
+Controle
+Precisão para dividir, parar e inverter o fluxo.
+Pureza
+Percentual de energia útil depois do refinamento.
+Pressão
+Força aplicada contra gargalos e barreiras.
+Estabilidade
+Resistência a emoção, veneno, ferimento e interferência.
+
+4.4 Uma sessão jogável
+O jogador escolhe ambiente, método, intensidade, duração e auxílio. O resultado compara capacidade, compatibilidade e estabilidade. Treino seguro gera progresso lento e fundação sólida; treino agressivo acelera o ganho, mas aumenta calor, frio, toxina, fissura ou corrupção. Eventos narrativos substituem minijogos repetitivos nos treinos longos.
+5. Rotas Yin, Yang e Demoníaca
+Rota
+Direção simbólica
+Vantagem
+Perigo
+Solar Yang
+Do dantian para coluna, peito e membros; retorna pela respiração.
+Liberação rápida, corpo e técnicas externas.
+Excesso fica preso no coração ou músculos.
+Lunar Yin
+Dos sentidos para interior, desce ao dantian e retorna por ossos e medula.
+Controle, reserva, espírito e recuperação.
+Estagnação e queda de temperatura interna.
+Inversa Yin
+Percorre a rota comum em sentido contrário sob controle absoluto.
+Converte força exterior em reserva e permite Núcleo Yin raro.
+Desvio severo se houver bloqueio ou medo durante a inversão.
+Espiral Demoníaca
+Circula ao redor do núcleo, invade um meridiano e retorna trazendo energia convertida.
+Adaptação e assimilação de energia hostil.
+Cada ciclo alimenta fome e traços demoníacos.
+
+5.1 Circulação Yang
+Ritmo: progressivo; cada volta é mais rápida até o limite seguro.
+Respiração: profunda, expansão do peito e expiração de resíduos.
+Treino ideal: amanhecer, forja, montanha aberta, combate corporal e clima seco.
+Sinal de sucesso: calor uniforme nas mãos e pés, sem dor no coração.
+Sinal de perigo: veias luminosas, sede extrema, irritação e perda de precisão.
+5.2 Circulação Yin
+Ritmo: constante e silencioso; a energia ganha densidade antes de ganhar velocidade.
+Respiração: curta, controlada e sincronizada com pulso e percepção.
+Treino ideal: noite, cavernas, lagos, bibliotecas de alma e câmaras frias.
+Sinal de sucesso: mente clara, batimentos tranquilos e frio confortável no dantian.
+Sinal de perigo: dormência, apatia, memória fragmentada e gelo sob a pele.
+5.3 Circulação Demoníaca
+Ritmo: irregular por natureza; estabilizado pela “âncora” da linhagem, desejo ou juramento.
+A energia não é apenas conduzida: ela tenta consumir, copiar ou dominar aquilo que atravessa.
+O núcleo deve possuir uma válvula de fome. Sem ela, o cultivador devora o próprio sangue e a própria alma.
+Sinais de sucesso variam por linhagem: pupila alterada, marca, sombra viva, sangue negro ou aura com vontade própria.
+Sinal de perigo: a técnica se ativa sozinha, memórias ganham voz e aliados parecem alimento.
+5.4 Direção não define moral
+Circulação inversa pode produzir Yin sem ser demoníaca. Sacrifício de sangue pode ser arte proibida humana. Somente a formação e estabilização de um Núcleo Demoníaco muda a espécie espiritual do praticante e permite produzir Qi Demoníaco verdadeiro.
+
+6. Demonização verdadeira
+Acesso a técnicas demoníacas exige uma transformação ontológica: o corpo e a alma precisam passar a produzir Qi Demoníaco. Roubar energia demoníaca ou engolir uma pílula não basta; isso gera contaminação temporária e frequentemente mata o humano.
+6.1 Estados
+Estado
+Natureza produzida
+Acesso técnico
+Reversibilidade
+Humano
+Yin ou Yang
+Técnicas comuns, universais, proibidas humanas.
+Normal.
+Contaminado
+Qi humano com resíduo demoníaco
+Nenhuma técnica demoníaca verdadeira; apenas sintomas.
+Alta com purificação rápida.
+Portador da Semente
+Qi humano pressionado por um embrião demoníaco
+Rituais de preparação e uma técnica de estabilização.
+Possível, com perda de progresso e memória.
+Meio-Demônio
+Fluxos humanos e demoníacos separados
+Técnicas demoníacas até Grau Xuan; risco alto de rejeição.
+Difícil e perigosa.
+Demônio Verdadeiro
+Qi Demoníaco Yin ou Yang estável
+Catálogo demoníaco completo conforme linhagem e reino.
+Praticamente irreversível.
+Demônio Ancestral
+Qi Demoníaco com lei própria
+Cria linhagem e técnicas; afeta descendentes e território.
+Não conhecida.
+
+6.2 Formas de tornar-se demônio
+Caminho
+Condição
+Preço
+Nascimento
+Raça ou linhagem demoníaca estável.
+Fome e traços definidos pela linhagem.
+Herança
+Aceitar núcleo, sangue ou vontade de um demônio.
+Dívida, memória invasora ou disputa de identidade.
+Autocriação
+Criar uma semente e reescrever os próprios meridianos.
+Mortalidade extrema; caminho de Mo Wutian.
+Contrato irreversível
+Fundir alma com entidade demoníaca compatível.
+Identidades passam a compartilhar dor e destino.
+Corrupção concluída
+Sobreviver até a contaminação formar núcleo próprio.
+Forma instável, fome severa e tribulação hostil.
+
+6.3 Fome demoníaca
+Todo demônio possui uma fonte de fome: sangue, medo, conflito, memória, sonhos, calor, qi, juramentos ou outra essência. Alimentar a fome dá estabilidade; exagerar fortalece o instinto; ignorá-la causa degeneração. Cada linhagem precisa oferecer ao menos uma forma ética e uma forma predatória de alimentação, para que demônio não signifique vilão obrigatório.
+6.4 Mo Wutian e o primeiro Qi Demoníaco
+Mo Wutian começou humano. Ao inverter a circulação, formou primeiro um Núcleo Yin — raro, perigoso, mas ainda humano. Durante a guerra entre seitas, ele usou esse núcleo para comprimir intenção assassina, vontade de sobreviver e qi de milhares de técnicas conflitantes. Em vez de purificar as vontades, obrigou-as a girar ao redor de seu desejo. Nesse instante nasceu a primeira Semente Demoníaca. Quando ela reescreveu seus meridianos e formou um Núcleo Demoníaco Yin, Mo Wutian tornou-se o Primeiro Demônio Celestial. Assim, ele não usou Qi Demoníaco antes de ser demônio: criou ambos no mesmo ato.
+7. Compatibilidade de técnicas
+Cada técnica possui requisitos claros. O jogador pode estudar um manual incompatível e compreender sua teoria, mas não pode executá-lo com segurança sem adaptação, corpo especial ou transformação.
+7.1 Classes de compatibilidade
+Classe
+Quem aprende
+Resultado
+Universal
+Yin, Yang e, quando indicado, demônios.
+Menor especialização; excelente base e fácil transmissão.
+Yin
+Portador de Qi Yin.
+Poder e estabilidade normais; Yang exige versão adaptada.
+Yang
+Portador de Qi Yang.
+Poder e estabilidade normais; Yin exige versão adaptada.
+Demoníaca
+Demônio verdadeiro ou meio-demônio dentro do limite.
+Humanos sofrem contaminação e não concluem a circulação.
+Híbrida Yin-Demoníaca
+Demônio com base Yin.
+Demônio Yang precisa reescrever a técnica.
+Híbrida Yang-Demoníaca
+Demônio com base Yang.
+Demônio Yin precisa reescrever a técnica.
+Harmônica
+Corpo dual ou dupla execução coordenada.
+Misturar sem separação provoca explosão ou neutralização.
+
+7.2 Resultado ao tentar aprender
+Situação
+Pode memorizar?
+Pode executar?
+Consequência
+Compatível
+Sim
+Sim
+Aprendizado normal.
+Universal
+Sim
+Sim
+Efeito estável, geralmente abaixo do teto especializado.
+Polaridade oposta suave
+Sim
+Com adaptação
+Custo maior, grau efetivo menor e risco de desvio.
+Polaridade oposta pura
+Sim
+Não
+A primeira circulação causa dano grave.
+Demoníaca por humano
+Parcialmente
+Não
+Contaminação, alucinação e formação involuntária de semente.
+Acima do limite de meio-demônio
+Sim
+Não com segurança
+Rejeição entre meridianos humanos e núcleo demoníaco.
+
+7.3 Adaptação de manual
+Compreender o princípio, sem circular energia.
+Separar o que depende de polaridade do que depende de elemento ou movimento.
+Escolher uma expressão equivalente: explosão Yang pode virar implosão Yin; congelamento Yin pode virar extração de calor Yang.
+Testar em um meridiano secundário e registrar dano, consumo e estabilidade.
+Criar uma versão nova com nome, grau efetivo e autoria. A adaptação nunca substitui o manual original.
+7.4 Matriz resumida
+Usuário / Técnica
+Universal
+Yin
+Yang
+Demoníaca
+Humano Yin
+Sim
+Sim
+Somente adaptação
+Não
+Humano Yang
+Sim
+Somente adaptação
+Sim
+Não
+Demônio Yin
+Sim, se aceita demônios
+Sim
+Adaptação difícil
+Sim; melhor em híbridas Yin
+Demônio Yang
+Sim, se aceita demônios
+Adaptação difícil
+Sim
+Sim; melhor em híbridas Yang
+Corpo de Harmonia
+Sim
+Sim, reservatório Yin
+Sim, reservatório Yang
+Não sem demonização
+
+
+8. Estrutura das técnicas
+8.1 Graus preservados
+Grau
+Nome
+Função no novo sistema
+1
+Amarelo
+Ensina um circuito simples, uma aplicação e um risco fácil de reconhecer.
+2
+Xuan
+Usa dois circuitos, mudança de ritmo ou interação clara entre natureza e elemento.
+3
+Terra
+Afeta área, meridianos adversários ou ambiente; exige domínio consistente.
+4
+Céu
+Cria fenômeno, domínio parcial ou alteração duradoura do corpo.
+5
+Divino/Ancestral
+Expressa lei própria, linhagem ou autoridade; não é apenas dano maior.
+
+8.2 Categorias preservadas
+Categoria
+Campos novos importantes
+Método de cultivo
+Natureza aceita, rota, ritmo, ambiente, capacidade, pureza e risco de desvio.
+Corpo
+Tecidos temperados, polaridade, limite de dor e mudança visível.
+Ofensiva
+Forma, alcance, sinal, custo, efeito em meridiano e contrajogo.
+Movimento
+Ponto de impulso, terreno, direção e custo de repetição.
+Defensiva
+Tipo de dano, conversão, ruptura e energia residual.
+Suporte
+Alvo, duração, condição, reversão e compatibilidade.
+Proibida
+Preço imediato, dívida futura, limite de uso e cicatriz permanente.
+
+8.3 Domínio de técnica
+Nível
+O que muda
+Iniciada
+Executa em ambiente seguro e com preparação.
+Praticada
+Reduz custo e falha; usa em combate.
+Dominada
+Altera ritmo, potência e alvo sem quebrar a circulação.
+Perfeita
+Remove movimentos desnecessários e cria variação própria.
+Transcendente
+Compreende o princípio e pode reconstruí-lo em outra técnica.
+
+8.4 Slots e escolhas
+O personagem pode conhecer muitos manuais, mas mantém poucos circuitos preparados. Um Método Principal ocupa a fundação; técnicas ativas ocupam meridianos de execução; artes proibidas deixam cicatrizes. Trocar o Método Principal exige dissolver hábitos de circulação e pode reduzir progresso, pureza ou estabilidade.
+
+9. Catálogo de técnicas universais
+Técnica
+Classe
+Qi aceito
+Identidade
+Contrajogo
+Respiração das Nove Nuvens
+Cultivo • Amarelo Alto
+Yin/Yang
+Absorção acompanha o clima; segura e flexível.
+Ambiente fechado reduz eficiência.
+Corpo de Bronze
+Corpo • Amarelo Médio
+Yin/Yang
+Tempera pele e ossos com ciclos alternados.
+Lento contra dano espiritual.
+Punho que Racha Montanhas
+Ofensiva • Amarelo Alto
+Yin/Yang
+Converte peso e qi em um único impacto.
+Desvia-se com passo lateral e terreno macio.
+Passos da Nuvem Errante
+Movimento • Xuan Médio
+Yin/Yang
+Alivia o corpo e distribui impulso.
+Vento contrário e teto baixo.
+Formação da Ponte Interna
+Suporte • Xuan Baixo
+Yin/Yang
+Desvia qi em torno de um meridiano ferido.
+Não cura; uso longo agrava o dano.
+Manto das Quatro Respirações
+Defensiva • Xuan Alto
+Yin/Yang
+Quatro camadas respondem a impacto, corte, calor e espírito.
+Cada camada usada demora a recompor.
+Sutra do Equilíbrio Imperfeito
+Cultivo • Terra Baixo
+Yin/Yang
+Permite adaptar uma técnica oposta de grau inferior.
+Reduz pureza e nunca aceita Qi Demoníaco.
+Olho do Fluxo Retornado
+Suporte • Terra Médio
+Yin/Yang
+Enxerga rota, gargalo e sinal de técnica inimiga.
+Sobrecarga sensorial diante de múltiplos alvos.
+
+9.1 Papel das técnicas universais
+Elas garantem que todo personagem possua opções úteis sem apagar a especialização. São mais fáceis de ensinar, copiar e adaptar, mas raramente atingem o mesmo teto de uma arte construída para uma polaridade pura.
+
+10. Catálogo de técnicas Yin
+Técnica
+Classe
+Rota
+Identidade
+Risco/contrajogo
+Sutra do Lótus Azul
+Cultivo • Xuan Médio
+Fluxo Lunar
+Purifica qi pela quietude e forma pétalas frias no dantian.
+Estagna quando o usuário reprime emoções por longos períodos.
+Agulha da Lua Silenciosa
+Ofensiva • Amarelo Alto
+Fluxo Interno
+Fio de qi entra pelo ponto atingido e atrasa circulação.
+Armadura espessa e movimento caótico.
+Passo da Sombra sobre Água
+Movimento • Xuan Alto
+Fluxo Lunar
+Move-se entre reflexos dentro de curta distância.
+Água turva, ausência de reflexo ou luz difusa.
+Palácio de Gelo Interior
+Defensiva • Terra Baixo
+Fluxo Interno
+Congela dor e veneno em câmaras temporárias.
+Calor súbito libera tudo de uma vez.
+Mãos da Médica Lunar
+Suporte • Terra Médio
+Fluxo Lunar
+Lê pulsos de qi e costura meridianos delicados.
+Falha em alvo frenético ou que resiste ao tratamento.
+Cântico das Almas Quietas
+Suporte • Terra Alto
+Fluxo Superior
+Acalma espíritos, memórias invasoras e bestas.
+Não funciona sobre vontade aceita conscientemente.
+Nove Mortes da Flor de Gelo
+Ofensiva • Céu Médio
+Fluxo Inverso
+Cada selo reduz uma função antes do golpe final.
+Romper a sequência reinicia o acúmulo.
+Mar Negro sem Lua
+Proibida • Divino Baixo
+Yin Extremo
+Apaga presença, calor e intenção por nove respirações.
+Cada uso apaga uma memória pessoal até ser recuperada.
+
+10.1 Perfil de jogo Yin
+Qi Yin recompensa preparação, leitura e controle de ritmo. O jogador acumula marcas, atrasa o inimigo, preserva recursos e escolhe o instante de conclusão. Seu dano imediato tende a ser menor, mas seus efeitos ignoram defesas brutas quando a sequência é bem executada.
+
+11. Catálogo de técnicas Yang
+Técnica
+Classe
+Rota
+Identidade
+Risco/contrajogo
+Método dos Nove Sóis
+Cultivo • Céu Alto
+Fluxo Solar
+Forma nove reservatórios que alimentam o núcleo central.
+Reservatório não descarregado causa febre solar.
+Palma do Trovão Ascendente
+Ofensiva • Xuan Baixo
+Fluxo Solar
+Descarga de palma que rompe defesa e paralisa.
+Aterramento, distância e antecipação do brilho.
+Corpo da Forja Escarlate
+Corpo • Xuan Alto
+Fluxo Solar
+Usa calor interno para temperar músculos e órgãos.
+Veneno frio interrompe o ciclo e aprisiona calor.
+Passo do Relâmpago
+Movimento • Terra Alto
+Fluxo Explosivo
+Impulso instantâneo em linha definida.
+Mudança súbita de terreno e uso repetido queimam pernas.
+Escudo do Sol Dourado
+Defensiva • Terra Médio
+Fluxo Externo
+Converte parte do impacto recebido em calor armazenado.
+Ataques Yin graduais saturam sem oferecer descarga.
+Mãos do Médico do Amanhecer
+Suporte • Terra Baixo
+Fluxo Solar
+Estimula sangue, respiração e recuperação de choque.
+Piora febre, veneno quente e excesso Yang.
+Dragão Solar Desce à Terra
+Ofensiva • Céu Alto
+Fluxo Solar
+Condensa aura em investida descendente de área.
+Requer altura, preparação e rota livre.
+Coração do Meio-Dia Eterno
+Proibida • Divino Baixo
+Yang Extremo
+Mantém corpo ativo após ferimento fatal por cem batimentos.
+Ao final, todo dano retorna e pode destruir o coração.
+
+11.1 Perfil de jogo Yang
+Qi Yang recompensa iniciativa, posicionamento e descarga controlada. O jogador acumula calor e pressão para produzir janelas curtas de superioridade. Permanecer no auge por tempo demais transforma vantagem em autolesão.
+
+12. Catálogo de técnicas demoníacas
+Técnica
+Classe
+Base
+Identidade
+Preço/contrajogo
+Sutra do Mar de Sangue
+Cultivo • Céu Médio
+Demoníaco Yang
+Refina qi no sangue e converte ferimento em aceleração.
+Fome de sangue e rejeição a cura comum.
+Cânone do Núcleo Abissal
+Cultivo • Céu Alto
+Demoníaco Yin
+Gira desejos ao redor do núcleo sem purificá-los.
+Desejo dominante tenta substituir personalidade.
+Garras do Cadáver Imortal
+Ofensiva • Céu Médio
+Demoníaco Yin
+Mãos drenam circulação e endurecem com energia roubada.
+Luz Yang e distância impedem alimentação.
+Véu das Sombras Infernais
+Movimento • Céu Médio
+Demoníaco Yin
+Usuário atravessa a própria sombra e emerge de outra marca.
+Luz sem sombra e selos de espaço.
+Chifres do General Carmesim
+Corpo • Terra Alto
+Demoníaco Yang
+Dor e impacto constroem armadura óssea temporária.
+Dano espiritual ignora a carapaça.
+Banquete das Cem Técnicas
+Suporte • Céu Alto
+Demoníaco variável
+Devora resíduo de uma técnica e imita um fragmento.
+Cópias conflitantes contaminam meridianos.
+Trono da Fome Celestial
+Defensiva • Divino Médio
+Demoníaco variável
+Cria domínio que consome técnicas lançadas contra o centro.
+Ataques físicos sem qi e fome acima do controle.
+Nascimento do Demônio Celestial
+Proibida • Divino Alto
+Demoníaco Yin
+Recria por instantes o primeiro ciclo de Mo Wutian.
+Pode gerar uma segunda vontade e romper contrato com a herança.
+
+12.1 Perfil de jogo demoníaco
+Qi Demoníaco recompensa adaptação e conversão: roubar ritmo, transformar ferimento, devorar resíduo e trocar estabilidade por poder. A pergunta central não é apenas “quanto custa?”, mas “o que dentro do personagem foi alimentado?”. O melhor resultado de combate pode criar o pior resultado narrativo.
+
+13. Técnicas harmônicas e dupla cultivação
+Yin e Yang podem cooperar sem se fundir. Cada energia circula em um circuito próprio e troca pressão em pontos definidos. A técnica falha quando um parceiro domina, força ou esconde instabilidade.
+13.1 Formatos
+Formato
+Participantes
+Uso
+Risco
+Espelho
+Dois cultivadores de polaridades opostas.
+Treino, cura e estabilização de avanço.
+Um devolve a impureza que não consegue refinar.
+Formação
+Três ou mais, com papéis definidos.
+Combate, barreira, alquimia e tribulação.
+Quebra de um nó sobrecarrega os demais.
+Corpo de Harmonia
+Um cultivador com dois reservatórios.
+Alterna técnicas sem parceiro.
+Mistura prematura explode o dantian.
+Arte de Casal
+Dois parceiros com vínculo profundo.
+Técnicas combinadas e memória compartilhada.
+Traição ou coerção transforma a arte em desvio.
+
+13.2 Regras éticas e narrativas
+Dupla cultivação exige consentimento explícito; não é sinônimo obrigatório de relação sexual.
+Pode ser realizada por familiares, mestre e discípulo, companheiros de formação ou parceiros românticos, conforme o método.
+Coerção produz impureza, dano e memória negativa; não concede bônus escondido.
+A interface informa o que será compartilhado: qi, dor, memória, emoção ou risco de vida.
+Qi Demoníaco só participa se a técnica aceitar demônios; harmonia não “cura” automaticamente demonização.
+13.3 Técnicas de exemplo
+Nome
+Grau
+Efeito
+Condição
+Ponte do Sol e da Lua
+Xuan Alto
+Troca excesso Yang por vazio Yin e vice-versa.
+Dois usuários conscientes e imóveis.
+Formação das Quatro Estações
+Terra Alto
+Alterna crescimento, expansão, colheita e preservação.
+Dois Yin, dois Yang e terreno preparado.
+Espada do Eclipse Partido
+Céu Médio
+Dois golpes separados atingem corpo e sombra.
+Sincronização alta; falha fere ambos.
+Mandala da União Celestial
+Divino
+Sustenta tribulação compartilhada sem misturar núcleos.
+Juramento verdadeiro e aceitação da mesma consequência.
+
+
+14. Pílulas: regras centrais
+Pílulas carregam natureza, elemento, ordem, pureza e toxina. Uma pílula correta pode salvar anos; uma pílula incompatível pode transformar energia útil em bloqueio permanente.
+14.1 Estrutura preservada
+Propriedade
+Regra
+Ordem
+1ª a 9ª, mais Divina/10ª; limita dificuldade, ingredientes e alvo.
+Pureza
+Impura, comum, refinada, perfeita ou com anéis; altera efeito e toxina.
+Natureza
+Neutra, Yin, Yang, Harmônica ou Demoníaca.
+Toxina
+Resíduo acumulado; depende de pureza, frequência e compatibilidade.
+Tolerância
+O corpo se adapta à mesma fórmula, reduzindo benefício e aumentando resíduo.
+Conflito
+Misturas incompatíveis podem reagir dentro do dantian.
+Janela
+Algumas exigem noite, sol, avanço, ferimento, jejum ou circulação específica.
+
+14.2 Compatibilidade
+Pílula
+Humano Yin
+Humano Yang
+Demônio Yin
+Demônio Yang
+Neutra
+Normal
+Normal
+Efeito reduzido ou normal
+Efeito reduzido ou normal
+Yin
+Ótima
+Risco de frio e bloqueio
+Boa se aceita demoníaco
+Risco duplo
+Yang
+Risco de febre e explosão
+Ótima
+Risco duplo
+Boa se aceita demoníaco
+Harmônica
+Equilibra excesso, não troca natureza
+Equilibra excesso, não troca natureza
+Somente fórmula compatível
+Somente fórmula compatível
+Demoníaca
+Veneno/contaminação
+Veneno/contaminação
+Ótima conforme linhagem
+Ótima conforme linhagem
+
+14.3 Regras contra abuso
+Repetir a mesma fórmula cria tolerância. Variar fórmulas sem intervalo cria conflito químico e espiritual.
+Pílula de avanço fornece energia e oportunidade; não substitui compreensão nem circuito completo.
+Pílula incompatível não vira “build criativa” apenas por sobreviver: deixa cicatriz ou exige missão de recuperação.
+Pílulas de purificação removem toxina, mas uso excessivo também remove parte do qi refinado e enfraquece a fundação.
+Pílula Demoníaca não transforma humano de forma segura. Apenas fórmulas únicas de Semente Demoníaca iniciam a transformação, com consentimento e riscos explícitos.
+
+15. Catálogo de pílulas comuns, Yin e Yang
+Pílula
+Ordem/natureza
+Efeito
+Risco ou limite
+Pílula de Reposição de Qi
+1ª • Neutra
+Recupera energia fora de combate.
+Tolerância rápida se usada diariamente.
+Pílula de Purificação Menor
+1ª • Neutra
+Remove pequena toxina residual.
+Reduz progresso recente quando abusada.
+Pílula dos Meridianos Suaves
+2ª • Neutra
+Facilita treino de nova rota.
+Meridianos ficam frágeis a pressão alta.
+Pílula da Fundação Estável
+3ª • Neutra
+Melhora estabilidade antes de avanço.
+Exige sete dias sem outra pílula.
+Pílula do Orvalho Lunar
+1ª • Yin
+Recupera controle e reduz calor interno.
+Yang sofre frio e perda de vazão.
+Pílula da Medula de Gelo
+3ª • Yin
+Fortalece ossos e reserva Yin.
+Pode causar dormência permanente.
+Pílula do Sonho Lúcido
+4ª • Yin
+Permite estudar técnica em sonho consciente.
+Memória falsa se a mente estiver contaminada.
+Pílula do Palácio Lunar
+6ª • Yin
+Ajuda a formar ou reparar Núcleo Yin.
+Fracasso sela emoções e sentidos.
+Pílula da Brasa Vital
+1ª • Yang
+Aquece sangue e remove frio comum.
+Excesso gera febre e sede.
+Pílula dos Ossos Solares
+3ª • Yang
+Acelera técnica corporal e cura fratura.
+Dor extrema e risco de calcificação.
+Pílula do Coração Trovejante
+4ª • Yang
+Eleva vazão e reação por curto período.
+Arritmia e meridianos queimados.
+Pílula dos Nove Sóis
+6ª • Yang
+Ajuda a formar reservatórios solares.
+Explode se tomada com núcleo Yin puro.
+
+15.1 Qualidade e anéis
+Cada anel reduz toxina, aumenta estabilidade e preserva o efeito. Anéis não eliminam incompatibilidade fundamental. Uma Pílula dos Nove Sóis perfeita continua perigosa para um Corpo Yin Absoluto; ela apenas causará uma reação mais pura e mais poderosa.
+
+16. Catálogo de pílulas harmônicas e demoníacas
+Pílula
+Ordem/natureza
+Efeito
+Preço ou perigo
+Pílula do Equinócio
+3ª • Harmônica
+Reduz excesso Yin ou Yang sem trocar a natureza.
+Enfraquece técnica usada nas próximas horas.
+Pílula das Duas Marés
+5ª • Harmônica
+Sincroniza dois cultivadores em formação.
+Compartilha toxina e dor durante o efeito.
+Pílula do Eclipse Interior
+7ª • Harmônica
+Separa polaridades misturadas no dantian.
+Pode dividir memórias ligadas a cada fluxo.
+Pílula Celestial da Reunião
+9ª • Harmônica
+Repara núcleo dual rachado.
+Exige alquimistas Yin e Yang trabalhando juntos.
+Pílula da Semente Carmesim
+3ª • Demoníaca
+Alimenta meio-demônio recém-formado.
+Em humano cria contaminação e fome.
+Pílula do Sangue sem Dono
+4ª • Demoníaca Yang
+Repõe sangue e qi sem assinatura externa.
+Pode trazer impulso emocional do doador.
+Pílula da Lua Morta
+4ª • Demoníaca Yin
+Silencia fome e aura por uma noite.
+A fome retorna dobrada ao amanhecer.
+Pílula das Cem Faces
+5ª • Demoníaca
+Muda traços e assinatura por um dia.
+Cada uso deixa uma característica aleatória.
+Pílula do Núcleo Faminto
+6ª • Demoníaca
+Repara fissura convertendo material ingerido.
+Núcleo passa a exigir o mesmo material.
+Pílula do Juramento Negro
+7ª • Demoníaca
+Transforma promessa em estabilizador de fome.
+Quebrar a promessa rompe meridianos.
+Pílula da Segunda Semente
+8ª • Demoníaca
+Permite substituir linhagem demoníaca instável.
+Duas identidades disputam o corpo durante a transição.
+Pílula do Primeiro Demônio
+Divina • Demoníaca Yin
+Reproduz fragmento da autocriação de Mo Wutian.
+Pode criar novo demônio ancestral ou destruir corpo e alma.
+
+16.1 Sementes demoníacas não são consumíveis comuns
+Qualquer item capaz de iniciar demonização deve abrir uma decisão narrativa: aceitar, destruir, selar, transferir ou estudar. A interface apresenta mudanças físicas, fome, irreversibilidade e técnicas que serão ganhas ou perdidas. Não pode existir transformação acidental permanente causada por um clique sem confirmação.
+
+17. Refinamento alquímico por natureza
+Etapa
+Yin
+Yang
+Demoníaca
+Preparação
+Ingredientes resfriados, cortados em silêncio e protegidos da luz.
+Ingredientes secos, despertos por calor e processados rapidamente.
+Ingredientes estabilizados por selo, sangue compatível ou recipiente vivo.
+Chama
+Chama fria, fogo espiritual baixo ou extração de calor.
+Chama crescente, pulsos e compressão térmica.
+Chama de alma, sangue ou fome; reage à intenção.
+Mistura
+A ordem preserva essências frágeis.
+A ordem provoca reação e liberação.
+A ordem impede que uma essência devore a outra.
+Condensação
+Lenta, densa e com resfriamento gradual.
+Rápida, sob pressão e descarga final.
+Selada com marca de linhagem e teste de vontade.
+Falha
+Pílula morta, fria ou paralisante.
+Explosão, cinza e vapor tóxico.
+Massa viva, fome autônoma ou contaminação da fornalha.
+
+17.1 Alquimista e compatibilidade
+Alquimista Yin pode refinar fórmula Yang usando fornalha e assistente adequados, mas perde controle em reações explosivas.
+Alquimista Yang pode refinar fórmula Yin, porém precisa impedir que a chama destrua essências delicadas.
+Fórmula Harmônica de alta ordem exige dois alquimistas ou um Corpo de Harmonia.
+Pílula Demoníaca requer alquimista demônio ou instrumento que substitua temporariamente sua assinatura. Um humano pode estudar a receita, não finalizar o núcleo com segurança.
+A assinatura do refinador permanece na pílula e pode ser usada em investigação, reputação, fraude e rastreamento.
+17.2 Impurezas específicas
+Campo
+Regra de design
+Calor residual
+Comum em pílulas Yang; soma febre e agressividade.
+Frio residual
+Comum em pílulas Yin; reduz vazão e sensibilidade.
+Cinza medicinal
+Ingrediente queimado; reduz efeito e entope meridianos.
+Eco emocional
+Fórmula demoníaca reteve medo, ódio ou desejo do material.
+Assinatura alheia
+Pílula não foi refinada até neutralidade e interfere no núcleo.
+
+
+18. Desvios, doenças e recuperação
+Condição
+Causa
+Sintomas
+Tratamento
+Queimadura Yang
+Pressão, pílula incompatível ou excesso solar.
+Febre, veias luminosas, tremor e perda de precisão.
+Descarga gradual, técnica Yin controlada e repouso.
+Estagnação Yin
+Retorno incompleto ou cultivo sem emoção/movimento.
+Frio, apatia, dormência e memória lenta.
+Movimento Yang moderado, calor e reabertura dos pontos.
+Núcleo rachado
+Avanço forçado, mistura ou tribulação.
+Vazamento, dor e perda contínua de progresso.
+Selamento, missão por material e reconstrução lenta.
+Rejeição de polaridade
+Técnica oposta executada sem adaptação.
+Dois fluxos se chocam e ferem órgãos.
+Interromper técnica, separar fluxos e abandonar manual.
+Contaminação demoníaca
+Qi, pílula ou ferimento demoníaco.
+Fome, marca, sonhos e técnica involuntária.
+Purificar cedo ou escolher ritual consciente de transformação.
+Erosão de identidade
+Demoníaco sem âncora ou devoração excessiva.
+Memórias contraditórias e voz no núcleo.
+Âncora, juramento, vínculo, separação ou duelo interno.
+
+18.1 Cicatrizes permanentes
+Falhas importantes não devem ser apagadas por descanso comum. Cicatrizes criam histórias e builds: meridiano queimado que favorece descarga curta, mão congelada que sente almas, marca demoníaca que atrai bestas, núcleo remendado que não suporta pílulas. Recuperar-se pode trocar uma limitação por um traço novo, não apenas voltar ao estado anterior.
+18.2 Morte e falha justa
+O jogador recebe sinais claros antes de risco fatal: sintomas, porcentagem de estabilidade e opinião de especialista.
+Falha em estudo não executa automaticamente a técnica.
+Pílulas incompatíveis exibem alerta baseado no conhecimento do personagem; informação pode faltar, mas o risco deve possuir pistas.
+Demonização permanente exige decisão confirmada e cena própria.
+Tribulação pode matar, mas preparação reduz causas conhecidas; azar nunca deve ser a única explicação.
+
+19. Progressão e balanceamento
+19.1 Quatro recursos separados
+Recurso
+Representa
+Como cresce
+Quantidade
+Reserva disponível.
+Cultivo, reino, tesouros e recuperação.
+Pureza
+Eficiência e resistência a impureza.
+Método, ciclos completos e pílulas adequadas.
+Controle
+Precisão de circulação e técnica.
+Prática, compreensão, mestres e combate.
+Estabilidade
+Capacidade de manter identidade e fundação.
+Descanso, vínculos, equilíbrio, tratamento e escolhas.
+
+19.2 Poder efetivo
+Uma técnica não deve usar apenas grau e multiplicador. O resultado considera domínio, compatibilidade, pureza, controle, condição corporal e contexto. Grau define teto; reino fornece energia; compatibilidade decide quanto chega ao alvo sem destruir o usuário.
+19.3 Regra de incompatibilidade
+Compatibilidade
+Poder
+Custo
+Risco
+Perfeita
+100–120% conforme pureza
+100%
+Baixo
+Normal
+100%
+100%
+Normal
+Universal
+85–100%
+90–110%
+Baixo
+Adaptada
+70–95%
+125–175%
+Médio
+Forçada
+Imprevisível
+200%+
+Alto ou fatal
+Demoníaca em humano
+Não completa
+Sem limite confiável
+Contaminação; nunca uso normal
+
+19.4 Evitar caminho obrigatório
+Yang não deve ser simplesmente dano; oferece cura vital, defesa, purificação e movimento.
+Yin não deve ser simplesmente suporte; oferece execução, controle, ataque espiritual e domínio de campo.
+Demoníaco não deve ser sempre mais forte; troca estabilidade, relações e fome por adaptação.
+Universal continua viável por flexibilidade, transmissão fácil e baixa manutenção.
+O melhor caminho depende de personagem, história, mestre, recursos e consequências desejadas.
+
+20. Interface e experiência do jogador
+Tela
+Informação essencial
+Perfil de Qi
+Natureza, pureza, tendência, rota principal, estabilidade e sintomas.
+Circulação
+Circuito atual, gargalos, intensidade, retorno e previsão de risco.
+Manual
+Grau, categoria, Qi aceito, rota, requisitos, domínio, custo e consequência de incompatibilidade.
+Biblioteca
+Filtros por natureza, categoria, grau, compatibilidade e origem.
+Pílula
+Ordem, natureza, pureza, toxina, tolerância, conflito e janela correta.
+Demonização
+Estado, fome, âncora, mudanças, irreversibilidade e técnicas permitidas.
+
+20.1 Linguagem de risco
+Estado
+Texto sugerido
+Seguro
+Compatível com sua natureza e sua rota atual.
+Adaptável
+Pode ser adaptada. Poder menor, custo maior e estudo adicional.
+Perigoso
+Sua polaridade rejeita este circuito. Executar pode causar dano permanente.
+Bloqueado
+Você não produz o Qi exigido.
+Demoníaco
+Somente demônios podem completar este ciclo.
+Desconhecido
+Seu conhecimento não é suficiente para prever a reação.
+
+20.2 Sem bloqueios invisíveis
+Mostrar por que a técnica está bloqueada e quais caminhos reais podem liberá-la.
+Não usar apenas cor para Yin, Yang, compatibilidade ou perigo.
+Separar “não posso executar” de “não posso ler ou estudar”.
+Registrar adaptações como técnicas próprias, preservando autoria e versão.
+Antes de consumir, comparar pílula com natureza, toxina atual e tolerância.
+
+21. Modelo de dados compatível
+Os campos atuais de Tecnica e CultivationState permanecem. A expansão adiciona campos opcionais e valores padrão, permitindo migrar o catálogo gradualmente.
+export type NaturezaQi = "yin" | "yang" | "demoniaco-yin" | "demoniaco-yang";export type CompatibilidadeQi = "universal" | "yin" | "yang" |  "demoniaca" | "demoniaca-yin" | "demoniaca-yang" | "harmonica";export type EstadoDemonico = "humano" | "contaminado" | "semente" |  "meio-demonio" | "demonio" | "ancestral";export interface PerfilQi {  natureza: NaturezaQi;  pureza: number;       // 0–100  controle: number;     // 0–100  estabilidade: number; // 0–100  capacidade: number;  vazao: number;  rotaPrincipal?: string;  estadoDemonico: EstadoDemonico;  fome?: { tipo: string; nivel: number; ancora?: string };  cicatrizes: string[];}export interface RequisitosQi {  compatibilidades: CompatibilidadeQi[];  purezaMinima?: number;  controleMinimo?: number;  estadoDemonicoMinimo?: EstadoDemonico;  rota?: string;  adaptavel?: boolean;}export interface TecnicaProfunda extends Tecnica {  requisitosQi?: RequisitosQi;  sinal?: string;  contrajogo?: string[];  riscoDesvio?: number;  dominio?: "iniciada" | "praticada" | "dominada" | "perfeita" | "transcendente";}
+21.1 Pílulas
+export interface PilulaProfunda {  id: string;  nome: string;  ordem: number; // 1–10  natureza: "neutra" | "yin" | "yang" | "harmonica" | "demoniaca";  pureza: number;  aneis: number;  efeito: string;  toxinaBase: number;  toleranciaGrupo?: string;  conflitos?: string[];  exigeDemonio?: boolean;  janela?: string;}
+21.2 Avaliação de uso
+interface AvaliacaoCompatibilidade {  classe: "perfeita" | "normal" | "universal" | "adaptavel" | "perigosa" | "bloqueada";  poder: number;  custo: number;  risco: number;  motivos: string[];}
+
+22. Migração do conteúdo atual
+Conteúdo atual
+Classificação inicial sugerida
+Arte de Respiração das Nove Nuvens
+Universal; método seguro para Yin e Yang.
+Técnica do Corpo de Bronze
+Universal; tempera com ciclos alternados.
+Palma do Trovão Ascendente
+Yang; adaptável por Yin apenas com nova versão.
+Passos da Nuvem Errante
+Universal.
+Regeneração do Lótus Verde
+Yin ou Universal inclinada a Yin.
+Escudo de Qi Dourado
+Yang.
+Arte Proibida do Sangue Fervente
+Yang proibida humana; não é demoníaca automaticamente.
+Sutra do Imperador Estelar
+Universal de alto grau ou Corpo Estelar específico.
+Punho do Imperador Estelar
+Yang/Estelar.
+Chama Renascente da Fênix
+Yang; herança de fogo e renascimento.
+Sutra do Lótus Azul
+Yin.
+Método dos Nove Sóis
+Yang.
+Sutra do Mar de Sangue
+Demoníaca Yang; exige demônio.
+Garras do Cadáver Imortal
+Demoníaca Yin; exige demônio.
+Véu das Sombras Infernais
+Demoníaca Yin; exige demônio.
+
+22.1 Ajuste de recurso
+O campo custoChakra pode permanecer por compatibilidade técnica, mas sua apresentação deve mudar conforme o reino: “Chakra” no Rank 1 e “Star” do Rank 2 em diante. Internamente, um nome neutro como custoEnergia evita que técnicas avançadas pareçam consumir o recurso errado.
+22.2 Ordem segura
+Adicionar NaturezaQi ao personagem com migração determinística baseada em escolha do jogador, corpo especial ou regra de criação.
+Classificar técnicas atuais sem alterar números de combate.
+Exibir compatibilidade e avisos antes de bloquear execução.
+Adicionar domínio, adaptação e riscos.
+Expandir pílulas e circulação somente depois que saves antigos carregarem corretamente.
+Introduzir demonização em missão própria, nunca por migração automática.
+
+23. Missões e eventos
+História
+Decisão
+Consequência
+O Homem da Lua Fria
+Um jovem Yin é rejeitado pelo clã Yang. Treinar, adaptar ou ocultar sua natureza.
+Novo mestre, ruptura familiar ou técnica híbrida.
+A Herdeira dos Nove Sóis
+Uma mulher Yang é forçada a casar para “corrigir” a linhagem.
+Libertação, aliança política ou reforma do clã.
+A Pílula sem Sombra
+Uma fórmula neutra revela ser demoníaca.
+Purificar lote, rastrear refinador ou usar como isca.
+Dois Núcleos, Uma Vida
+Corpo de Harmonia começa a misturar reservatórios.
+Separação, fusão consciente ou sacrifício de uma polaridade.
+O Preço da Segunda Semente
+Meio-demônio recebe chance de trocar linhagem.
+Nova fome, identidade dividida ou recusa e estabilização.
+A Primeira Circulação
+Herança de Mo Wutian oferece recriar o nascimento demoníaco.
+Tornar-se demônio, selar a herança ou tentar criar quarta via.
+
+23.1 Eventos de treino
+Gargalo inesperado revela cicatriz, linhagem, erro do manual ou sabotagem.
+Mestre ensina uma rota diferente da escrita; escolher confiança ou teoria.
+Clima raro amplia natureza e oferece treino arriscado.
+Companheiro percebe sinais de desvio antes do personagem.
+Manual incompleto exige adaptar a última volta do circuito.
+Pílula perfeita carrega assinatura de alguém considerado morto.
+
+24. Ordem de implementação
+Fase
+Escopo
+Entrega verificável
+1 — Perfil de Qi
+Tipos, criação, save e exibição.
+Todo personagem possui Yin ou Yang; demônio não surge aleatoriamente.
+2 — Técnicas
+Requisitos opcionais e classificação atual.
+Compatibilidade aparece sem quebrar catálogo.
+3 — Execução
+Bloqueio, adaptação, custo e risco.
+Técnica incompatível não executa silenciosamente.
+4 — Circulação
+Capacidade, vazão, pureza, controle e estabilidade.
+Treinos geram resultados e sintomas legíveis.
+5 — Pílulas
+Natureza, pureza, toxina, tolerância e conflitos.
+Consumo prevê reação e registra resíduo.
+6 — Demonização
+Estados, fome, âncora e missão.
+Somente demônios produzem Qi Demoníaco.
+7 — Catálogo
+Novas técnicas e pílulas.
+Cada natureza possui builds completas.
+8 — Narrativa
+Facções, preconceito, mestres e consequências.
+Decisões alteram acesso, reputação e corpo.
+
+24.1 Testes essenciais
+Criação respeita probabilidades configuradas e exceções de corpo especial.
+Save antigo recebe escolha ou migração clara, nunca natureza aleatória invisível.
+Humanos não executam técnica demoníaca mesmo com atributo alto.
+Demoníaco Yin e Yang aceitam apenas híbridas correspondentes sem adaptação.
+Técnica universal funciona em ambas as polaridades.
+Pílula incompatível calcula risco antes de consumo e aplica consequência correta.
+Tolerância e toxina persistem no save e não duplicam ao carregar.
+Chakra e Star usam o mesmo custo interno com rótulo correto por reino.
+Demonização permanente exige evento e confirmação.
+
+25. Critérios de aceite
+Área
+Critério
+Lore
+Yin e Yang têm maioria por sexo, mas nenhuma técnica é bloqueada apenas pelo sexo.
+Natureza
+Qi, Chakra, Star, elemento e método possuem funções distintas e explicadas.
+Técnicas
+Toda técnica declara compatibilidade, rota, sinal, contrajogo e risco.
+Demoníaco
+Acesso exige estado demoníaco; maldade ou seita não ortodoxa não bastam.
+Mo Wutian
+A cronologia distingue Núcleo Yin humano do nascimento posterior do Qi Demoníaco.
+Circulação
+Sessão inclui absorção, condução, refino, condensação, distribuição e retorno.
+Pílulas
+Ordem, natureza, pureza, toxina, tolerância, conflitos e janela são verificáveis.
+Interface
+Bloqueios e perigos explicam motivo e possíveis caminhos.
+Save
+Migração preserva técnicas, progresso, toxina e personagem.
+Balanceamento
+Yin, Yang, Universal e Demoníaco possuem vantagens e custos próprios.
+
+25.1 Decisões de lore consolidadas
+Yin é majoritário em mulheres; Yang é majoritário em homens; ambos admitem exceções naturais.
+Demônios de qualquer sexo podem produzir Qi Demoníaco.
+Qi Demoníaco mantém base Yin ou Yang e exige transformação verdadeira.
+Mo Wutian tornou-se o Primeiro Demônio no mesmo momento em que criou o primeiro Qi Demoníaco.
+Caminho demoníaco não equivale a maldade; caminho não ortodoxo não equivale a demonização.
+Aprender teoria é diferente de executar técnica. Compatibilidade governa a execução.
+
+26. Prompt pronto para enviar ao Codex
+Objetivo: implementar apenas a base de compatibilidade Yin/Yang de forma incremental, sem tentar entregar circulação, pílulas profundas e demonização na mesma mudança.
+Analise o estado atual do repositório Cultivo Xuanhuan antes de editar, especialmente cultivation.ts, techniques.ts, criação de personagem, saves, combate, interface de técnicas e testes.Implemente somente a Fase 1 do GDD de Qi, Técnicas e Pílulas:1. Adicione ao personagem uma NaturezaQi inicial: yin ou yang. Não adicione Qi Demoníaco aleatoriamente.2. A natureza deve ser influenciada, mas não determinada, pelo sexo corporal: configuração padrão de 70% Yin/30% Yang para corpo feminino e 30% Yin/70% Yang para corpo masculino. Isole essas probabilidades em constantes configuráveis.3. Preserve Chakra no Rank 1 e Star a partir do Rank 2; Yin/Yang é a natureza da energia, não um novo recurso.4. Estenda Tecnica com requisitos opcionais de compatibilidade: universal, yin, yang, demoníaca, demoníaca-yin, demoníaca-yang e harmônica.5. Classifique as técnicas atuais conforme a tabela de migração deste GDD. Por enquanto, técnicas demoníacas devem aparecer bloqueadas para humanos com a explicação “Somente demônios podem completar este ciclo”.6. Não implemente ainda transformação demoníaca, fome, circulação detalhada, adaptação de manuais, novas pílulas ou rebalanceamento numérico.7. Atualize a interface para mostrar natureza do personagem e compatibilidade do manual antes do estudo.8. Crie migração de save idempotente. Para saves antigos, use uma escolha explícita na primeira abertura se houver infraestrutura; se não houver, implemente um estado pendente seguro, sem sortear silenciosamente.9. Adicione testes para probabilidades com RNG injetável, técnicas universais, bloqueios Yin/Yang, bloqueio demoníaco, serialização e migração.Antes de editar, apresente um plano curto e os arquivos afetados. Depois execute testes e build. Não faça push, merge ou alteração na main sem autorização explícita.
+26.1 Continuação recomendada
+Implementar execução, adaptação e risco de incompatibilidade.
+Adicionar circulação com pureza, controle, capacidade, vazão e estabilidade.
+Aprofundar pílulas com natureza, tolerância e conflitos.
+Criar campanha de demonização e estados de transformação.
+Adicionar os catálogos completos de técnicas e pílulas deste documento.
+Conectar facções, mestres, alquimistas e consequências sociais.
+Apêndice A — Base analisada
+O documento foi alinhado ao estado atual observado da branch main. A base já possui 13 ranks, Chakra no primeiro, Star a partir do segundo, toxina de pílula, cinco graus de técnica, sete categorias funcionais, compreensão, manuais de herança e três artes descritas como demoníacas. Arquivos de referência: docs/GDD.md, src/game/cultivation.ts e src/game/techniques.ts.
+

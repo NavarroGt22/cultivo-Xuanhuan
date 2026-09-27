@@ -1,0 +1,1152 @@
+﻿
+CULTIVO XUANHUAN
+GDD DO BESTIÁRIO PROFUNDO
+Ecologia, combate, vínculo, descoberta e consequências no mundo
+Documento de expansão narrativa e sistêmicaVersão 1.0 • Setembro de 2026
+“Uma besta não é uma tabela de atributos. É uma criatura que ocupa um lugar no mundo, deixa rastros, protege algo, teme alguma coisa e se lembra de como foi tratada.”
+
+1. Visão executiva
+O bestiário atual possui uma base funcional e coerente: 28 espécies distribuídas pelas cinco regiões, cinco linhagens, quatro fases de vida, intervalos de reino, raridade regional, encontros selvagens, ovos de herança e integração com companheiros. A proposta deste documento é preservar essa fundação e acrescentar profundidade sem exigir uma reescrita imediata dos sistemas existentes.
+1.1 Diagnóstico da implementação atual
+Camada
+O que já existe
+Profundidade a acrescentar
+Catálogo
+Nome, região, elemento, linhagem, reinos, maturidade e descrição.
+Habitat, nicho ecológico, dieta, ciclo de atividade, comportamento social, inteligência e lenda.
+Encontros
+Seleção por região, reino e raridade.
+Clima, estação, hora, rastros, migração, ruído, reputação, karma e estado do mundo.
+Combate
+Poder derivado sobretudo de reino, fase e atributos genéricos.
+Habilidades próprias, sinais de ataque, resistências, fraquezas, moral, território e soluções não letais.
+Domesticação
+Contratos, vínculo, treino, evolução conjunta ou independente.
+Temperamento, necessidades, memória, trauma, preferências, tipos de contrato e evolução por relacionamento.
+Interface
+Busca, filtro de linhagem, cartões, progresso por fase e estado de companheiro.
+Conhecimento gradual, silhuetas, abas de ecologia/combate/materiais, mapa, espécimes e rumores.
+Mundo
+As espécies são distribuídas regionalmente.
+Impacto sobre agricultura, facções, comércio, eventos, extinção local e equilíbrio espiritual.
+
+1.2 Objetivos de design
+Fazer cada espécie ser reconhecível pelo comportamento, e não apenas pelo nome ou poder.
+Transformar observar, rastrear, evitar, negociar, resgatar e domesticar em alternativas reais ao combate.
+Fazer o conhecimento do jogador ter valor mecânico: descobrir uma fraqueza deve mudar a preparação e o resultado do encontro.
+Conectar bestas à economia, às seitas, ao clima, à agricultura e às histórias da campanha.
+Preservar compatibilidade com os campos e regras já presentes no projeto.
+Permitir expansão gradual: primeiro dados e interface; depois encontros contextuais; por fim ecossistemas dinâmicos.
+1.3 Princípios
+Campo
+Conteúdo de design
+Identidade antes de quantidade
+As 28 espécies atuais devem se tornar memoráveis antes de o catálogo crescer.
+Poder não é personalidade
+Duas bestas do mesmo reino precisam exigir estratégias diferentes.
+Todo recurso tem origem
+Materiais devem vir de muda, coleta, caça, resgate, contrato ou calamidade — com consequências distintas.
+Conhecimento evita grind
+Uma investigação correta reduz risco, custo ou duração do encontro.
+O mundo reage
+Caça excessiva, proteção, migração e corrupção alteram encontros e comunidades.
+
+
+2. Taxonomia expandida
+A linhagem continua definindo raridade e teto de potencial, mas não deve carregar sozinha todas as diferenças. Cada espécie recebe classificações paralelas que explicam como ela vive e como o jogador deve abordá-la.
+2.1 Linhagem preservada
+Linhagem
+Função
+Diretriz narrativa
+Comum
+Base ecológica e econômica.
+Não significa inútil. Espécies comuns sustentam cadeias alimentares, transporte, agricultura e sinais ambientais.
+Espiritual
+Criaturas adaptadas ao qi local.
+Possuem uma técnica natural simples e reagem com clareza a desequilíbrios elementais.
+Demoníaca
+Predadores ou mutações de alto risco.
+Agem por fome, território ou obsessão; “demoníaca” não significa moralmente má.
+Divina
+Guardiões, símbolos ou agentes de leis naturais.
+Exigem prova, promessa, ritual ou mérito; matá-las deve ter peso político e espiritual.
+Ancestral
+Entidades ligadas à memória do mundo.
+Funcionam como acontecimentos, soberanos ou calamidades; raramente são encontros comuns.
+
+2.2 Papel ecológico
+Papel
+Comportamento esperado
+Uso em jogo
+Presa
+Foge, alerta o bando, esconde filhotes.
+Rastreamento, captura, indicador de perigo.
+Forrageadora
+Move sementes, qi ou minerais.
+Coleta, agricultura e descoberta de recursos.
+Predadora
+Seleciona alvos, prepara emboscadas.
+Combate tático e leitura de rastros.
+Ápice
+Controla uma região e outras bestas.
+Chefe territorial e mudança de ecossistema.
+Guardiã
+Defende local, juramento, linhagem ou fenômeno.
+Provação, negociação e acesso a áreas.
+Simbionte
+Vive ligada a outra espécie ou comunidade.
+Cadeias de missões e benefícios mútuos.
+Calamidade
+Consome ou transforma regiões inteiras.
+Evento mundial, evacuação e guerra.
+
+2.3 Temperamento e inteligência
+Temperamento e inteligência são separados. Uma criatura instintiva pode ser territorial sem ser cruel; uma entidade sapiente pode agir pacificamente, negociar ou guardar rancor por gerações.
+Eixo
+Valores recomendados
+Temperamento
+Dócil; cautelosa; curiosa; territorial; predatória; orgulhosa; soberana.
+Inteligência
+Instintiva; treinável; astuta; sapiente; ancestral.
+Sociabilidade
+Solitária; casal; família; matilha; colônia; corte.
+Atividade
+Diurna; noturna; crepuscular; sazonal; desperta por evento.
+
+2.4 Grau de ameaça
+O grau de ameaça mede risco real, não reino. Considera número, terreno, inteligência, veneno, capacidade de fuga e dano colateral. Uma colônia fraca pode ser mais perigosa para uma aldeia do que uma besta forte e isolada.
+Grau
+Significado
+I — Local
+Um mortal preparado ou cultivador iniciante consegue lidar com a criatura.
+II — Patrulha
+Exige grupo pequeno, antídoto ou conhecimento do habitat.
+III — Regional
+Pode destruir caravanas, plantações ou postos avançados.
+IV — Domínio
+Controla uma área e altera o comportamento de outras espécies.
+V — Soberana
+Exige intervenção de anciões, alianças ou solução ritual.
+VI — Calamidade
+Muda clima, veias espirituais, fronteiras ou a sobrevivência de uma região.
+
+
+3. Descoberta e conhecimento
+O bestiário deve representar o que o personagem sabe, não um catálogo completo entregue ao jogador. Cada espécie possui um nível de conhecimento persistente. Informações obtidas por observação, livros, mestres, dissecação, contrato ou rumores podem ter confiabilidade diferente.
+Nível
+Nome
+Conteúdo liberado
+Como avançar
+0
+Desconhecida
+Silhueta e região aproximada; nome oculto.
+Encontrar rastro, ouvir rumor ou sobreviver a um encontro.
+1
+Reconhecida
+Nome, aparência, regiões e ameaça estimada.
+Observar com segurança ou consultar guia básico.
+2
+Estudada
+Habitat, dieta, atividade e comportamento.
+Seguir rastros, observar ninho, conversar com caçadores.
+3
+Compreendida
+Habilidades, sinais de ataque, resistências e fraquezas.
+Combater, treinar com especialista ou concluir pesquisa.
+4
+Dominada
+Materiais, coleta segura, domesticação e variantes.
+Contrato, criação, estudo de espécime ou missão dedicada.
+5
+Lendária
+História oculta, evolução rara e interação com eventos mundiais.
+Feito único, herança, amizade ancestral ou descoberta histórica.
+
+3.1 Fontes e confiabilidade
+Observação direta: confiável, mas só registra o que aconteceu naquele contexto.
+Rumor: barato e rápido; pode acrescentar uma pista verdadeira, exagerada ou falsa.
+Livro de seita: preciso sobre espécies locais, possivelmente censurado sobre bestas divinas.
+Material coletado: revela idade, saúde, elemento e causa de ferimento.
+Companheiro contratado: revela necessidades, emoções e técnicas conforme o vínculo cresce.
+Memória ancestral: desbloqueia lore, mas pode refletir preconceitos da própria criatura.
+3.2 Rastros como jogabilidade
+Campo
+Conteúdo de design
+Pegadas e marcas
+Estimam tamanho, fase de vida, direção e estado de ferimento.
+Restos de alimento
+Revelam dieta, horário recente e possível presa desaparecida.
+Qi residual
+Indica elemento, corrupção, técnica usada e distância temporal.
+Som e silêncio
+Mudanças no ambiente anunciam predadores, migrações e calamidades.
+Ninho ou toca
+Revela reprodução e materiais, mas invadir gera memória negativa e retaliação.
+
+3.3 Erro e correção
+Rumores falsos não devem frustrar sem pista. A interface marca informação como “relato”, “provável” ou “confirmada”. Quando o jogador corrige um erro, recebe experiência de bestiário e pode atualizar o conhecimento de NPCs, melhorando a segurança regional.
+
+4. Encontros vivos
+O encontro deixa de ser apenas uma rolagem de espécie. Primeiro o sistema escolhe um contexto; depois determina sinais, intenção e composição. A mesma espécie pode produzir cenas radicalmente diferentes.
+4.1 Variáveis de contexto
+Variável
+Exemplos de efeito
+Bioma
+Rio, mangue, geleira, floresta de jade, ruína, caverna, deserto ou campo espiritual.
+Hora e estação
+Caça, migração, acasalamento, hibernação, muda ou nascimento.
+Clima
+Amplifica técnicas, mascara cheiro, muda visibilidade e altera agressividade.
+Estado físico
+Faminta, ferida, doente, corrompida, protegendo filhote ou fugindo de ameaça maior.
+Estado do mundo
+Guerra, seca, mina aberta, seita caçando, veia espiritual rompida ou território protegido.
+Histórico do jogador
+Cheiro de sangue, reputação, karma, companhia atual, materiais carregados e contratos anteriores.
+
+4.2 Formatos de encontro
+Formato
+Função
+Vestígio
+Ensina leitura de mundo sem iniciar confronto.
+Avistamento
+Oferece observação, perseguição ou recuo.
+Indivíduo
+Permite duelo, resgate, captura ou negociação.
+Grupo
+Traz papéis sociais, moral e proteção dos vulneráveis.
+Ninho
+Aumenta recompensa e consequência moral.
+Migração
+Evento temporário que atravessa regiões e altera rotas comerciais.
+Disputa territorial
+Duas espécies ou facções; o jogador escolhe interferir ou não.
+Calamidade
+Objetivo coletivo com fases, evacuação e consequências persistentes.
+
+4.3 Intenção antes do combate
+Alimentar-se: busca um recurso e pode ignorar o jogador se não for ameaçada.
+Defender: exibe avisos graduais antes do ataque; recuar encerra a cena.
+Testar: bestas orgulhosas aceitam demonstrações de coragem ou técnica.
+Pedir ajuda: criatura ferida, filhote perdido ou habitat corrompido.
+Caçar: seleciona o alvo mais vulnerável, cria emboscada e tenta impedir fuga.
+Negociar: entidade sapiente troca passagem, conhecimento, juramento ou serviço.
+4.4 Exemplo de geração
+Norte + fim do inverno + nevasca + guerra próxima pode gerar uma matilha de Lobos de Presas de Gelo faminta, seguindo uma caravana ferida. O jogador pode afastá-la com fogo controlado, oferecer carne, curar a líder, conduzir a caravana por outra rota ou atacar. Cada solução registra consequências diferentes para comerciantes, caçadores e população dos lobos.
+
+5. Combate com identidade
+Cada espécie deve ter um verbo central — emboscar, cercar, imitar, resistir, migrar, julgar — que guie habilidades, animação, IA e texto. O combate fica legível quando ataques perigosos possuem sinais claros e respostas possíveis.
+5.1 Kit mínimo por espécie
+Campo
+Conteúdo de design
+Técnica de assinatura
+A ação que define a criatura e que o jogador lembra depois do encontro.
+Técnica de território
+Mais forte em seu habitat; pode ser neutralizada alterando o campo.
+Defesa ou fuga
+Evita que todos os encontros terminem em troca direta de dano.
+Sinal antecipado
+Som, postura, cor, concentração de qi ou mudança ambiental antes da ação perigosa.
+Fraqueza contextual
+Uma resposta descoberta por conhecimento, não apenas um modificador elemental.
+
+5.2 Fase de vida e repertório
+Fase
+Comportamento
+Técnicas
+Filhote
+Dependente, curioso, foge ou chama protetor.
+Uma técnica incompleta e forte necessidade de proteção.
+Jovem
+Arrisca, imita, disputa posição.
+Assinatura básica e fuga; maior chance de erro.
+Adulta
+Cumpre o nicho ecológico completo.
+Kit integral, território e leitura do jogador.
+Anciã
+Economiza movimento e usa experiência.
+Variações, contra-ataques, comando social e memória de confrontos.
+
+5.3 Moral e encerramento
+Bestas não devem lutar até a morte por padrão. Moral cai com ferimentos, perda de liderança, ruptura territorial ou proteção bem-sucedida dos filhotes. O encontro pode terminar em fuga, rendição, respeito, contrato, perseguição futura ou mudança de território. Executar uma criatura rendida afeta karma e testemunhas.
+5.4 Soluções não letais
+Intimidação controlada, alimento, cura, distração, ritual, troca de território, quebra de corrupção e restituição de objeto roubado.
+Formações de contenção reduzem dano e melhoram a qualidade de materiais coletados depois.
+Conhecimento de nível 3 ou superior revela pelo menos uma saída não letal em cada encontro normal.
+Bestas divinas e ancestrais priorizam provas ou pactos; vitória por dano é possível apenas em condições excepcionais.
+
+6. Vínculo, contrato e memória
+Domesticar não deve ser um botão após a vitória. O vínculo nasce da forma como a criatura foi encontrada e continua sendo modificado por cuidado, treino, ambiente, escolhas morais e compatibilidade de técnicas.
+6.1 Origens de vínculo
+Origem
+Vantagem
+Risco
+Nascimento
+Confiança inicial alta e evolução moldável.
+Dependência; desenvolvimento prejudicado se for isolada da própria espécie.
+Resgate
+Lealdade por gratidão quando há cuidado consistente.
+Trauma pode reaparecer diante de caçadores, fogo, jaulas ou seitas.
+Prova mútua
+Respeito entre iguais; ideal para orgulhosas e sapientes.
+Quebrar uma promessa destrói vínculo e reputação.
+Contrato de guarda
+Objetivo compartilhado e bônus territorial.
+A criatura abandona o jogador se a missão for traída.
+Dominação
+Resultado rápido e previsível no curto prazo.
+Medo, sabotagem, fuga, corrupção e incompatibilidade com bestas divinas.
+
+6.2 Necessidades persistentes
+Alimento e ambiente adequados à espécie; uma Fênix Carmesim não deve prosperar em cela gelada.
+Sociabilidade: matilhas, rebanhos e colônias sofrem quando mantidos isolados.
+Expressão de instinto: correr, caçar, escavar, voar, guardar, migrar ou resolver desafios.
+Compatibilidade moral: criaturas sapientes observam promessas, crueldade e tratamento de outras bestas.
+Descanso e ritmo de cultivo; forçar evolução acumula instabilidade e reduz confiança.
+6.3 Estados emocionais
+Estado
+Causa comum
+Efeito
+Seguro
+Rotina, ambiente e promessas cumpridas.
+Treino estável e recuperação melhor.
+Curioso
+Novo bioma, técnica ou objeto.
+Eventos de descoberta e evolução lateral.
+Estressado
+Fome, confinamento, excesso de combate.
+Erros, recusa e perda de sincronização.
+Traumatizado
+Abuso, morte do grupo ou corrupção.
+Gatilhos específicos e missão de recuperação.
+Devotado
+Vínculo alto e objetivo compartilhado.
+Ações combinadas e proteção espontânea.
+Ressentido
+Contrato injusto ou promessa quebrada.
+Desobediência, fuga ou vingança.
+
+6.4 Memória
+Cada espécime registra eventos marcantes: resgatado por, ferido por, ninho invadido, promessa recebida, batalha vencida e aliado perdido. A memória gera pequenas mudanças de comportamento e diálogos de interface. Memórias fortes podem ser herdadas parcialmente por linhagens ancestrais ou por técnicas de sangue.
+
+7. Materiais, coleta e economia
+O valor de uma besta não deve transformar toda descoberta em caça automática. Cada espécie oferece recursos renováveis, materiais de risco e recompensas alternativas. A origem do material importa para preço, qualidade, karma e reação de facções.
+7.1 Métodos de obtenção
+Método
+Qualidade
+Consequência
+Coleta ambiental
+Baixa a média, segura.
+Pouco impacto; exige conhecimento de habitat e época.
+Muda natural
+Alta e compatível com alquimia.
+Favorece criação, proteção e contratos.
+Ordenha ou extração
+Variável; requer técnica.
+Pode ser sustentável ou cruel, conforme ferramenta e vínculo.
+Caça
+Alta quantidade, qualidade ligada ao método.
+Reduz população e pode gerar retaliação.
+Combate de calamidade
+Única ou excepcional.
+Materiais instáveis; distribuição vira decisão política.
+Presente ou pacto
+Qualidade máxima e assinatura espiritual.
+Não pode ser comercializado sem violar o vínculo.
+
+7.2 Qualidade do material
+A qualidade combina fase de vida, saúde, pureza de linhagem, frescor, método de coleta e dano recebido. Golpes destrutivos podem facilitar uma vitória e arruinar o núcleo, a pele ou o veneno. Coleta especializada cria espaço para ocupações, ferramentas e companheiros adequados.
+7.3 Pressão ecológica
+Caça excessiva reduz aparições e aumenta pragas antes controladas pela espécie.
+Proteção recupera populações, atrai estudiosos e pode gerar conflito com comerciantes.
+Mercado negro oferece preços altos por materiais divinos, mas aumenta corrupção e hostilidade de guardiões.
+Substitutos alquímicos e materiais de muda oferecem rotas econômicas menos destrutivas.
+A interface regional mostra tendência populacional apenas após pesquisa suficiente.
+7.4 Cadeias de produção
+Materiais devem apontar para usos concretos: alquimia, talismãs, forja, medicina, formação, agricultura, transporte ou pesquisa. Uma espécie possui no máximo dois materiais principais e um excepcional, evitando listas infladas sem função.
+
+8. Variantes e evolução
+Variantes são respostas a ambiente, contrato e história. Elas não precisam ser upgrades lineares: podem trocar elemento, comportamento, função ecológica e exigências de cuidado.
+Origem
+Regra
+Exemplo
+Regional
+Adaptação estável a um bioma.
+Lobo de Presas de Gelo da costa ganha névoa salina e perde armadura profunda.
+Elemental
+Exposição longa a veia ou calamidade.
+Coelho de Jade Lunar absorve yin e só forrageia à noite.
+Despertar de sangue
+Atinge vínculo, fase e condição de linhagem.
+Carpa do Portão do Dragão manifesta escamas dracônicas sem completar ascensão.
+Corrupção
+Poder rápido, instabilidade e dano ecológico.
+Pantera de Névoa Carmesim espalha alucinações e perde cautela natural.
+Adaptação ao contrato
+Reflete técnica e escolhas do cultivador.
+Cavalo Espiritual aprende Passo de Cinzas com parceiro de fogo.
+Regressão ancestral
+Recupera traço antigo e memória parcial.
+Corvo de Três Olhos desperta visão de causalidade limitada.
+
+8.1 Regras de evolução
+Toda evolução exige condição visível, não apenas experiência acumulada.
+O jogador recebe uma prévia de ganhos, perdas, novas necessidades e mudança de temperamento.
+Forçar evolução cria uma cicatriz permanente ou dívida narrativa; não é caminho gratuito.
+Algumas evoluções exigem devolver a criatura à natureza, aceitar separação temporária ou renunciar a uma recompensa.
+Variantes raras entram no bestiário como espécimes relacionados, preservando a identidade da espécie-base.
+8.2 Reprodução e herança
+Ovos e descendentes herdam espécie, potencial de linhagem, um traço dos progenitores e uma memória instintiva. Cruzamentos não devem criar combinações ilimitadas; apenas pares definidos pelo lore geram híbridos estáveis. A criação responsável exige espaço, alimento e equilíbrio populacional.
+
+9. Interface do bestiário
+A tela deve servir tanto ao colecionador quanto ao jogador que está se preparando para uma expedição. O princípio central é revelar informação de acordo com o conhecimento, evitando spoilers e transformando lacunas em objetivos.
+9.1 Estrutura recomendada
+Área
+Conteúdo
+Cabeçalho
+Progresso global, espécies reconhecidas, dominadas e lendárias.
+Filtros
+Região, linhagem, elemento, habitat, ameaça, fase observada, vínculo e nível de conhecimento.
+Lista
+Cartões com silhueta, nome ou codinome, ameaça estimada, última região e tendência populacional.
+Detalhe
+Abas Visão Geral, Ecologia, Combate, Materiais, Vínculo, Espécimes e Lendas.
+Mapa
+Habitats confirmados, migração sazonal e áreas de rumor com precisão graduada.
+Preparação
+Fixar espécie como alvo; mostrar antídotos, ferramentas e missões relacionadas.
+
+9.2 Progressão visual
+Nível 0 usa silhueta e título provisório, como “predador de patas silenciosas”.
+Dados não descobertos aparecem como perguntas curtas: “O que provoca sua migração?”.
+Informação baseada em rumor recebe ícone e texto de incerteza; confirmação substitui o rumor sem apagar seu histórico.
+Um espécime contratado possui página própria com nome, memórias, humor, necessidades e árvore de evolução.
+A aba de combate destaca sinais antecipados e contramedidas já descobertas, sem exibir números ocultos desnecessários.
+9.3 Comparação de espécimes
+O jogador pode comparar dois indivíduos da mesma espécie por fase, potencial, traços, memória e necessidades. Não exibir um “melhor” absoluto: um indivíduo poderoso pode ser instável, enquanto outro tem alta compatibilidade de vínculo ou técnica utilitária rara.
+9.4 Acessibilidade
+Nunca depender apenas de cor para ameaça, elemento ou confiabilidade.
+Oferecer busca tolerante a acentos e nomes alternativos.
+Permitir reduzir animações de fundo e efeitos de qi.
+Usar texto direto para sinais de ataque; ícones são apoio, não substituição.
+
+10. Modelo de dados compatível
+Os campos atuais permanecem obrigatórios. Os novos campos podem ser adicionados como opcionais e preenchidos progressivamente. Assim, nenhuma espécie existente deixa de funcionar durante a migração.
+10.1 Extensão proposta
+type PapelEcologico =  | "presa" | "forrageadora" | "predadora" | "apice"  | "guardia" | "simbionte" | "calamidade";interface HabilidadeBesta {  id: string;  nome: string;  fases: FaseBesta[];  sinal: string;  efeito: string;  resposta: string;}interface MaterialBesta {  id: string;  nome: string;  origem: "coleta" | "muda" | "extracao" | "caca" | "presente";  usos: string[];  renovavel: boolean;}interface EspecieBestaProfunda extends EspecieBesta {  habitats?: string[];  papelEcologico?: PapelEcologico[];  dieta?: string[];  atividade?: string;  estruturaSocial?: string;  temperamento?: string[];  inteligencia?: string;  ameaca?: 1 | 2 | 3 | 4 | 5 | 6;  habilidades?: HabilidadeBesta[];  resistencias?: string[];  fraquezas?: string[];  materiais?: MaterialBesta[];  domesticacao?: string;  variantes?: string[];  impactoMundial?: string[];  entradasCodex?: string[];}
+10.2 Estado de conhecimento por save
+interface ConhecimentoBesta {  especieId: string;  nivel: 0 | 1 | 2 | 3 | 4 | 5;  pistas: string[];  fatosConfirmados: string[];  rumores: { id: string; confiabilidade: number }[];  especimesEncontrados: string[];  encontros: number;  derrotadas: number;  poupadas: number;  domesticadas: number;  ultimaRegiao?: Regiao;}
+10.3 Compatibilidade e migração
+Adicionar campos opcionais e valores padrão derivados da linhagem e da região.
+Converter o booleano de “já domesticada” em uma das fontes do nível de conhecimento, sem removê-lo de saves antigos.
+Preencher primeiro cinco espécies-piloto, uma por região, e manter as demais com o cartão atual.
+Versionar o save e executar migração idempotente; carregar novamente não pode duplicar pistas ou espécimes.
+Somente depois tornar habilidades específicas obrigatórias para novos conteúdos.
+
+11. Fichas aprofundadas das 28 espécies
+As fichas abaixo foram desenhadas sobre o catálogo atual. Elas definem identidade, contrajogo e conexões de mundo, mantendo região, elemento, linhagem e faixa de reino já existentes.
+
+Região Central
+Coelho de Jade
+Comum • Madeira • Reinos 1–2
+Campo
+Conteúdo de design
+Nicho e habitat
+Forrageador de campos espirituais, pomares e margens de floresta. Enterra sementes carregadas de qi e melhora o solo ao redor das tocas.
+Comportamento
+Crepuscular, familiar e muito cauteloso. Bate as patas para alertar o grupo e abandona campos onde sente intenção assassina repetida.
+Assinatura
+Salto de Broto: deixa uma raiz súbita no ponto de partida. Em grupo, cria uma rede de raízes que atrasa perseguidores.
+Fraqueza e leitura
+Sinos graves interrompem a percepção do solo; alimento fresco permite aproximação sem perseguição.
+Materiais
+Pelos de muda para pílulas de recuperação suave; esterco de jade como fertilizante. Ambos renováveis.
+Vínculo
+Ganha confiança com rotina, abrigo e cultivo sem veneno. Sofre se isolado de outros coelhos.
+Variante e gancho
+Coelho de Jade Lunar, yin e noturno. O desaparecimento dos coelhos é o primeiro sinal de solo corrompido.
+
+Tigre da Nuvem Branca
+Demoníaca • Metal • Reinos 3–6
+Campo
+Conteúdo de design
+Nicho e habitat
+Predador ápice de montanhas úmidas. Controla herbívoros e mantém desfiladeiros livres de bestas corrompidas.
+Comportamento
+Solitário, territorial e orgulhoso. Marca pedras com cortes de qi; ataca intrusos apenas após três avisos.
+Assinatura
+Passo sobre Nuvens apaga o som das patas; Rugido da Lâmina condensa névoa em cortes metálicos.
+Fraqueza e leitura
+Poeira de terra revela sua trilha e cavernas baixas limitam o passo aéreo. O bigode aponta para o próximo avanço.
+Materiais
+Bigodes caídos para bússolas de qi; garras somente de cadáver natural ou caça, usadas em armas de precisão.
+Vínculo
+Não aceita dominação. Um contrato exige sobreviver à caçada ritual sem ferir filhotes nem cruzar marcas proibidas.
+Variante e gancho
+Tigre da Nuvem Trovejante. Uma linhagem está sendo caçada para falsificar selos de uma seita.
+
+Garça das Nove Penas
+Divina • Madeira • Reinos 5–8
+Campo
+Conteúdo de design
+Nicho e habitat
+Guardiã de lagos e terraços medicinais. Cada pena principal acumula um aspecto do ciclo vegetal.
+Comportamento
+Paciente, monogâmica e sapiente. Julga comunidades pelo tratamento dado às nascentes.
+Assinatura
+Círculo das Nove Penas alterna cura, enraizamento, purificação e lâminas de folha conforme a postura.
+Fraqueza e leitura
+Água espelhada revela qual pena está ativa. Poluição deliberada transforma defesa em fúria sem negociação.
+Materiais
+Uma pena cai a cada mudança de estação; usada em talismãs de cura. Pena arrancada perde pureza.
+Vínculo
+Concede pacto de passagem após restaurar uma nascente e manter o juramento por um ciclo anual.
+Variante e gancho
+Garça da Pena Vazia, com uma pena perdida para o Culto do Abismo; recuperá-la muda uma rota regional.
+
+Qilin de Chifre Dourado
+Divina • Terra • Reinos 6–9
+Campo
+Conteúdo de design
+Nicho e habitat
+Guardião de fronteiras antigas, campos honestamente cultivados e túmulos sem profanação.
+Comportamento
+Soberano e compassivo, evita pisar em seres vivos. Reconhece mentiras pelo tremor do solo.
+Assinatura
+Mandato do Solo sela técnicas de quem quebrou uma promessa dentro de seu domínio.
+Fraqueza e leitura
+Não possui fraqueza elemental simples. Contradições em juramentos e marcos territoriais quebrados limitam o domínio.
+Materiais
+Pó do chifre desprendido naturalmente fortalece formações; sangue ou chifre arrancado amaldiçoa o usuário.
+Vínculo
+Não é domesticável. Pode reconhecer um “portador de mandato” e aparecer quando o pacto territorial é ameaçado.
+Variante e gancho
+Qilin do Barro Negro nasce quando uma comunidade prospera por exploração; pode ser purificado ou tornar-se juiz hostil.
+
+Kirin Ancestral
+Ancestral • Terra • Reinos 9–12
+Campo
+Conteúdo de design
+Nicho e habitat
+Memória viva das primeiras veias espirituais. Onde dorme, montanhas estabilizam e rios mudam lentamente de curso.
+Comportamento
+Ancestral, silencioso e quase imóvel. Responde a linhagens, antigas dívidas e alterações profundas do terreno.
+Assinatura
+Passo que Reescreve a Montanha altera relevo e sela passagens; Recordação Mineral reproduz técnicas gravadas no solo.
+Fraqueza e leitura
+Combate direto é calamidade. Um marco do primeiro pacto permite dialogar e interromper o despertar.
+Materiais
+Fragmentos de casco deixados a cada século; não há saque comum. Um fragmento registra a história do lugar.
+Vínculo
+Jamais companheiro convencional. Pode conceder uma peregrinação compartilhada ou reconhecer uma linhagem familiar.
+Variante e gancho
+O “Kirin Adormecido” pode ser a própria cordilheira central; mineração divina ameaça acordá-lo.
+
+
+Região Norte
+Lobo de Presas de Gelo
+Espiritual • Água • Reinos 1–4
+Campo
+Conteúdo de design
+Nicho e habitat
+Predador de tundra e pinheiros gelados. Abate animais doentes e conduz rebanhos para longe de gelo frágil.
+Comportamento
+Matilha disciplinada; juvenis cercam, adultos decidem e anciãos preservam rotas de inverno.
+Assinatura
+Mordida de Geada reduz circulação de qi; Uivo de Caça troca a liderança do cerco sem perder ação.
+Fraqueza e leitura
+Calor seco racha a camada de gelo nas presas. A cauda do líder sinaliza a direção do próximo ataque.
+Materiais
+Pelos de inverno e saliva congelante. Coleta não letal exige confiança ou toca abandonada.
+Vínculo
+Deve ser aceito pela matilha ou formar nova unidade social; isolamento prolongado causa estresse.
+Variante e gancho
+Lobo de Névoa Salina nas costas. Uma matilha segue refugiados porque perdeu seu território para uma mina.
+
+Águia da Tempestade
+Espiritual • Metal • Reinos 2–5
+Campo
+Conteúdo de design
+Nicho e habitat
+Caçadora das escarpas; dispersa nuvens carregadas e leva minerais leves para ninhos altos.
+Comportamento
+Casais territoriais criam um filhote por estação. Testam intrusos com mergulhos de aviso.
+Assinatura
+Mergulho de Pressão cria lâmina sônica; Asa de Granizo encobre a retirada.
+Fraqueza e leitura
+Perde controle em correntes cruzadas criadas por formações. As penas do pescoço se erguem antes do mergulho.
+Materiais
+Penas condutoras de muda para talismãs de velocidade; casca de ovo abandonada para ligas leves.
+Vínculo
+Exige espaço de voo e parceria, não montaria passiva. Responde bem a cultivadores que respeitam altitude.
+Variante e gancho
+Águia do Olho Quieto prevê nevascas. Caçadores querem capturá-la antes de uma guerra de inverno.
+
+Urso da Armadura Glacial
+Demoníaca • Água • Reinos 3–6
+Campo
+Conteúdo de design
+Nicho e habitat
+Onívoro de geleiras e cavernas. Abre poços de pesca usados por espécies menores.
+Comportamento
+Solitário fora da criação; evita conflito quando alimentado, mas protege covis com persistência absoluta.
+Assinatura
+Armadura Glacial cresce enquanto recebe dano frio; Pancada de Fenda quebra o terreno sob o alvo.
+Fraqueza e leitura
+Calor gradual expõe juntas, mas fogo súbito provoca frenesi. O gelo azula antes da pancada.
+Materiais
+Gordura medicinal, pelos e placas desprendidas após hibernação; caça fornece mais, porém desestabiliza poços de pesca.
+Vínculo
+Resgate de filhote pode gerar confiança, mas o adulto precisa hibernar e escolher território próprio.
+Variante e gancho
+Urso de Vidro Azul possui armadura transparente contaminada por cristal de mineração.
+
+Mamute do Gelo Eterno
+Divina • Água • Reinos 6–9
+Campo
+Conteúdo de design
+Nicho e habitat
+Engenheiro de ecossistema. Migra abrindo rotas, cavando água e transportando sementes no pelo.
+Comportamento
+Manada matriarcal, memória secular e luto prolongado. Evita assentamentos que respeitam corredores migratórios.
+Assinatura
+Procissão do Inverno cria uma frente de neve; Trombeta Ancestral fortalece a manada e derruba formações.
+Fraqueza e leitura
+Separação e pânico são mais perigosos que o indivíduo. Sinos de baixa frequência podem orientar sem ferir.
+Materiais
+Lã, gelo das pegadas e presas encontradas após morte natural. Marfim caçado é contrabando sagrado.
+Vínculo
+Pode aceitar guia temporário para uma migração. Nunca abandona a manada para ser companheiro permanente.
+Variante e gancho
+Mamute de Musgo Invernal carrega um jardim medicinal. Uma fortaleza bloqueia a rota e ameaça toda a região.
+
+Dragão de Gelo Primordial
+Ancestral • Água • Reinos 10–13
+Campo
+Conteúdo de design
+Nicho e habitat
+Soberano adormecido das calotas. Seu sonho regula invernos e preserva memórias no gelo profundo.
+Comportamento
+Ancestral e territorial em escala continental. Considera séculos como estações.
+Assinatura
+Inverno sem Horizonte congela qi e memória; Espelho da Geleira devolve técnicas registradas no gelo.
+Fraqueza e leitura
+Calor não o derrota: desperta-o. O contrajogo é restaurar selos, devolver escama roubada ou ajustar o clima ritual.
+Materiais
+Escamas antigas presas em geleiras; uma lasca pode conservar objeto ou lembrança por gerações.
+Vínculo
+Somente pacto de soberania, com obrigações sobre o clima do Norte.
+Variante e gancho
+Não há variante conhecida; relatos do Dragão Negro podem ser uma memória corrompida dentro do gelo.
+
+
+Região Sul
+Sapo de Fogo Venenoso
+Comum • Fogo • Reinos 1–3
+Campo
+Conteúdo de design
+Nicho e habitat
+Poças termais e mangues quentes. Controla insetos espirituais e concentra toxinas ambientais.
+Comportamento
+Colonial e noturno. Infla bolsas luminosas antes de defender ovos.
+Assinatura
+Cuspe Ígneo Tóxico adere ao chão; Coro Febril amplifica veneno de toda a colônia.
+Fraqueza e leitura
+Água espalha vapor venenoso; barro frio neutraliza com segurança. A cor das bolsas indica a toxina.
+Materiais
+Veneno ordenhado para antídotos e bombas; muco de muda para pomadas contra queimadura.
+Vínculo
+Terrário úmido, companhia e alimentação regular. É útil para alquimistas, mas reage mal a recipientes secos.
+Variante e gancho
+Sapo da Brasa Azul absorveu resíduo alquímico; curá-lo revela descarte ilegal de uma oficina.
+
+Serpente de Escamas de Jade
+Espiritual • Madeira • Reinos 1–4
+Campo
+Conteúdo de design
+Nicho e habitat
+Pomares, ruínas tomadas por vinhas e arrozais. Controla roedores e redistribui qi vegetal.
+Comportamento
+Solitária, paciente e treinável. Prefere imobilizar a matar quando não está faminta.
+Assinatura
+Laço de Videira faz brotar cipós por onde desliza; Muda Reflexiva deixa uma pele-ilusão.
+Fraqueza e leitura
+Vibração ritmada confunde sua leitura do solo. A língua muda de cor antes da ilusão.
+Materiais
+Peles de muda para talismãs de ocultação e escamas soltas para remédios de meridiano.
+Vínculo
+Aceita tratadores pacientes e locais quentes. Mudanças bruscas de rotina geram fuga, não agressão.
+Variante e gancho
+Serpente de Jade Oca vive em árvores mortas e pode indicar uma doença espiritual no pomar.
+
+Pantera da Névoa
+Demoníaca • Água • Reinos 3–6
+Campo
+Conteúdo de design
+Nicho e habitat
+Predadora de pântanos e florestas chuvosas. Mantém criaturas doentes longe das nascentes.
+Comportamento
+Solitária, astuta e silenciosa. Observa uma presa por dias e testa rotas de fuga.
+Assinatura
+Corpo de Névoa evita o primeiro golpe direto; Passo sem Reflexo ataca a partir da imagem errada.
+Fraqueza e leitura
+Pólen aderente e sinos finos revelam deslocamento. A névoa recua um instante antes do salto.
+Materiais
+Bigodes para formações de ilusão; condensado de pegadas para pílulas de furtividade.
+Vínculo
+Contrato possível após caça ritual equilibrada. Detesta jaulas e pune crueldade contra presas indefesas.
+Variante e gancho
+Pantera Carmesim corrompida espalha alucinações; purificação pode recuperar memórias de seu território.
+
+Serpente de Nove Cabeças
+Divina • Água • Reinos 7–10
+Campo
+Conteúdo de design
+Nicho e habitat
+Guardiã de deltas antigos. Cada cabeça regula um veneno, doença ou fluxo de água.
+Comportamento
+Sapiente e internamente dividida; as cabeças podem votar, discutir e negociar condições distintas.
+Assinatura
+Coro dos Nove Venenos combina efeitos; Regeneração Discordante cria nova cabeça se o corte não for selado.
+Fraqueza e leitura
+Selar os pescoços por ordem ritual impede regeneração. Algumas cabeças aceitam argumento ou antídoto.
+Materiais
+Veneno oferecido em gotas para medicina avançada; escamas de muda registram a personalidade de uma cabeça.
+Vínculo
+Pacto diplomático, nunca domesticação. O jogador precisa manter nove cláusulas que podem entrar em conflito.
+Variante e gancho
+Uma décima voz surge sem cabeça visível, sugerindo corrupção ou evolução incompleta.
+
+Fênix Carmesim
+Ancestral • Fogo • Reinos 9–12
+Campo
+Conteúdo de design
+Nicho e habitat
+Renova florestas antigas por incêndios raros e controlados. Sua morte e renascimento reorganizam o qi regional.
+Comportamento
+Soberana, intensa e ligada a ciclos. Lembra promessas entre renascimentos, mas não todas as emoções.
+Assinatura
+Coração de Cinzas renasce se o ciclo não for selado; Aurora Carmesim queima corrupção antes de matéria viva.
+Fraqueza e leitura
+Yin e vazio podem conter as cinzas temporariamente, mas destruir o ciclo provoca incêndios espirituais descontrolados.
+Materiais
+Penas dadas voluntariamente; cinza de renascimento só pode ser recolhida sem impedir o retorno.
+Vínculo
+Pacto através de uma vida e uma morte simbólica. Pode acompanhar o jogador por um ciclo, não como propriedade.
+Variante e gancho
+Fênix Pálida renasceu sem memória após ritual inimigo; restaurá-la altera alianças ancestrais.
+
+
+Região Leste
+Macaco do Vento Prateado
+Espiritual • Madeira • Reinos 1–4
+Campo
+Conteúdo de design
+Nicho e habitat
+Copas de floresta, falésias e templos abandonados. Espalha sementes e recupera objetos brilhantes.
+Comportamento
+Tropas curiosas, hierarquia flexível e forte aprendizagem social. Imitam gestos e selos simples.
+Assinatura
+Mão que Rouba o Vento copia o início de uma técnica; Risada em Eco confunde alvo e direção.
+Fraqueza e leitura
+Quebra-cabeças e trocas interessam mais que combate. Selos falsos podem fazê-los copiar um movimento inútil.
+Materiais
+Pelos prateados de muda para talismãs de leveza; sementes escondidas revelam plantas raras.
+Vínculo
+Precisa de estímulo, liberdade e interação social. Castigo repetitivo transforma curiosidade em sabotagem.
+Variante e gancho
+Macaco dos Cem Selos memorizou uma técnica proibida e várias seitas querem capturá-lo.
+
+Tartaruga de Coral
+Espiritual • Água • Reinos 2–5
+Campo
+Conteúdo de design
+Nicho e habitat
+Recifes e baías rasas. O casco sustenta corais, ervas e filhotes de outras espécies.
+Comportamento
+Lenta, comunitária e migratória. Retorna ao mesmo recife por décadas.
+Assinatura
+Domínio do Recife cria barreira compartilhada; Maré de Retorno empurra agressores sem persegui-los.
+Fraqueza e leitura
+Vibrações harmônicas abrem a postura defensiva; parte inferior é vulnerável, mas atacá-la prejudica confiança.
+Materiais
+Fragmentos de coral e placas de casco naturalmente soltas; retirar coral vivo destrói um micro-habitat.
+Vínculo
+Pode transportar um guardião do recife. Exige água limpa e visitas sazonais ao local de origem.
+Variante e gancho
+Tartaruga Cidade carrega um recife grande o bastante para um povoado; piratas querem ocupá-la.
+
+Tubarão de Chifre
+Demoníaca • Água • Reinos 3–7
+Campo
+Conteúdo de design
+Nicho e habitat
+Predador de canais profundos. Segue vazamentos de qi e remove criaturas gravemente feridas.
+Comportamento
+Solitário, incansável e atraído por circulação espiritual irregular, não apenas sangue.
+Assinatura
+Investida Perfurante rompe barreiras; Sentido de Meridiano localiza o alvo com qi instável.
+Fraqueza e leitura
+Máscaras de qi e pulsos rítmicos desviam a caçada. O chifre vibra antes de mudar de alvo.
+Materiais
+Limalha do chifre para agulhas de acupuntura; dentes substituídos naturalmente para lâminas serrilhadas.
+Vínculo
+Extremamente difícil. Requer área oceânica e rotina de caça; confinamento cria frenesi.
+Variante e gancho
+Tubarão de Chifre Partido ataca portos porque uma arma de seita permanece presa em seu crânio.
+
+Carpa do Portão do Dragão
+Divina • Água • Reinos 4–8
+Campo
+Conteúdo de design
+Nicho e habitat
+Migrante de rios sagrados. Sua jornada redistribui qi e fertilidade entre costa e montanha.
+Comportamento
+Persistente, social e orientada pelo Portão do Dragão. Ajuda carpas mais fracas contra correntes.
+Assinatura
+Salto contra o Céu converte obstáculos vencidos em impulso; Escama da Perseverança resiste uma vez ao golpe fatal.
+Fraqueza e leitura
+Não é vencida por armadilha simples: bloquear a rota fortalece sua determinação. Correntes laterais podem guiá-la.
+Materiais
+Escamas deixadas em cachoeiras; água da passagem serve a pílulas de avanço sem garantir sucesso.
+Vínculo
+O jogador acompanha a migração e ajuda outras carpas. Concluir a jornada pode exigir deixá-la ascender.
+Variante e gancho
+Carpa do Portão Quebrado perdeu a rota após uma barragem; restaurar o rio afeta cidades e seitas.
+
+Dragão Azul
+Ancestral • Madeira • Reinos 10–13
+Campo
+Conteúdo de design
+Nicho e habitat
+Soberano das chuvas, florestas costeiras e marés de primavera. Governa por ciclos, não por fronteiras humanas.
+Comportamento
+Ancestral, sapiente e cerimonial. Responde a tributos simbólicos, equilíbrio hídrico e legitimidade.
+Assinatura
+Édito da Primavera altera clima e crescimento; Corpo do Horizonte viaja entre nuvens e correntezas.
+Fraqueza e leitura
+Seca artificial e juramento violado enfraquecem sua autoridade, mas também ameaçam a região inteira.
+Materiais
+Escama oferecida como selo de mandato; orvalho de sua passagem para restaurar campos devastados.
+Vínculo
+Aliança política e espiritual, nunca contrato de posse. Pode reconhecer emissário humano.
+Variante e gancho
+Dois relatos contraditórios sugerem um Dragão Azul jovem disputando o título com o soberano.
+
+
+Região Oeste
+Camelo de Duas Almas
+Comum • Terra • Reinos 1–3
+Campo
+Conteúdo de design
+Nicho e habitat
+Rotas desérticas e oásis. Uma alma guia o corpo; a outra guarda memória de caminhos e perigos.
+Comportamento
+Rebanho paciente, treinável e sensível a ilusões. Pode recusar uma rota que terminou em tragédia.
+Assinatura
+Passo da Segunda Sombra detecta caminhos falsos; Reserva Espiritual sustenta a caravana em emergência.
+Fraqueza e leitura
+Conflito entre as almas causa imobilidade. Canto rítmico e cheiro familiar restauram consenso.
+Materiais
+Lã para mantos térmicos; cristais de suor para conservação de água, coletados sem ferir.
+Vínculo
+Rotina, grupo e respeito às pausas. Vender um companheiro contra sua vontade deixa memória na segunda alma.
+Variante e gancho
+Camelo de Alma Vazia chega sozinho de uma rota apagada dos mapas.
+
+Escorpião da Areia Dourada
+Espiritual • Terra • Reinos 1–4
+Campo
+Conteúdo de design
+Nicho e habitat
+Dunas minerais e ruínas. Consome parasitas de veias espirituais e cristaliza toxinas no ferrão.
+Comportamento
+Solitário, noturno e imóvel por longos períodos. Ataca vibração invasiva, não aparência.
+Assinatura
+Ferrão de Ouro fixa veneno ao meridiano; Mergulho de Duna muda posição sob a areia.
+Fraqueza e leitura
+Frio noturno reduz velocidade. Passos ritmados podem atraí-lo para ponto controlado.
+Materiais
+Veneno para antídotos minerais; placas de muda para armadura leve resistente à areia.
+Vínculo
+Possível com alimentação por minerais e recinto profundo. Não demonstra afeto humano, mas aprende padrões.
+Variante e gancho
+Escorpião de Vidro surge perto de uma veia esgotada e carrega mapa mineral no casco.
+
+Falcão do Sol Poente
+Demoníaca • Fogo • Reinos 3–6
+Campo
+Conteúdo de design
+Nicho e habitat
+Cânions e planaltos. Caça durante o brilho baixo e mantém pequenos predadores longe das caravanas.
+Comportamento
+Casais competitivos, precisão extrema e apego a poleiros elevados.
+Assinatura
+Mergulho Contra o Sol cega antes do impacto; Pena Incandescente marca a presa para nova passagem.
+Fraqueza e leitura
+Cobertura, espelhos foscos e deslocamento perpendicular anulam a vantagem solar. A sombra anuncia o ângulo.
+Materiais
+Penas de muda para flechas térmicas e lentes; fuligem do poleiro para tinta de talismã.
+Vínculo
+Contrato exige voo, caça e respeito ao par. Separar o casal destrói qualquer vínculo.
+Variante e gancho
+Falcão do Eclipse perdeu o ciclo de caça após um fenômeno celestial e ataca à noite.
+
+Leão Dourado
+Divina • Metal • Reinos 5–8
+Campo
+Conteúdo de design
+Nicho e habitat
+Guardião de cidades antigas, vales de bronze e rotas juramentadas. Sua presença afasta saqueadores.
+Comportamento
+Orgulhoso, social e sapiente. O grupo reconhece coragem, hospitalidade e duelo justo.
+Assinatura
+Juba das Mil Lâminas repele cercos; Rugido do Rei quebra medo aliado e intenção hostil.
+Fraqueza e leitura
+Barro pesado e raízes flexíveis prendem a juba metálica. Desonra pública provoca duelo, não ataque ao grupo.
+Materiais
+Fios de juba naturalmente soltos para armaduras cerimoniais; dentes só são entregues a sucessores.
+Vínculo
+Pacto de honra com deveres públicos. O jogador precisa defender hóspedes e cumprir duelos aceitos.
+Variante e gancho
+Leão sem Juba foi humilhado por uma seita e procura recuperar nome, não poder.
+
+Verme Devorador
+Ancestral • Terra • Reinos 10–13
+Campo
+Conteúdo de design
+Nicho e habitat
+Calamidade subterrânea que segue veias espirituais. Ao passar, cria cavernas e desertos, mas também expõe minerais antigos.
+Comportamento
+Instintivo em escala colossal. Não odeia cidades; percebe apenas concentração e vibração de qi.
+Assinatura
+Fome do Subsolo drena formações; Boca do Horizonte engole terreno e reaparece quilômetros adiante.
+Fraqueza e leitura
+Cego, sensível a ressonância. Redes de pilares podem desviar sua rota; feri-lo perto de cidade piora o desastre.
+Materiais
+Placas abandonadas e cristais digestivos. Matar não é método realista; expedições coletam após passagem.
+Vínculo
+Não domesticável. Pode ser conduzido por formação continental, com enorme custo e responsabilidade.
+Variante e gancho
+Um verme juvenil desperta sob uma mina; facções discordam entre matar, desviar ou explorar.
+
+
+Todas as regiões
+Lobo Cinzento
+Comum • Terra • Reinos 1–2
+Campo
+Conteúdo de design
+Nicho e habitat
+Predador adaptável de campos e bosques. Serve como indicador rápido de pressão humana e escassez.
+Comportamento
+Matilha familiar, evita cultivadores saudáveis e aprende rotas de caravanas.
+Assinatura
+Cerco Comum ganha eficiência com número; Fuga Coordenada salva filhotes quando o líder recua.
+Fraqueza e leitura
+Fogo controlado, ruído e remoção de alimento desviam a matilha. Não há resistência sobrenatural.
+Materiais
+Pele e presas simples; valor maior como criação, guarda e estudo de comportamento.
+Vínculo
+Domesticação gradual com alimento, limites e grupo. Indivíduos criados sozinhos desenvolvem ansiedade.
+Variante e gancho
+Matilhas próximas a seitas começam a imitar formações de patrulha.
+
+Cavalo Espiritual
+Comum • Fogo • Reinos 1–3
+Campo
+Conteúdo de design
+Nicho e habitat
+Rebanhos de planície e criação humana. Transporta sementes, pessoas e qi térmico entre regiões.
+Comportamento
+Social, sensível ao humor do cavaleiro e propenso a fugir de ambientes saturados de morte.
+Assinatura
+Passo de Faísca mantém velocidade em terreno ruim; Fôlego de Longa Jornada compartilha resistência com o cavaleiro.
+Fraqueza e leitura
+Medo e isolamento anulam técnicas. Orelhas e respiração antecipam pânico.
+Materiais
+Crina de muda para cordas condutoras; esterco aquecido para campos frios.
+Vínculo
+Cuidado diário e treino sem exaustão. A compatibilidade com o cavaleiro vale mais que o potencial bruto.
+Variante e gancho
+Cavalo de Cinzas nasce em campos queimados e encontra caminhos através de incêndios.
+
+Corvo de Três Olhos
+Espiritual • Metal • Reinos 1–4
+Campo
+Conteúdo de design
+Nicho e habitat
+Necrópoles, cidades e campos de batalha. Limpa restos, recolhe objetos e observa fluxos de qi.
+Comportamento
+Bandos astutos, memória facial longa e trocas por objetos brilhantes ou histórias.
+Assinatura
+Terceiro Olho percebe qi oculto; Voz Roubada reproduz frases e sons ouvidos com contexto limitado.
+Fraqueza e leitura
+Reflexos múltiplos confundem o terceiro olho; trilhas falsas podem desviar o bando.
+Materiais
+Pena ocular de muda para talismãs de detecção. Olho removido perde a maior parte do poder.
+Vínculo
+Aceita mensageiros honestos e lembra traições por gerações. Precisa de voo livre e interação com o bando.
+Variante e gancho
+Corvo do Quarto Presságio aparece antes de eventos impossíveis; talvez não seja uma espécie, mas um mensageiro.
+
+
+12. Consequências regionais e facções
+O bestiário ganha peso quando as populações de bestas mudam atividades humanas. O sistema não precisa simular indivíduos fora da tela; tendências discretas por região já criam a sensação de ecossistema.
+Estado populacional
+Efeito sugerido
+Extinta localmente
+Espécie não aparece; surge praga, escassez ou mudança de cadeia alimentar.
+Rara
+Encontros viram rumores e missões; materiais disparam de preço.
+Estável
+Taxa normal de encontro e economia.
+Abundante
+Mais avistamentos, conflitos e oportunidades de coleta.
+Surto ou migração
+Evento temporário altera rotas, clima, segurança e comércio.
+
+12.1 Relações de facção
+Facção-tipo
+Interesse
+Conflito possível
+Seita ortodoxa
+Proteção oficial de divinas, coleta regulamentada.
+Hipocrisia, monopólio de materiais ou caça encoberta.
+Seita não ortodoxa
+Contratos pragmáticos e técnicas de sangue.
+Eficiência pode cruzar limites éticos.
+Clã de domadores
+Criação, linhagem e comércio de companheiros.
+Endogamia, posse, fraude de potencial e sequestro.
+Aldeias e caravanas
+Segurança, fertilidade, montaria e rotas.
+Proteção de pessoas pode ameaçar espécies locais.
+Alquimistas e ferreiros
+Materiais consistentes e raros.
+Mercado incentiva caça e falsificação.
+Culto ou corrupção
+Mutações e calamidades controladas.
+Transforma ecologia em arma.
+
+12.2 Regra de consequência
+Toda missão central de besta deve alterar pelo menos duas camadas: população, reputação, preço, segurança, acesso territorial, conhecimento ou relação de facção. O resultado aparece no mapa, em diálogos e na disponibilidade de encontros — não apenas em uma mensagem final.
+
+13. Missões-modelo
+Missão
+Escolha central
+Consequências
+O Corredor Branco
+Abrir a fortaleza, desviar os Mamutes do Gelo Eterno ou interromper a migração.
+Comércio imediato versus fertilidade futura; reputação com militares e aldeias.
+A Pena Ausente
+Devolver, usar ou destruir a pena roubada da Garça das Nove Penas.
+Cura regional, técnica rara ou hostilidade divina.
+O Portão Quebrado
+Derrubar barragem, criar passagem ritual ou vender a rota das carpas.
+Energia da cidade, ecologia do rio e ascensão da Carpa do Portão do Dragão.
+Duas Almas, Uma Rota
+Curar a memória do Camelo ou apagar o trauma para atravessar o deserto.
+Rota perdida descoberta versus vínculo e identidade da criatura.
+Fome sob a Mina
+Desviar o Verme Devorador, evacuar e explorar, ou apoiar ataque impossível.
+Mapa regional, sobrevivência da cidade e despertar ancestral.
+O Rei sem Juba
+Restaurar a honra do Leão, revelar a fraude da seita ou tomar seu lugar.
+Pacto divino, crise política ou recompensa material.
+
+13.1 Estrutura de missão de besta
+Rumor ou sintoma: o problema humano aparece antes da criatura.
+Investigação: rastros revelam comportamento, causa e informação contraditória.
+Contato: o jogador encontra a besta em um estado específico, não neutro.
+Decisão: combater, negociar, curar, conduzir, proteger ou explorar.
+Consequência imediata: recompensa, perda, mudança de facção e nível de conhecimento.
+Eco futuro: novo encontro, preço, população, variante ou dívida retorna depois.
+
+14. Ordem de implementação
+Fase
+Escopo
+Entrega verificável
+1 — Dados
+Novos tipos opcionais e cinco espécies-piloto.
+Projeto compila; bestiário antigo continua funcionando.
+2 — Conhecimento
+Estado por save, níveis 0–5, rumores e migração.
+Novo e antigo save carregam sem perda; informações bloqueadas corretamente.
+3 — Interface
+Filtros, abas, silhuetas e ficha detalhada.
+Navegação por teclado, busca e ausência de spoilers.
+4 — Encontros
+Contexto, intenção, rastros e formatos.
+Mesma espécie produz ao menos três cenas distintas.
+5 — Combate
+Habilidades, sinais, fraquezas e moral.
+Cinco pilotos possuem identidade e solução não letal.
+6 — Vínculo
+Necessidades, memória e evolução contextual.
+Companheiro reage a cuidado e escolhas, com feedback claro.
+7 — Mundo
+População, facções, preços e eventos.
+Uma missão altera encontros e diálogo futuro.
+8 — Catálogo
+Migrar as 23 espécies restantes.
+Todas as 28 fichas possuem dados e testes mínimos.
+
+14.1 Espécies-piloto recomendadas
+Central: Coelho de Jade — valida ecologia, coleta renovável e espécie comum útil.
+Norte: Lobo de Presas de Gelo — valida grupo, moral e rastreamento.
+Sul: Pantera da Névoa — valida sinais, fraqueza contextual e caça ritual.
+Leste: Carpa do Portão do Dragão — valida migração, missão e evolução.
+Oeste: Camelo de Duas Almas — valida memória, transporte e solução narrativa.
+14.2 Testes essenciais
+Seleção de encontro respeita região, reino, contexto e pesos sem retornar catálogo vazio indevidamente.
+Migração de save é idempotente e preserva companheiro, espécie e histórico de domesticação.
+Conhecimento nunca revela campo acima do nível permitido.
+Rumor pode ser corrigido e não reaparece como verdade após recarregar.
+Fase de vida libera repertório correto e mantém os limites já existentes.
+Materiais renováveis e de caça têm origem e qualidade distintas.
+Moral encerra combate sem morte e registra o desfecho certo.
+Filtros combinados, busca sem acento e navegação por teclado funcionam.
+
+15. Critérios de aceite
+Área
+Critério
+Identidade
+Cada espécie possui nicho, comportamento, técnica de assinatura, sinal, fraqueza contextual, material, vínculo e gancho.
+Descoberta
+O jogador começa com informação incompleta e consegue explicar como cada dado foi obtido.
+Combate
+Pelo menos uma resposta tática e uma solução não letal existem para encontros normais.
+Companheiro
+A origem do vínculo e as necessidades alteram comportamento e progressão.
+Economia
+Material informa origem, uso, renovabilidade e efeito ecológico.
+Mundo
+Missões de besta modificam ao menos duas variáveis persistentes.
+Interface
+O painel diferencia desconhecido, rumor e confirmado sem depender somente de cor.
+Compatibilidade
+Saves e espécies antigas continuam válidos durante a migração.
+Qualidade
+Testes automatizados cobrem geração, conhecimento, migração, fase e desfechos.
+
+15.1 Definição de pronto por espécie
+Uma espécie só é considerada profunda quando seus dados aparecem em pelo menos três sistemas: encontro, bestiário e combate ou vínculo. Texto sem consequência mecânica é lore; regra sem apresentação é invisível. A ficha precisa unir ambos.
+15.2 Métricas de validação
+Jogadores identificam a espécie por comportamento em teste cego de descrição.
+A maioria dos encontros normais termina por mais de um tipo de desfecho.
+Conhecimento reduz consumo de recursos ou risco de forma mensurável.
+Nenhum material obrigatório depende exclusivamente de matar besta divina ou ancestral.
+O bestiário é consultado antes de expedições, não apenas para completar coleção.
+
+16. Prompt pronto para enviar ao Codex
+Objetivo: implementar a primeira etapa do Bestiário Profundo de forma incremental, preservando o comportamento existente e sem tentar entregar todos os sistemas em uma única alteração.
+Analise o repositório Cultivo Xuanhuan antes de editar. Use como base os arquivos atuais de bestiário, painel, companheiro, mundo, testes de bestas e GDD.Implemente somente a Fase 1 do GDD do Bestiário Profundo:1. Preserve todos os campos e comportamentos atuais de EspecieBesta.2. Crie tipos opcionais para habitat, papel ecológico, dieta, atividade, estrutura social, temperamento, inteligência, ameaça, habilidades, resistências, fraquezas, materiais, domesticação, variantes, impacto mundial e entradas de códice.3. Preencha esses campos para cinco pilotos: Coelho de Jade, Lobo de Presas de Gelo, Pantera da Névoa, Carpa do Portão do Dragão e Camelo de Duas Almas, seguindo as fichas deste documento.4. Exiba os novos dados no painel em uma área de detalhe simples, sem redesenhar toda a interface e sem revelar dados que ainda não possuem sistema de descoberta.5. Mantenha compatibilidade com saves e chamadas existentes.6. Atualize ou crie testes para validar os novos dados, a compilação e a ausência de regressões.7. Não implemente ainda população dinâmica, rumores, migração, IA de combate ou novas espécies.Antes de alterar, apresente um plano curto com os arquivos que serão tocados. Depois, execute os testes existentes e informe resultados, limitações e próximos passos. Não faça push nem merge sem autorização explícita.
+16.1 Próximos prompts
+Fase 2: estado de conhecimento, rumores, migração de save e bloqueio de informações.
+Fase 3: nova navegação do painel, filtros e páginas de espécimes.
+Fases 4–5: encontros contextuais, habilidades, sinais, fraquezas e moral.
+Fases 6–7: memória, necessidades, população regional e consequências de facção.
+Fase 8: migração das outras 23 espécies e revisão de equilíbrio.
+Apêndice A — Inventário-base
+Este documento foi alinhado ao estado observado da branch main: 28 espécies, cinco regiões, cinco linhagens, quatro fases de vida, encontros ponderados, ovos de herança e sistema de companheiro com vínculo e evolução. Arquivos de referência: src/game/bestiary.ts, src/renderer/ui/bestiaryPanel.ts, src/game/companion.ts, src/game/world.ts, scripts/testar-bestas.js e docs/GDD.md.
+

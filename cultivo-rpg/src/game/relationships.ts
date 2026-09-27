@@ -9,6 +9,8 @@ import { chance, inteiro } from './rng';
 import { influenciaPessoal } from './influence';
 import { doFamilia } from './world';
 import { fatorRelacoesTracos } from './lifeTraits';
+import type { PapelCompanheiro } from './companionRoles';
+import { INTERACOES_COMPANHEIRO, deixarJornada, descreverCompanheiro, processarCompanheiros } from './journeyCompanions';
 
 /** docs/Sistema-de-vida.md — Relacionamentos. */
 export type TipoRelacao =
@@ -24,7 +26,8 @@ export type TipoRelacao =
   | 'Irmão(ã)'
   | 'Mãe/Pai'
   | 'Vassalo'
-  | 'Discípulo';
+  | 'Discípulo'
+  | 'Companheiro de Jornada';
 
 /** Família de sangue: nada de namoro, casamento ou término. */
 export function ehFamilia(r: Relacao): boolean {
@@ -46,6 +49,10 @@ export interface Relacao {
   relacao: number;
   /** Só para filhos: grau da raiz espiritual sorteada. */
   raizGrau?: number;
+  /** Companheiro de Jornada (journeyCompanions.ts): papel no grupo, caminho e lealdade (0–100). */
+  papel?: PapelCompanheiro;
+  caminho?: 'ortodoxo' | 'demoniaco';
+  lealdade?: number;
 }
 
 export const ENERGIA_INTERACAO = 1;
@@ -85,7 +92,8 @@ export function descreverRelacao(r: Relacao): string {
   if (r.tipo === 'Filho(a)') {
     return `${Math.floor(r.idade)} anos · Raiz ${r.raizGrau} (${grauRaizInfo(r.raizGrau ?? 1).nome})`;
   }
-  return `${Math.floor(r.idade)} anos · ${descreverCultivo(r.rank, r.estagio)} · Aparência ${r.aparencia} · Compat. elemental ${r.compatibilidadeElemental}`;
+  const base = `${Math.floor(r.idade)} anos · ${descreverCultivo(r.rank, r.estagio)} · Aparência ${r.aparencia} · Compat. elemental ${r.compatibilidadeElemental}`;
+  return r.papel ? `${base} · ${descreverCompanheiro(r)}` : base;
 }
 
 export interface Interacao {
@@ -258,6 +266,7 @@ export const INTERACOES: Interacao[] = [
     executar: (c, r) => {
       const eraParceiro = ehParceiro(r) || r.tipo === 'Namorado(a)';
       if (eraParceiro) {
+        deixarJornada(r);
         r.tipo = 'Ex';
         r.relacao = Math.min(r.relacao, 20);
         return [`Você e ${r.nome} se separam. ${r.nome} agora é seu/sua ex.`];
@@ -267,6 +276,7 @@ export const INTERACOES: Interacao[] = [
       return [`Você corta os laços com ${r.nome}. Vocês não se falam mais.`];
     },
   },
+  ...INTERACOES_COMPANHEIRO,
 ];
 
 /** Relações esfriam com o tempo; filhos crescem; Companheiros de Dao cultivam junto; vassalos pagam tributo. */
@@ -305,10 +315,12 @@ export function passarTempoRelacoes(character: Character, meses: number): string
   // Quem se sente abandonado de verdade vai embora.
   for (const p of parceiros) {
     if (p.relacao <= 10) {
+      deixarJornada(p);
       p.tipo = 'Ex';
       mensagens.push(`${p.nome} deixou você.`);
     }
   }
+  mensagens.push(...processarCompanheiros(character, estacoes));
   return mensagens;
 }
 

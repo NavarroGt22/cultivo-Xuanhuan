@@ -60,10 +60,12 @@ export function precisaTribulacao(state: CultivationState): boolean {
   return state.rank < REINOS.length && state.estagio >= reino.estagios && state.progresso >= 100;
 }
 
-/** Ganhos positivos são divididos por 1,8 a cada rank: reinos altos levam séculos, como no GDD. */
+/** Ganhos positivos são divididos por 1,7 a cada rank: reinos altos levam séculos, como no GDD. */
+export const DIVISOR_POR_RANK = 1.7;
+
 export function progressoEfetivo(state: CultivationState, pontos: number): number {
   if (pontos <= 0) return pontos;
-  return Math.round((pontos / Math.pow(1.8, state.rank - 1)) * 10) / 10;
+  return Math.round((pontos / Math.pow(DIVISOR_POR_RANK, state.rank - 1)) * 10) / 10;
 }
 
 /** Soma progresso e sobe de estágio; no último estágio do rank, trava em 100% até a Tribulação. */

@@ -18,6 +18,10 @@ import { especieParaFamilia } from './bestiary';
 import { Noivado, arranjarNoivado } from './betrothal';
 import type { GuerraClas } from './clanWar';
 import type { Feito } from './lifeTraits';
+import { bonusAtributosCompanheiros } from './companionRoles';
+import type { ConhecimentoBesta } from './beastKnowledge';
+import { NaturezaQi, sortearNaturezaQi } from './qiNature';
+import type { EstadoNarrativo, HistoriaId } from './narrative';
 import type { Relacao } from './relationships';
 import type { Faccao } from './faction';
 
@@ -74,6 +78,19 @@ export interface Character {
   tracosVida?: string[];
   /** Reputação e cotas com os grandes grupos mercadores (merchantGroups.ts). */
   mercadores?: Record<string, { reputacao: number; cotas: number }>;
+  /** O que você sabe de cada espécie de besta, pelo id (beastKnowledge.ts). */
+  conhecimentoBestas?: Record<string, ConhecimentoBesta>;
+  /** Reputação (−100 a 100) com cada Seita Suprema, pelo nome (supremeSects.ts). */
+  reputacaoSupremas?: Record<string, number>;
+  /**
+   * Natureza do Qi (qiNature.ts). Ausente = save antigo com escolha pendente — nunca sorteada
+   * em silêncio depois da criação.
+   */
+  naturezaQi?: NaturezaQi;
+  /** História escolhida na criação (narrative.ts); ausente = "História do Pequeno Herói". */
+  historia?: HistoriaId;
+  /** Estado da campanha narrativa roteirizada, se houver (narrative.ts). */
+  narrativa?: EstadoNarrativo;
   /** Nome de arquivo em /assets para o retrato do protagonista (opcional). */
   retrato?: string;
   /** Marcadores de história (eventos únicos, rival, companheiro etc.). */
@@ -88,6 +105,8 @@ export interface CharacterCreationOptions {
   raizEspiritual: SpiritualRoot;
   atributosDistribuidos: Attributes;
   retrato?: string;
+  /** Força a natureza do Qi (testes, histórias roteirizadas); sem valor = sorteada pelo corpo. */
+  naturezaQi?: NaturezaQi;
 }
 
 export const SLOTS_POR_TIPO: Record<EquipmentType, number> = {
@@ -141,6 +160,7 @@ export function createCharacter(opcoes: CharacterCreationOptions): Character {
     retrato: opcoes.retrato,
     flags: {},
     noivado: arranjarNoivado(opcoes.origem, opcoes.genero),
+    naturezaQi: opcoes.naturezaQi ?? sortearNaturezaQi(opcoes.genero),
   };
 
   if (opcoes.origem.familiaDomadora) {
@@ -169,6 +189,7 @@ export function getEffectiveAttributes(character: Character): Attributes {
     character.atributosBase,
     ...character.equipamentos.map((item) => item.bonusAtributos),
     bonusDeEstilos(character.estilos),
+    bonusAtributosCompanheiros(character.relacoes),
   );
 }
 

@@ -25,6 +25,11 @@ import { NOME_TIPO_FACCAO } from './regionalFactions';
 import type { MundoState } from './worldState';
 import { fatorEmboscadaTracos, fatorVingancaTracos } from './lifeTraits';
 import { quantidadeItem } from './inventory';
+import { modificadorTribulacaoKarma, nivelKarma } from './karma';
+import { estacaoAtual, picoDaEstacao } from './seasons';
+import { PAPEIS } from './companionRoles';
+import { companheirosDeJornada, fatorEmboscadaCompanheiros, gerarCompanheiroErrante, limiteCompanheiros } from './journeyCompanions';
+import { HOSTIL, ALIADA, reputacaoSuprema, supremaHostil, supremasDaRegiao } from './supremeSects';
 import { GRAU_MINIMO_DESPERTAR, podeDespertar, sortearIdentidade } from './soulAwakening';
 import { achadoDeHeranca, herancasPorAlinhamento, rolarTierHeranca } from './inheritance';
 import { especieDeOvo, especieParaEncontro, rankNascimento, rankSelvagem } from './bestiary';
@@ -361,14 +366,21 @@ function gerarTribulacao(ctx: Contexto): StoryNode {
   const cultivo = ctx.character.cultivo;
   const reinoAtual = getRealm(cultivo);
   const proximo = REINOS[cultivo.rank] ?? reinoAtual;
-  const dificuldade = dificuldadeTribulacao(cultivo);
+  const pesoKarma = modificadorTribulacaoKarma(ctx.character);
+  const dificuldade = dificuldadeTribulacao(cultivo) + pesoKarma;
+  const avisoKarma =
+    pesoKarma > 0
+      ? `\n\nO Céu não esqueceu o que você fez. Seu karma está ${nivelKarma(ctx.character).nome.toLowerCase()}, e os raios caem mais pesados por causa disso (+${pesoKarma} na dificuldade).`
+      : pesoKarma < 0
+        ? `\n\nAs vidas que você salvou pesam a seu favor: os raios parecem hesitar (${pesoKarma} na dificuldade).`
+        : '';
 
   const texto =
-    cultivo.rank === 1
+    (cultivo.rank === 1
       ? 'Seu Chakra está no limite. Para romper para o First Origin Realm, você precisa comprimir essa energia bruta até ela se condensar em Star — e o céu vai testar se você é dign' +
         g(ctx, 'o', 'a') +
         '.\n\nNuvens negras se reúnem sobre sua cabeça. O primeiro trovão ecoa.'
-      : `Você atingiu o ápice do ${reinoAtual.nome}. Nuvens de tribulação se acumulam por quilômetros, e cultivadores ao redor fogem para não serem pegos no fogo cruzado.\n\nDo outro lado dos raios está o ${proximo.nome}.`;
+      : `Você atingiu o ápice do ${reinoAtual.nome}. Nuvens de tribulação se acumulam por quilômetros, e cultivadores ao redor fogem para não serem pegos no fogo cruzado.\n\nDo outro lado dos raios está o ${proximo.nome}.`) + avisoKarma;
 
   const sucesso: Desfecho = {
     texto:
@@ -668,7 +680,7 @@ const EVENTOS: ModeloEvento[] = [
   },
   {
     id: 'bandidos',
-    peso: (ctx) => (ctx.idade >= 13 ? 0.9 * protecaoFaccao(ctx.character) * fatorEmboscada(ctx.character) * fatorEmboscadaTracos(ctx.character) : 0),
+    peso: (ctx) => (ctx.idade >= 13 ? 0.9 * protecaoFaccao(ctx.character) * fatorEmboscada(ctx.character) * fatorEmboscadaTracos(ctx.character) * fatorEmboscadaCompanheiros(ctx.character) : 0),
     gerar: (ctx) => {
       const chefe = `${gerarNomePessoa()}, o ${escolher(['Cicatriz', 'Lâmina Torta', 'Sem Orelha', 'Lobo Cinzento'])}`;
       return no(ctx, 'bandidos', 'Emboscada na Estrada', `Na estrada para ${escolher(ctx.regiao.cidades)}, três bandidos saem do mato. O líder, ${chefe}, estende a mão: "Pedras ou sangue."`, [
@@ -804,10 +816,14 @@ const EVENTOS: ModeloEvento[] = [
     },
     gerar: (ctx) => {
       const c = ctx.character;
-      const suprema = c.raizEspiritual.grau >= 7 || c.reputacao >= 40;
-      const seitaSuprema = escolher(ctx.regiao.seitasSupremas);
-      const ortodoxa = suprema ? seitaSuprema.ortodoxa : chance(0.7);
-      const nome = suprema ? seitaSuprema.nome : gerarNomeSeita(ortodoxa);
+      const candidatas = supremasDaRegiao(c.local.regiao)
+        .filter((s) => reputacaoSuprema(c, s.nome) > HOSTIL)
+        .sort((a, b) => reputacaoSuprema(c, b.nome) - reputacaoSuprema(c, a.nome));
+      const seitaSuprema = candidatas.length ? (chance(0.6) ? candidatas[0] : escolher(candidatas)) : null;
+      const aliada = !!seitaSuprema && reputacaoSuprema(c, seitaSuprema.nome) >= ALIADA;
+      const suprema = !!seitaSuprema && (c.raizEspiritual.grau >= 7 || c.reputacao >= 40 || aliada);
+      const ortodoxa = suprema && seitaSuprema ? seitaSuprema.ortodoxa : chance(0.7);
+      const nome = suprema && seitaSuprema ? seitaSuprema.nome : gerarNomeSeita(ortodoxa);
       const estipendio = suprema ? 5 : 2;
       const saindoDeCla = c.afiliacao.tipo === 'cla';
 
@@ -817,6 +833,7 @@ const EVENTOS: ModeloEvento[] = [
           afiliacao: { tipo: suprema ? 'seita-suprema' : 'seita', nome, ortodoxa, posto: 'Discípulo Externo', estipendio },
           alinhamento: ortodoxa ? 10 : -15,
           reputacao: suprema ? 10 : 4,
+          ...(suprema ? { reputacaoSuprema: { [nome]: 15 } } : {}),
         },
       };
 
@@ -830,7 +847,7 @@ const EVENTOS: ModeloEvento[] = [
           ? {
               texto: 'Tentar recusar com educação.',
               teste: { atributo: 'espirito', dificuldade: dif(ctx, 20) },
-              resultado: { texto: 'O emissário estreita os olhos — mas aceita. Por enquanto.', efeitos: { reputacao: 3, flags: { recrutamentoProximo: ctx.turno + 8 } } },
+              resultado: { texto: 'O emissário estreita os olhos — mas aceita. Por enquanto.', efeitos: { reputacao: 3, reputacaoSuprema: { [nome]: -8 }, flags: { recrutamentoProximo: ctx.turno + 8 } } },
               falha: { ...aceitar, texto: 'O emissário nem responde. No dia seguinte, você está a caminho da seita.' },
             }
           : {
@@ -942,21 +959,248 @@ const EVENTOS: ModeloEvento[] = [
               contribuicao: -c.contribuicao,
               reputacao: 5,
               alinhamento: -5,
+              reputacaoSuprema: { [suprema.nome]: 15 },
               flags: { aliciadoIdade: c.idadeMeses, traiuSeita: c.afiliacao.nome },
             },
           },
         },
         {
           texto: `Recusar: "Meu lugar é no ${c.afiliacao.nome}."`,
-          resultado: { texto: `O ancião ri. "Lealdade é um luxo caro." Mas a notícia da sua recusa chega aos anciões da sua seita, que passam a olhar você com outros olhos.`, efeitos: { contribuicao: 30, reputacao: 3, alinhamento: 3, flags: { aliciadoIdade: c.idadeMeses } } },
+          resultado: { texto: `O ancião ri. "Lealdade é um luxo caro." Mas a notícia da sua recusa chega aos anciões da sua seita, que passam a olhar você com outros olhos.`, efeitos: { contribuicao: 30, reputacao: 3, alinhamento: 3, reputacaoSuprema: { [suprema.nome]: -5 }, flags: { aliciadoIdade: c.idadeMeses } } },
         },
         {
           texto: 'Fingir interesse e arrancar informações (Inteligência).',
           teste: { atributo: 'inteligencia', dificuldade: dif(ctx, 15) },
           resultado: { texto: 'Você volta com os planos da Suprema para a região — e os anciões da sua seita pagam bem por eles.', efeitos: { contribuicao: 50, pedras: pedras(ctx, 15), flags: { aliciadoIdade: c.idadeMeses } } },
-          falha: { texto: 'O ancião percebe o jogo. "Esperto demais para o próprio bem." Você sai com uma marca de palma nas costas.', efeitos: { danoPercentual: 30, flags: { aliciadoIdade: c.idadeMeses } } },
+          falha: { texto: 'O ancião percebe o jogo. "Esperto demais para o próprio bem." Você sai com uma marca de palma nas costas.', efeitos: { danoPercentual: 30, reputacaoSuprema: { [suprema.nome]: -15 }, flags: { aliciadoIdade: c.idadeMeses } } },
         },
       ], 3), anciao);
+    },
+  },
+
+  // --- Reputação com as Seitas Supremas (GDD 15.1) ---
+  {
+    id: 'suprema-hostil',
+    peso: (ctx) => {
+      if (ctx.idade < 14 || ctx.turno < Number(flag(ctx, 'supremaHostilProximo') ?? 0)) return 0;
+      return supremaHostil(ctx.character) ? 1.5 : 0;
+    },
+    gerar: (ctx) => {
+      const suprema = supremaHostil(ctx.character)!;
+      const lider = gerarNomePessoa();
+      const tributo = pedras(ctx, 20);
+      const proximo = { supremaHostilProximo: ctx.turno + 6 };
+      return falando(no(ctx, 'suprema-hostil', 'Discípulos da Seita Suprema', `Cinco discípulos com o emblema da **${suprema.nome}** fecham a estrada. ${lider}, o mais velho, cospe no chão. "A seita não esqueceu você. Hoje a gente cobra."`, [
+        {
+          texto: 'Lutar contra eles.',
+          combate: inimigo(ctx, `${lider} e os discípulos da ${suprema.nome}`, 'guerreiro', 1.1),
+          resultado: { texto: `Os discípulos fogem carregando ${lider}. A notícia de que alguém humilhou a ${suprema.nome} corre pela região.`, efeitos: { reputacao: 8, reputacaoSuprema: { [suprema.nome]: -5 }, flags: proximo } },
+          falha: { texto: 'Eles te deixam caído na lama, sem as pedras e com um aviso: "Da próxima vez, não levantamos você."', efeitos: { pedras: -Math.min(tributo, ctx.character.inventario.pedrasEspirituais), flags: proximo } },
+        },
+        {
+          texto: 'Fugir pelos telhados (Destreza).',
+          teste: { atributo: 'destreza', dificuldade: dif(ctx, 16) },
+          resultado: { texto: 'Quando eles chegam ao fim da rua, você já sumiu.', efeitos: { flags: proximo } },
+          falha: { texto: 'Um talismã de amarração te derruba no meio do salto.', efeitos: { danoPercentual: 35, flags: proximo } },
+        },
+        {
+          texto: `Pagar ${tributo} pedras de "desculpas" à seita.`,
+          requisito: { pedras: tributo },
+          resultado: { texto: `${lider} conta as pedras devagar. "A seita vai saber que você aprendeu o seu lugar."`, efeitos: { pedras: -tributo, reputacao: -3, reputacaoSuprema: { [suprema.nome]: 15 }, flags: proximo } },
+        },
+      ], 2), lider);
+    },
+  },
+  {
+    id: 'suprema-pedido',
+    peso: (ctx) => {
+      if (ctx.idade < 16 || ctx.turno < Number(flag(ctx, 'supremaPedidoProximo') ?? 0)) return 0;
+      return supremasDaRegiao(ctx.character.local.regiao).some((s) => reputacaoSuprema(ctx.character, s.nome) > HOSTIL) ? 0.7 : 0;
+    },
+    gerar: (ctx) => {
+      const c = ctx.character;
+      const suprema = escolher(supremasDaRegiao(c.local.regiao).filter((s) => reputacaoSuprema(c, s.nome) > HOSTIL));
+      const rivais = supremasDaRegiao(c.local.regiao).filter((s) => s.ortodoxa !== suprema.ortodoxa);
+      const irritar = Object.fromEntries(rivais.map((s) => [s.nome, -6]));
+      const emissario = gerarNomePessoa();
+      const proximo = { supremaPedidoProximo: ctx.turno + 5 };
+      const ganho = { [suprema.nome]: 12, ...irritar };
+      if (suprema.ortodoxa) {
+        const besta = escolher(ctx.regiao.fauna);
+        return falando(no(ctx, 'suprema-pedido', 'Um Pedido da Seita Suprema', `${emissario}, emissário da **${suprema.nome}**, procura você. "Uma ${besta} enlouquecida ameaça uma vila sob nossa proteção, e nossos discípulos estão longe. A seita lembraria de quem ajudou."`, [
+          {
+            texto: 'Caçar a besta pela seita.',
+            combate: inimigo(ctx, besta, 'besta', 1.0),
+            resultado: { texto: `A vila está a salvo. A ${suprema.nome} manda uma carta de agradecimento com o selo da seita.`, efeitos: { pedras: pedras(ctx, 10), reputacao: 5, alinhamento: 4, reputacaoSuprema: ganho, flags: proximo } },
+            falha: { texto: 'Você recua ferido; os discípulos da seita terminam o trabalho e olham você com desdém.', efeitos: { reputacaoSuprema: { [suprema.nome]: -3 }, flags: proximo } },
+          },
+          {
+            texto: 'Organizar a defesa da vila (Inteligência).',
+            teste: { atributo: 'inteligencia', dificuldade: dif(ctx, 15) },
+            resultado: { texto: 'Armadilhas e fogueiras mantêm a besta longe até os discípulos chegarem.', efeitos: { pedras: pedras(ctx, 6), alinhamento: 3, reputacaoSuprema: ganho, flags: proximo } },
+            falha: { texto: 'A defesa desmorona; a vila perde metade das plantações.', efeitos: { flags: proximo } },
+          },
+          { texto: 'Recusar: "Não sou servo da seita."', resultado: { texto: `${emissario} anota seu nome sem dizer nada.`, efeitos: { reputacaoSuprema: { [suprema.nome]: -4 }, flags: proximo } } },
+        ], 2), emissario);
+      }
+      const testemunha = gerarNomePessoa();
+      return falando(no(ctx, 'suprema-pedido', 'Um Pedido da Seita Suprema', `${emissario}, da **${suprema.nome}**, fala sem rodeios: "${testemunha} viu o que não devia. Faça ele sumir e a seita abre portas que você nem sabe que existem."`, [
+        {
+          texto: `Silenciar ${testemunha}.`,
+          resultado: { texto: `Ninguém mais vai ouvir falar de ${testemunha}. Na ${suprema.nome}, seu nome passa a circular com respeito.`, efeitos: { pedras: pedras(ctx, 15), alinhamento: -12, feitos: { mortes: 1 }, reputacaoSuprema: { ...ganho, [suprema.nome]: 15 }, flags: proximo } },
+        },
+        {
+          texto: `Avisar ${testemunha} para fugir e mentir para a seita (Inteligência).`,
+          teste: { atributo: 'inteligencia', dificuldade: dif(ctx, 17) },
+          resultado: { texto: `${testemunha} some no mundo, vivo. ${emissario} acredita na sua história — por enquanto.`, efeitos: { alinhamento: 8, reputacaoSuprema: { [suprema.nome]: 5 }, flags: proximo } },
+          falha: { texto: 'A seita descobre a mentira. Você vira o próximo nome da lista.', efeitos: { alinhamento: 5, reputacaoSuprema: { [suprema.nome]: -25 }, flags: proximo } },
+        },
+        { texto: 'Recusar.', resultado: { texto: `${emissario} sorri, frio. "Covardes vivem mais. Às vezes."`, efeitos: { reputacaoSuprema: { [suprema.nome]: -6 }, flags: proximo } } },
+      ], 2), emissario);
+    },
+  },
+
+  // --- Companheiros de Jornada (GDD 15.3) ---
+  {
+    id: 'companheiro-estrada',
+    peso: (ctx) => {
+      const c = ctx.character;
+      if (ctx.idade < 14 || !flag(ctx, 'raizRevelada') || ctx.turno < Number(flag(ctx, 'companheiroProximo') ?? 0)) return 0;
+      return companheirosDeJornada(c).length < limiteCompanheiros(c) ? 0.6 : 0;
+    },
+    gerar: (ctx) => {
+      const novo = gerarCompanheiroErrante(ctx.character);
+      const papel = PAPEIS[novo.papel!];
+      const caminho = novo.caminho === 'demoniaco' ? 'Os olhos dele têm o brilho vermelho de quem segue o caminho demoníaco.' : 'Carrega o emblema gasto de uma seita ortodoxa que já não existe.';
+      const proximo = { companheiroProximo: ctx.turno + 8 };
+      return falando(no(ctx, 'companheiro-estrada', 'Um Companheiro na Estrada', `Na estalagem, ${novo.nome} — ${papel.nome.toLowerCase()}, ${descreverCultivo(novo.rank, novo.estagio)} — senta à sua mesa sem pedir licença. ${caminho} "Estradas longas pedem companhia. Eu ${papel.descricao.split(':')[0]}. Você segue para onde?"`, [
+        { texto: `Aceitar ${novo.nome} no grupo.`, resultado: { texto: `Vocês brindam com vinho barato. ${papel.nome} no grupo: ${papel.descricao}.`, efeitos: { companheiroJornada: novo, flags: proximo } } },
+        {
+          texto: 'Testar a lealdade antes (Inteligência).',
+          teste: { atributo: 'inteligencia', dificuldade: dif(ctx, 14) },
+          resultado: { texto: `Algumas perguntas bem colocadas e você sabe exatamente com quem está lidando. ${novo.nome} respeita isso.`, efeitos: { companheiroJornada: { ...novo, lealdade: 65 }, flags: proximo } },
+          falha: { texto: `${novo.nome} percebe a desconfiança e vai embora ofendido.`, efeitos: { flags: proximo } },
+        },
+        { texto: 'Seguir sozinho.', resultado: { texto: 'Alguns caminhos se trilham melhor sem ninguém ao lado.', efeitos: { flags: proximo } } },
+      ], 1), novo.nome);
+    },
+  },
+  {
+    id: 'companheiro-pedido',
+    peso: (ctx) => {
+      if (ctx.turno < Number(flag(ctx, 'pedidoCompanheiroProximo') ?? 0)) return 0;
+      return companheirosDeJornada(ctx.character).length ? 0.8 : 0;
+    },
+    gerar: (ctx) => {
+      const r = escolher(companheirosDeJornada(ctx.character));
+      const proximo = { pedidoCompanheiroProximo: ctx.turno + 6 };
+      if (r.caminho === 'demoniaco') {
+        const mercador = gerarNomePessoa();
+        return falando(no(ctx, 'companheiro-pedido', `O Pedido de ${r.nome}`, `${r.nome} aponta para a caravana de ${mercador}. "Guardas preguiçosos, carga cheia. Uma noite de trabalho e ficamos ricos. Você está comigo ou não?"`, [
+          {
+            texto: 'Assaltar a caravana juntos.',
+            combate: inimigo(ctx, `Guardas de ${mercador}`, 'guerreiro', 0.85),
+            resultado: { texto: `${r.nome} ri alto enquanto divide o saque. "Agora sim, um companheiro de verdade."`, efeitos: { pedras: pedras(ctx, 14), alinhamento: -8, lealdade: { id: r.id, delta: 18 }, flags: proximo } },
+            falha: { texto: 'Os guardas eram menos preguiçosos do que pareciam. Vocês fogem de mãos vazias.', efeitos: { danoPercentual: 25, lealdade: { id: r.id, delta: 5 }, flags: proximo } },
+          },
+          { texto: 'Recusar: "Não roubo de quem trabalha."', resultado: { texto: `${r.nome} cospe no chão. "Santinho."`, efeitos: { alinhamento: 3, lealdade: { id: r.id, delta: -12 }, flags: proximo } } },
+        ], 2), r.nome);
+      }
+      const vila = escolher(ctx.regiao.cidades);
+      return falando(no(ctx, 'companheiro-pedido', `O Pedido de ${r.nome}`, `${r.nome} ouviu que bandidos cercam uma vila perto de ${vila}. "Ninguém mais vai ajudar essa gente. Eu vou — com ou sem você."`, [
+        {
+          texto: 'Ir junto defender a vila.',
+          combate: inimigo(ctx, 'Bandidos da estrada', 'guerreiro', 0.9),
+          resultado: { texto: `Os aldeões choram de alívio. ${r.nome} bate no seu ombro: "Eu sabia que podia contar com você."`, efeitos: { reputacao: 4, alinhamento: 6, lealdade: { id: r.id, delta: 18 }, flags: proximo } },
+          falha: { texto: 'Vocês salvam metade da vila antes de recuar. Não foi o bastante, mas foi alguma coisa.', efeitos: { danoPercentual: 25, lealdade: { id: r.id, delta: 6 }, flags: proximo } },
+        },
+        { texto: 'Recusar: "Não é problema nosso."', resultado: { texto: `${r.nome} vai sozinho e volta ferido, calado, por dias.`, efeitos: { lealdade: { id: r.id, delta: -15 }, flags: proximo } } },
+      ], 2), r.nome);
+    },
+  },
+
+  // --- Estações e clima espiritual (GDD 15.2): janelas que só abrem numa época do ano ---
+  {
+    id: 'lotus-inverno',
+    peso: (ctx) => (estacaoAtual(ctx.mundo).id === 'inverno' && flag(ctx, 'raizRevelada') ? 0.6 : 0),
+    gerar: (ctx) => {
+      const agua = ctx.character.raizEspiritual.elementos.includes('agua');
+      return no(ctx, 'lotus-inverno', 'O Lótus de Gelo', `No pico do inverno, o lago congelado ${ctx.regiao.preposicao === 'na' ? 'da' : 'do'} ${ctx.regiao.nome} revela um Lótus de Gelo — flor que só se abre com o frio mais intenso do ano.${agua ? ' Sua raiz de Água vibra só de olhar para ela.' : ''}`, [
+        {
+          texto: 'Meditar sobre o gelo ao lado do lótus (Constituição).',
+          teste: { atributo: 'constituicao', dificuldade: dif(ctx, 15) },
+          resultado: { texto: 'O frio atravessa seus ossos e se converte em qi puro.', efeitos: { progresso: ganho(ctx, agua ? 8 : 4) } },
+          falha: { texto: 'O gelo racha sob você. Você sai do lago tremendo, com metade do corpo dormente.', efeitos: { danoPercentual: 25 } },
+        },
+        { texto: 'Colher o lótus e guardar a erva.', resultado: { texto: 'Uma erva de séculos, conservada pelo gelo.', efeitos: { itens: [{ id: 'erva-500-anos', quantidade: 1 }] } } },
+      ], 2);
+    },
+  },
+  {
+    id: 'flor-sol',
+    peso: (ctx) => (estacaoAtual(ctx.mundo).id === 'verao' && flag(ctx, 'raizRevelada') ? 0.6 : 0),
+    gerar: (ctx) => {
+      const fogo = ctx.character.raizEspiritual.elementos.includes('fogo');
+      const guardiao = escolher(ctx.regiao.fauna);
+      return no(ctx, 'flor-sol', 'A Flor do Sol Poente', `O verão mais quente em anos fez abrir, num penhasco, a Flor do Sol Poente. Uma ${guardiao} dorme enrolada em volta dela.${fogo ? ' Seu qi de Fogo se agita como se reconhecesse a flor.' : ''}`, [
+        {
+          texto: `Enfrentar a ${guardiao}.`,
+          combate: inimigo(ctx, guardiao, 'besta', 1.0),
+          resultado: { texto: 'A flor é sua — e o núcleo da besta também.', efeitos: { itens: [{ id: 'erva-500-anos', quantidade: 1 }, { id: 'nucleo-besta', quantidade: 1 }], progresso: ganho(ctx, fogo ? 5 : 2) } },
+          falha: { texto: 'A besta acorda de mau humor. Você desce o penhasco rolando.', efeitos: { danoPercentual: 30 } },
+        },
+        {
+          texto: 'Absorver o calor da flor sem arrancá-la (Espírito).',
+          teste: { atributo: 'espirito', dificuldade: dif(ctx, 15) },
+          resultado: { texto: 'O calor dourado corre pelos seus meridianos e queima parte da toxina acumulada.', efeitos: { progresso: ganho(ctx, fogo ? 7 : 3), toxina: -10 } },
+          falha: { texto: 'O calor é demais: você fica com febre por dias.', efeitos: { danoPercentual: 15 } },
+        },
+        { texto: 'Deixar a flor em paz.', resultado: { texto: 'Algumas coisas são mais bonitas onde nasceram.', efeitos: { alinhamento: 2 } } },
+      ], 2);
+    },
+  },
+  {
+    id: 'orvalho-primavera',
+    peso: (ctx) => (estacaoAtual(ctx.mundo).id === 'primavera' && flag(ctx, 'raizRevelada') ? 0.6 : 0),
+    gerar: (ctx) => {
+      const madeira = ctx.character.raizEspiritual.elementos.includes('madeira');
+      return no(ctx, 'orvalho-primavera', 'Chuva de Orvalho Espiritual', `Uma chuva fina e prateada cai sobre a região: orvalho espiritual, que só desce na primavera, quando a Madeira desperta.${madeira ? ' Sua raiz de Madeira bebe cada gota.' : ''}`, [
+        { texto: 'Cultivar ao ar livre, sob a chuva.', resultado: { texto: 'Cada gota carrega um fio de qi. Você cultiva até a chuva parar.', efeitos: { progresso: ganho(ctx, madeira ? 7 : 3) } } },
+        { texto: 'Recolher o orvalho em frascos e vender.', resultado: { texto: 'Alquimistas pagam bem por orvalho da primavera.', efeitos: { pedras: pedras(ctx, 8) } } },
+      ], 1);
+    },
+  },
+  {
+    id: 'colheita-outono',
+    peso: (ctx) => (estacaoAtual(ctx.mundo).id === 'outono' && ctx.idade >= 12 ? 0.6 : 0),
+    gerar: (ctx) => {
+      const preco = pedras(ctx, 6);
+      return no(ctx, 'colheita-outono', 'A Feira da Colheita', 'O outono chegou e as vilas celebram a colheita das ervas espirituais. Barracas vendem ervas frescas pela metade do preço, e fazendeiros procuram braços fortes.', [
+        { texto: `Comprar 3 ervas espirituais (${preco} pedras).`, requisito: { pedras: preco }, resultado: { texto: 'Ervas frescas, ainda com terra nas raízes.', efeitos: { pedras: -preco, itens: [{ id: 'erva-espiritual', quantidade: 3 }] } } },
+        { texto: 'Ajudar na colheita (Força).', teste: { atributo: 'forca', dificuldade: dif(ctx, 12) }, resultado: { texto: 'Um dia de trabalho honesto, pago em pedras e gratidão.', efeitos: { pedras: pedras(ctx, 5), alinhamento: 3 } }, falha: { texto: 'Você torce as costas no terceiro fardo.', efeitos: { danoPercentual: 10 } } },
+        { texto: 'Aproveitar a festa.', resultado: { texto: 'Música, vinho de arroz e lanternas de papel. Às vezes, isso basta.', efeitos: { curaPercentual: 30 } } },
+      ], 1);
+    },
+  },
+  {
+    id: 'selo-inverno',
+    peso: (ctx) => (estacaoAtual(ctx.mundo).id === 'inverno' && picoDaEstacao(ctx.mundo) && ctx.character.cultivo.rank >= 2 ? 0.5 : 0),
+    gerar: (ctx) => {
+      return no(ctx, 'selo-inverno', 'O Selo Enfraquecido', `No coração do inverno, o selo de uma ruína da Era Dourada — que resiste há milênios — enfraquece com o frio. Por poucos dias, a entrada fica aberta. Um guardião de pedra ainda vigia o portão.`, [
+        {
+          texto: 'Entrar antes que o selo se feche.',
+          combate: inimigo(ctx, 'Guardião do Selo', 'besta', 1.1, 1),
+          resultado: { texto: 'Atrás do guardião, a tesouraria esquecida de uma seita extinta.', efeitos: { pedras: pedras(ctx, 25), itens: [{ id: 'erva-1000-anos', quantidade: 1 }], reputacao: 6 } },
+          falha: { texto: 'O guardião te arremessa para fora bem na hora em que o selo se fecha de novo.', efeitos: { danoPercentual: 40 } },
+        },
+        {
+          texto: 'Estudar as inscrições do selo por fora (Inteligência).',
+          teste: { atributo: 'inteligencia', dificuldade: dif(ctx, 17) },
+          resultado: { texto: 'Os padrões da Era Dourada abrem sua mente.', efeitos: { progresso: ganho(ctx, 5), xpProfissao: { inscricao: 20 } } },
+          falha: { texto: 'Os padrões se embaralham diante dos seus olhos.' },
+        },
+        { texto: 'Voltar no próximo inverno.', resultado: { texto: 'O selo vai continuar ali. Você também, se tiver juízo.' } },
+      ], 2);
     },
   },
 

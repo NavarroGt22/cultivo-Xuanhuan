@@ -96,3 +96,42 @@ test('grupos mercadores: cotas pagam dividendos, contratos dão reputação e de
   const casa = MORADIAS[3];
   assert.ok(precoComDesconto(c, casa.preco) < casa.preco);
 });
+
+const { fundarFaccao, membrosDaFamilia, processarFaccao, rendaFaccao, sincronizarFamilia } = require('../dist/game/faction');
+const { talentoNosReinosAltos } = require('../dist/game/stats');
+
+test('facção fundada: a renda cresce com o reino e a fama do fundador; a família entra sozinha', () => {
+  const { c } = novo();
+  c.cultivo.rank = 4; c.reputacao = 100;
+  c.relacoes.push({ id: 'esposa', nome: 'Gu Yu', tipo: 'Cônjuge', idade: 30, relacao: 80, rank: 3, estagio: 1, aparencia: 70, inteligencia: 60, compatibilidadeElemental: 60 });
+  c.relacoes.push({ id: 'filho', nome: 'Shen Zhu', tipo: 'Filho(a)', idade: 8, relacao: 80, rank: 1, estagio: 1, raizGrau: 3 });
+  const mensagens = fundarFaccao(c, 'seita', 'Lótus Celeste');
+  assert.ok(mensagens.some((m) => m.includes('Gu Yu') && m.includes('Shen Zhu')));
+  assert.equal(c.faccao.membros, 10);
+  assert.equal(membrosDaFamilia(c), 2);
+  assert.equal(sincronizarFamilia(c).length, 0, 'não conta a família duas vezes');
+  assert.equal(c.faccao.membros, 10);
+
+  const noQuarto = rendaFaccao(c);
+  c.cultivo.rank = 1;
+  const noPrimeiro = rendaFaccao(c);
+  assert.ok(noQuarto.membros > noPrimeiro.membros * 1.8, 'reino alto rende muito mais por membro');
+  assert.equal(noQuarto.prestigio, Math.floor(c.reputacao / 15));
+
+  c.relacoes.find((r) => r.id === 'esposa').tipo = 'Ex';
+  sincronizarFamilia(c);
+  assert.equal(c.faccao.membros, 9);
+  assert.equal(membrosDaFamilia(c), 1);
+
+  const antes = c.inventario.pedrasEspirituais;
+  processarFaccao(c, 1);
+  assert.ok(c.inventario.pedrasEspirituais > antes);
+});
+
+test('cultivo nos reinos altos: raízes melhores rendem mais quanto mais alto o reino', () => {
+  const raiz = (grau) => ({ grau, tipo: 'unico', elementos: ['agua'] });
+  assert.equal(talentoNosReinosAltos(raiz(3), { rank: 9 }), 1);
+  assert.equal(talentoNosReinosAltos(raiz(5), { rank: 1 }), 1);
+  assert.ok(Math.abs(talentoNosReinosAltos(raiz(5), { rank: 5 }) - 1.32) < 1e-9);
+  assert.ok(talentoNosReinosAltos(raiz(8), { rank: 7 }) > talentoNosReinosAltos(raiz(5), { rank: 7 }));
+});

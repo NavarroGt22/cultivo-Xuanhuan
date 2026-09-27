@@ -26,6 +26,7 @@ import { imagemOpcional } from './ui/assets';
 import { abrirMundo } from './ui/worldPanel';
 import { abrirMercado } from './ui/marketPanel';
 import { abrirBestiario } from './ui/bestiaryPanel';
+import { abrirCodex } from './ui/codexPanel';
 import { confirmar } from './ui/resultView';
 import { torneioAberto } from '../game/tournaments';
 import { criarHerdeiro, herdeirosDisponiveis } from '../game/heirs';
@@ -264,12 +265,12 @@ function desenharJogo(): void {
           ${botaoNav('campos', 'Campos espirituais')}
           ${botaoNav('inventario', 'Inventário')}
         </nav>
-        <div class="sidebar-rodape">${botaoNav('saves', 'Jornadas salvas')}${botaoNav('guia', 'Guia do cultivador')}${botaoNav('bestiario', 'Bestiário')}${botaoNav('opcoes', 'Opções de leitura')}${botaoNav('menu', 'Menu inicial')}</div>
+        <div class="sidebar-rodape">${botaoNav('saves', 'Jornadas salvas')}${botaoNav('guia', 'Guia do cultivador')}${botaoNav('bestiario', 'Bestiário')}${botaoNav('codex', 'Codex')}${botaoNav('opcoes', 'Opções de leitura')}${botaoNav('menu', 'Menu inicial')}</div>
       </aside>
       <div class="area-jogo"><div class="centro-jornada">
         <header class="topbar"><div><span class="eyebrow">O livro da sua vida</span><h1>Sua jornada</h1></div><div class="topbar-direita"><span class="save-status ${avisoSave ? 'erro' : ''}" role="status">${avisoSave ? 'Falha ao salvar' : 'Progresso salvo'}</span><button id="btn-salvar" class="botao-salvar">${icone('salvar')} Salvar</button></div></header>
         ${avisoSave ? `<p class="erro-save" role="alert">${escapeHtml(avisoSave)}</p>` : ''}
-        ${renderHud(character)}
+        ${renderHud(character, historia.mundo)}
         <div class="conteudo-jogo">
           <main class="painel-narrativa" id="narrativa" tabindex="-1">
             <div class="banner-jornada"><div class="paisagem" aria-hidden="true"><div class="sol"></div><div class="montanha distante"></div><div class="montanha media"></div><div class="montanha perto"></div></div>
@@ -331,7 +332,8 @@ function desenharJogo(): void {
 
   document.getElementById('btn-diario')?.addEventListener('click', () => abrirDiario(historia));
   document.getElementById('btn-guia')?.addEventListener('click', abrirGuia);
-  document.getElementById('btn-bestiario')?.addEventListener('click', () => abrirBestiario(character, renderJogo));
+  document.getElementById('btn-bestiario')?.addEventListener('click', () => abrirBestiario(character, renderJogo, historia));
+  document.getElementById('btn-codex')?.addEventListener('click', () => abrirCodex(character, historia));
   document.getElementById('btn-opcoes')?.addEventListener('click', abrirPreferencias);
   document.querySelectorAll<HTMLElement>('[data-abrir]').forEach(botao => botao.addEventListener('click', () => document.getElementById(`btn-${botao.dataset.abrir}`)?.click()));
   document.getElementById('btn-menu')?.addEventListener('click', renderTelaInicial);

@@ -24,6 +24,8 @@ import { grauRaizInfo } from '../../game/spiritualRoot';
 import { LIMIAR_DIGNO, LIMIAR_INDIGNO, TEXTO_STATUS, descreverNoivado, forcaRelativa, tratamento } from '../../game/betrothal';
 import { REINOS } from '../../game/cultivation';
 import { bloqueioLicao, bloqueioMestre, deixarMestre, receberLicao, tipoDeSaida, tornarDiscipulo } from '../../game/mentor';
+import { LEALDADE_TRAICAO, companheirosDeJornada, ehCompanheiroJornada, limiteCompanheiros } from '../../game/journeyCompanions';
+import { LEALDADE_IRMAO, PAPEIS } from '../../game/companionRoles';
 
 /** Pais são gerados uma vez e guardados nas flags. */
 function garantirFamilia(character: Character): void {
@@ -68,14 +70,28 @@ function cartaoPessoa(character: Character, historia: StoryState, r: Relacao): s
   }).join('');
   return `
     <div class="objetivo">
-      <div><strong>${escapeHtml(r.nome)}</strong><small>${escapeHtml(r.tipo)} · Relação ${Math.round(r.relacao)}</small></div>
+      <div><strong>${escapeHtml(r.nome)}</strong><small>${escapeHtml(r.tipo)} · Relação ${Math.round(r.relacao)}${
+        character.faccao?.familia?.includes(r.id) ? ` · membro ${character.faccao.tipo === 'cla' ? 'do' : 'da'} ${escapeHtml(character.faccao.nome)}` : ''
+      }</small></div>
       <p><small>${escapeHtml(descreverRelacao(r))}</small></p>
       <div class="botoes-interacao">${botoes}</div>
     </div>`;
 }
 
+function renderCompanheiros(character: Character, historia: StoryState): string {
+  const grupo = companheirosDeJornada(character);
+  const papeis = Object.values(PAPEIS).map((p) => `<strong>${escapeHtml(p.nome)}</strong> ${escapeHtml(p.descricao.split(': ')[1] ?? p.descricao)}`).join(' · ');
+  return `
+    <h3>Companheiros de jornada (${grupo.length}/${limiteCompanheiros(character)})</h3>
+    <p class="dica">Convide um amigo (relação 50+) ou aceite quem pedir para viajar com você. Cada um tem um papel — ${papeis} —
+      e uma <strong>lealdade</strong> própria: ela cai aos poucos, sobe quando você divide os espólios ou atende aos pedidos dele, e reage aos seus atos
+      (ortodoxos odeiam crueldade; demoníacos, bondade). Companheiros de caminhos opostos brigam. Com lealdade ${LEALDADE_IRMAO}+ viram Irmãos de Armas (bônus em dobro);
+      abaixo de ${LEALDADE_TRAICAO}, podem trair e fugir com parte das suas pedras.</p>
+    ${grupo.length ? `<div class="lista-objetivos">${grupo.map((r) => cartaoPessoa(character, historia, r)).join('')}</div>` : '<p class="vazio-texto">Você viaja sozinho.</p>'}`;
+}
+
 function renderPessoas(character: Character, historia: StoryState): string {
-  const pessoas = character.relacoes.filter((r) => !ehRelacaoDePoder(r) && r.tipo !== 'Discípulo');
+  const pessoas = character.relacoes.filter((r) => !ehRelacaoDePoder(r) && r.tipo !== 'Discípulo' && !ehCompanheiroJornada(r));
   if (pessoas.length === 0) {
     return '<h3>Pessoas</h3><p class="vazio-texto">Ninguém ainda. Use "Conhecer pessoas novas" em Atividades → Social.</p>';
   }
@@ -154,6 +170,7 @@ export function abrirRelacoes(character: Character, historia: StoryState, aoAlte
         ${renderNoivado(character)}
         ${renderMestre(character, historia)}
         ${renderDiscipulos(character, historia)}
+        ${renderCompanheiros(character, historia)}
         ${renderPessoas(character, historia)}
       </div>`;
   };

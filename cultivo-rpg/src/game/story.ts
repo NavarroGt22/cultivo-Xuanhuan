@@ -24,6 +24,12 @@ import { crescerNoivado } from './betrothal';
 import { atualizarTracosVida, getTracoVida, registrarFeito } from './lifeTraits';
 import { comecarGuerraDeclarada, processarGuerra } from './clanWar';
 import { processarMercadores } from './merchantGroups';
+import { processarSupremas } from './supremeSects';
+import { avancarCalendario, bonusCultivoEstacao } from './seasons';
+import { bonusCultivoCompanheiros, curaCompanheiros } from './journeyCompanions';
+import { registrarNoCodex } from './codex';
+import { concluirCena, noDaNarrativa } from './narrative';
+import { FATOR_FRAQUEZA_CONHECIDA, especieDoInimigo, fraquezaConhecida, registrarEncontroBesta } from './beastKnowledge';
 import { RegistroJornada, registrarJornada } from './journal';
 
 export interface Teste {
@@ -35,6 +41,8 @@ export interface Requisito {
   pedras?: number;
   item?: string;
   contribuicao?: number;
+  /** Motivo do bloqueio já avaliado ao montar a escolha (histórias roteirizadas). */
+  bloqueio?: string;
 }
 
 export interface Desfecho {
@@ -106,7 +114,7 @@ export const ENERGIA_POR_ESTACAO = 5;
 export function iniciarHistoria(character: Character): StoryState {
   return {
     turno: 0,
-    noAtual: gerarPrologo(character, 0),
+    noAtual: noDaNarrativa(character) ?? gerarPrologo(character, 0),
     desfecho: null,
     avisos: [],
     recentes: [],
@@ -138,7 +146,9 @@ export interface EscolhaInfo {
 
 export function descreverEscolha(character: Character, escolha: StoryChoice): EscolhaInfo {
   let bloqueio: string | null = null;
-  if (escolha.requisito?.pedras && character.inventario.pedrasEspirituais < escolha.requisito.pedras) {
+  if (escolha.requisito?.bloqueio) {
+    bloqueio = escolha.requisito.bloqueio;
+  } else if (escolha.requisito?.pedras && character.inventario.pedrasEspirituais < escolha.requisito.pedras) {
     bloqueio = `Requer ${escolha.requisito.pedras} pedras espirituais`;
   } else if (escolha.requisito?.item && quantidadeItem(character.inventario, escolha.requisito.item) === 0) {
     bloqueio = `Requer ${nomeItem(escolha.requisito.item)}`;
@@ -191,7 +201,16 @@ export function executarEscolha(character: Character, escolha: StoryChoice): Des
     const usarTalisma = quantidadeItem(character.inventario, 'talisma-combate') > 0;
     const usarTalismaEscudo = quantidadeItem(character.inventario, 'talisma-escudo') > 0;
     const companheira = character.companheira;
-    const resultado = simularCombate(combatenteDoJogador(character), combatenteDoInimigo(escolha.combate), {
+    const especieInimiga = escolha.combate.besta ? especieDoInimigo(escolha.combate.nome) : undefined;
+    const fraqueza = especieInimiga ? fraquezaConhecida(character, especieInimiga) : null;
+    const inimigoDef = { ...escolha.combate, atributos: { ...escolha.combate.atributos } };
+    if (fraqueza) {
+      for (const chave of Object.keys(inimigoDef.atributos) as (keyof typeof inimigoDef.atributos)[]) {
+        inimigoDef.atributos[chave] = Math.round(inimigoDef.atributos[chave] * FATOR_FRAQUEZA_CONHECIDA);
+      }
+    }
+    if (fraqueza) sequelas.push(`Você conhece a fraqueza desta besta (${fraqueza.toLowerCase()}) e a explora na luta.`);
+    const resultado = simularCombate(combatenteDoJogador(character), combatenteDoInimigo(inimigoDef), {
       usarTalisma,
       usarTalismaEscudo,
       tecnicas: tecnicasAtivas(character),
@@ -217,6 +236,7 @@ export function executarEscolha(character: Character, escolha: StoryChoice): Des
 
     registrarFeito(character, resultado.vitoria ? 'vitorias' : 'derrotas');
     if (resultado.vitoria && escolha.combate.besta) registrarFeito(character, 'bestasAbatidas');
+    if (escolha.combate.besta) sequelas.push(...registrarEncontroBesta(character, escolha.combate.nome, resultado.vitoria));
 
     log = resultado.log;
     vitoria = resultado.vitoria;
@@ -267,7 +287,7 @@ export function resolverEscolha(character: Character, state: StoryState, indice:
     `${escolha.texto}\n${state.desfecho.texto}`);
 }
 
-function passarTempo(character: Character, meses: number): string[] {
+function passarTempo(character: Character, meses: number, mundo?: MundoState): string[] {
   const avisos: string[] = [];
   const idadeAntes = character.idadeMeses;
   character.idadeMeses += meses;
@@ -296,7 +316,10 @@ function passarTempo(character: Character, meses: number): string[] {
   }
 
   if (character.flags.raizRevelada) {
-    const fator = fatorCultivoPassivo(character) + bonusCultivoRelacoes(character);
+    const base = fatorCultivoPassivo(character);
+    // Sem método de cultivo, nem a estação nem os companheiros fazem o qi se acumular.
+    const extras = base > 0 ? bonusCultivoEstacao(character, mundo) + bonusCultivoCompanheiros(character) : 0;
+    const fator = base > 0 ? Math.max(0.05, base + bonusCultivoRelacoes(character) + extras) : bonusCultivoRelacoes(character);
     const passivo = ganhoCultivo(getCharacterStats(character).velocidadeCultivo, meses, fator);
     avisos.push(...aplicarProgresso(character.cultivo, passivo));
   }
@@ -320,7 +343,7 @@ function passarTempo(character: Character, meses: number): string[] {
   const toxinaAntes = character.cultivo.toxina;
   character.cultivo.toxina = Math.max(0, toxinaAntes - (1 + character.cultivo.rank) * estacoes);
 
-  alterarVidaPercentual(character, 30 * estacoes);
+  alterarVidaPercentual(character, (30 + curaCompanheiros(character)) * estacoes);
   return avisos;
 }
 
@@ -328,23 +351,33 @@ export function continuarHistoria(character: Character, state: StoryState): void
   if (!state.desfecho || state.desfecho.final) return;
 
   const meses = state.noAtual.meses;
-  const tracosAntes = character.tracosVida?.length ?? 0;
-  const avisos = passarTempo(character, meses);
-  for (const id of (character.tracosVida ?? []).slice(tracosAntes)) {
-    const traco = getTracoVida(id);
-    if (traco) registrarJornada(character, state, 'marco', `Novo traço: ${traco.nome}`, `${traco.descricao} Ajuda: ${traco.vantagem}. Atrapalha: ${traco.desvantagem}.`);
+  if (character.narrativa) concluirCena(character, state.noAtual.id);
+  const avisos: string[] = [];
+  // Cenas roteirizadas do mesmo dia (0 meses) não passam uma estação nem renovam a energia.
+  if (meses > 0) {
+    const tracosAntes = character.tracosVida?.length ?? 0;
+    avisos.push(...passarTempo(character, meses, state.mundo));
+    avisos.push(...avancarCalendario(state.mundo, meses));
+    for (const id of (character.tracosVida ?? []).slice(tracosAntes)) {
+      const traco = getTracoVida(id);
+      if (traco) registrarJornada(character, state, 'marco', `Novo traço: ${traco.nome}`, `${traco.descricao} Ajuda: ${traco.vantagem}. Atrapalha: ${traco.desvantagem}.`);
+    }
+    avisos.push(...amadurecerCampos(character, meses));
+    avancarMundo(state.mundo, character, meses);
+    avisos.push(...processarGuerra(state.mundo, character, Math.max(1, Math.round(meses / 3))));
+    avisos.push(...processarMercadores(state.mundo, character, Math.max(1, Math.round(meses / 3))));
+    avisos.push(...processarSupremas(character, Math.max(1, Math.round(meses / 3))));
+    avisos.push(...comecarGuerraDeclarada(state.mundo, character));
   }
-  avisos.push(...amadurecerCampos(character, meses));
-  avancarMundo(state.mundo, character, meses);
-  avisos.push(...processarGuerra(state.mundo, character, Math.max(1, Math.round(meses / 3))));
-  avisos.push(...processarMercadores(state.mundo, character, Math.max(1, Math.round(meses / 3))));
-  avisos.push(...comecarGuerraDeclarada(state.mundo, character));
+  avisos.push(...registrarNoCodex(state.mundo, character, `${state.noAtual.texto}\n${state.desfecho.texto}`));
   state.recentes = [state.noAtual.evento, ...state.recentes].slice(0, 5);
   state.turno += 1;
-  state.noAtual = gerarProximoEvento(character, state.turno, state.recentes, state.mundo);
+  state.noAtual = noDaNarrativa(character) ?? gerarProximoEvento(character, state.turno, state.recentes, state.mundo);
   state.desfecho = null;
   state.avisos = avisos;
-  state.energia = ENERGIA_POR_ESTACAO;
-  state.contagemAtividades = {};
+  if (meses > 0) {
+    state.energia = ENERGIA_POR_ESTACAO;
+    state.contagemAtividades = {};
+  }
   if (character.flags.raizRevelada) atualizarQuadro(state.mundo, character, state.turno);
 }

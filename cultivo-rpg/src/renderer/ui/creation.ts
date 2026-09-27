@@ -21,6 +21,8 @@ import { escolher } from '../../game/rng';
 import { criarOverlay, escapeHtml, redesenharMantendoPosicao } from './dom';
 import { imagemOpcional, retratosDoProtagonista } from './assets';
 import { renderAtributosGrid, renderStatsGrid } from './hud';
+import { HISTORIAS, HistoriaId, RAIZ_DO_VAZIO, origemHis001, prepararHis001 } from '../../game/narrative';
+import { CHANCE_YIN } from '../../game/qiNature';
 
 interface CreationState {
   nome: string;
@@ -28,6 +30,7 @@ interface CreationState {
   retrato: string;
   tracoId: string;
   distribuicao: Attributes;
+  historia: HistoriaId;
 }
 
 function distribuicaoAleatoria(): Attributes {
@@ -165,6 +168,7 @@ export function renderCriacao(app: HTMLElement, aoComecar: (character: Character
     retrato: retratosDoProtagonista()[0] ?? '',
     tracoId: TRAITS[0].id,
     distribuicao: createBaseAttributes(),
+    historia: 'pequeno-heroi',
   };
 
   const podeComecar = (): boolean => estado.nome.trim().length > 0 && pontosRestantes(estado.distribuicao) === 0;
@@ -193,6 +197,11 @@ export function renderCriacao(app: HTMLElement, aoComecar: (character: Character
       <div class="criacao">
         <div class="painel painel-criacao">
           <h1>Criação de Cultivador</h1>
+          <label for="campo-historia">História</label>
+          <select id="campo-historia">
+            ${HISTORIAS.map((h) => `<option value="${h.id}" ${h.id === estado.historia ? 'selected' : ''}>${escapeHtml(h.titulo)}</option>`).join('')}
+          </select>
+          <p class="descricao">${escapeHtml(HISTORIAS.find((h) => h.id === estado.historia)?.resumo ?? '')}</p>
           <button id="btn-aleatorizar" class="largo" title="Sorteia nome, gênero, retrato, traço e atributos">🎲 Aleatorizar tudo</button>
 
           <label for="campo-nome">Nome</label>
@@ -240,7 +249,17 @@ export function renderCriacao(app: HTMLElement, aoComecar: (character: Character
             ${renderStatsGrid(stats, false)}
           </div>
 
-          <div class="destino">
+          ${
+            estado.historia === 'HIS-001'
+              ? `<div class="destino">
+            <h3>Seu começo já está escrito</h3>
+            <p>Você nasce na <strong>Aldeia do Campo Sereno</strong>, no Leste, filho de uma família de camponeses comuns — pai, mãe e uma irmã.
+              Aos oito anos, um cristal de avaliação vai declarar sua raiz inútil. A campanha é dividida em capítulos; suas escolhas
+              ficam registradas e voltam anos depois.</p>
+            <p class="dica">Natureza do Qi: sorteada ao nascer (corpo feminino ~${Math.round(CHANCE_YIN.feminino * 100)}% Yin; masculino ~${Math.round(CHANCE_YIN.masculino * 100)}% Yin).
+              Os capítulos 1 a 4 (Ato 1) já estão no jogo; os seguintes chegam em próximas versões e o save continua de onde parou.</p>
+          </div>`
+              : `<div class="destino">
             <h3>O Destino decide o resto</h3>
             <p>
               Onde você nasce — região, família, clã ou seita, ramo principal ou colateral —, sua
@@ -256,7 +275,9 @@ export function renderCriacao(app: HTMLElement, aoComecar: (character: Character
               Estilos marciais, técnicas, Alquimia e Inscrição são aprendidos ao longo da vida — o primeiro estilo vem da sua
               infância. Cada estilo tem maestria própria, de Iniciante a Grão-Mestre.
             </p>
-          </div>
+            <p class="dica">Natureza do Qi: sorteada ao nascer — corpo feminino ~${Math.round(CHANCE_YIN.feminino * 100)}% Yin, masculino ~${Math.round(CHANCE_YIN.masculino * 100)}% Yin. Ela decide quais técnicas combinam com você.</p>
+          </div>`
+          }
 
           <div class="acoes">
             <button id="btn-voltar">Voltar</button>
@@ -298,6 +319,11 @@ export function renderCriacao(app: HTMLElement, aoComecar: (character: Character
       render();
     });
 
+    document.getElementById('campo-historia')?.addEventListener('change', (evento) => {
+      estado.historia = (evento.target as HTMLSelectElement).value as HistoriaId;
+      render();
+    });
+
     document.getElementById('campo-genero')?.addEventListener('change', (evento) => {
       estado.genero = (evento.target as HTMLSelectElement).value as Genero;
     });
@@ -312,6 +338,20 @@ export function renderCriacao(app: HTMLElement, aoComecar: (character: Character
 
     botaoComecar.addEventListener('click', () => {
       if (!podeComecar()) return;
+      if (estado.historia === 'HIS-001') {
+        const personagem = createCharacter({
+          nome: estado.nome.trim(),
+          genero: estado.genero,
+          traco,
+          origem: origemHis001(estado.nome),
+          raizEspiritual: { ...RAIZ_DO_VAZIO },
+          atributosDistribuidos: estado.distribuicao,
+          retrato: estado.retrato || undefined,
+        });
+        prepararHis001(personagem);
+        aoComecar(personagem);
+        return;
+      }
       const sorte = atributosFinais.sorte;
       const origem = rollOrigin(sorte);
       // GDD 12: Rolagem de Herança no nascimento.

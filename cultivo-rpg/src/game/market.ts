@@ -5,6 +5,7 @@ import { nomeItem } from './items';
 import { REINOS } from './cultivation';
 import { REGIOES } from './world';
 import { descontoMercador } from './merchantGroups';
+import { fatorPrecoSupremas } from './supremeSects';
 
 /**
  * Mercado (Sistema de Vida — Moradias, Montarias e Transportes; GDD 4 — fornalhas).
@@ -212,7 +213,7 @@ export function precoEquipamento(character: Character, equipamento: Equipment): 
 
 /** Reputação com os grandes grupos mercadores dá desconto em tudo o que se compra aqui. */
 export function precoComDesconto(character: Character, preco: number): number {
-  return Math.round(preco * (1 - descontoMercador(character)));
+  return Math.round(preco * (1 - descontoMercador(character)) * fatorPrecoSupremas(character));
 }
 
 export function motivoBloqueioEquipamento(character: Character, equipamento: Equipment): string | null {

@@ -1,5 +1,6 @@
 import { formatarBonus } from '../../game/attributes';
 import { Feito, NOME_FEITO, feitosDe, tracosDaVida } from '../../game/lifeTraits';
+import { karmaDe, nivelKarma } from '../../game/karma';
 import { DICA_SEM_METODO, metodoDeCultivo } from '../../game/cultivationMethod';
 import { getIdentidade } from '../../game/soulAwakening';
 import { Character, SLOTS_POR_TIPO, desequipar, equipar, getCharacterStats, getEffectiveAttributes } from '../../game/character';
@@ -18,6 +19,16 @@ import { HERANCAS } from '../../game/inheritance';
 import { getCicatriz } from '../../game/scars';
 import { profeciaAtual } from '../../game/divination';
 import { reducaoEstudoFaccao } from '../../game/faction';
+import {
+  CHANCE_YIN,
+  DESCRICAO_NATUREZA,
+  NOME_COMPATIBILIDADE,
+  NOME_NATUREZA,
+  avaliarCompatibilidade,
+  compatibilidadeDaTecnica,
+  nomeEnergia,
+  sortearNaturezaQi,
+} from '../../game/qiNature';
 import { criarOverlay, escapeHtml } from './dom';
 import { renderStatsGrid } from './hud';
 
@@ -56,13 +67,17 @@ function renderFicha(character: Character): string {
   const tecnicas = character.tecnicas
     .map(getTecnica)
     .filter((t): t is Tecnica => Boolean(t))
-    .map((t) => `<span title="${escapeHtml(t.descricao)}">${escapeHtml(t.nome)} (${nomeGrau(t)}, ${NOME_CATEGORIA_TECNICA[t.categoria]})</span>`)
+    .map((t) => {
+      const qi = avaliarCompatibilidade(character, t.id);
+      return `<span title="${escapeHtml(`${t.descricao} — ${qi.rotulo}: ${qi.texto}`)}">${escapeHtml(t.nome)} (${nomeGrau(t)}, ${NOME_CATEGORIA_TECNICA[t.categoria]}, Qi ${escapeHtml(NOME_COMPATIBILIDADE[compatibilidadeDaTecnica(t.id)])}${qi.classe === 'seguro' ? '' : ` — ${escapeHtml(qi.rotulo)}`})</span>`;
+    })
     .join('; ');
 
   const metodo = metodoDeCultivo(character);
   const almaDesperta = getIdentidade(String(character.flags.almaDespertada ?? ''));
   const tracosVida = tracosDaVida(character);
   const contagem = feitosDe(character);
+  const karma = nivelKarma(character);
   const feitos =
     (Object.keys(NOME_FEITO) as Feito[])
       .filter((f) => contagem[f] > 0)
@@ -77,6 +92,9 @@ function renderFicha(character: Character): string {
           .join('')}</ul></li>`
       : '',
     `<li><strong>Feitos:</strong> ${escapeHtml(feitos)}</li>`,
+    `<li><strong>Karma:</strong> ${escapeHtml(karma.nome)} (${karmaDe(character)}) — ${escapeHtml(karma.descricao)}${
+      karma.tribulacao ? `; ${karma.tribulacao > 0 ? '+' : ''}${karma.tribulacao} na dificuldade da Tribulação Celestial` : ''
+    }. Crueldades e mortes pesam; boas ações aliviam.</li>`,
     almaDesperta
       ? `<li><strong>${character.traco.id === 'heranca-escondida' ? 'Sangue desperto' : 'Alma desperta'}:</strong> ${escapeHtml(almaDesperta.titulo)}</li>`
       : character.flags.almaDespertada === 'contida'
@@ -88,6 +106,14 @@ function renderFicha(character: Character): string {
     `<li><strong>Influência da família:</strong> ${escapeHtml(familia.nome)} — ${escapeHtml(familia.alcance)}</li>`,
     `<li><strong>Influência pessoal:</strong> ${escapeHtml(pessoal.nome)} (${pontosInfluenciaPessoal(character)} pts) — ${escapeHtml(pessoal.alcance)}</li>`,
     `<li><strong>Estilos marciais:</strong> ${estilos || 'nenhum ainda'}</li>`,
+    character.naturezaQi
+      ? `<li><strong>Natureza do Qi:</strong> ${escapeHtml(NOME_NATUREZA[character.naturezaQi])} — ${escapeHtml(DESCRICAO_NATUREZA[character.naturezaQi])}. Energia atual: ${nomeEnergia(character.cultivo.rank)}.</li>`
+      : `<li><strong>Natureza do Qi:</strong> ainda não definida neste save. Ela decide quais técnicas combinam com você (não é um novo recurso: seu ${nomeEnergia(character.cultivo.rank)} continua o mesmo).
+          <div class="botoes-interacao">
+            <button class="botao-pequeno" data-natureza="yin">Meu Qi é Yin</button>
+            <button class="botao-pequeno" data-natureza="yang">Meu Qi é Yang</button>
+            <button class="botao-pequeno" data-natureza="corpo">Deixar o corpo decidir (~${Math.round(CHANCE_YIN[character.genero] * 100)}% Yin)</button>
+          </div></li>`,
     `<li><strong>Técnicas:</strong> ${tecnicas || 'nenhuma ainda — encontre manuais em pavilhões, mercadores e ruínas'}</li>`,
     `<li><strong>Raiz espiritual:</strong> ${
       raizRevelada
@@ -167,8 +193,10 @@ function renderBolsa(character: Character): string {
       } else {
         const dificuldade = Math.max(5, dificuldadeEstudo(tecnica, Number(character.flags[chaveEstudo(tecnica.id)] ?? 0)) - reducaoEstudoFaccao(character));
         const chance = Math.round(chanceDeSucesso(compreensao, dificuldade) * 100);
-        tipo = 'Manual — clique para estudar';
-        detalhe = `<span class="slot-detalhe">Compreensão ${compreensao} vs. ${dificuldade} · ${chance}%</span>`;
+        const qi = avaliarCompatibilidade(character, tecnica.id);
+        tipo = qi.executavel ? 'Manual — clique para estudar' : 'Manual — só a teoria';
+        detalhe = `<span class="slot-detalhe">Qi ${escapeHtml(NOME_COMPATIBILIDADE[compatibilidadeDaTecnica(tecnica.id)])} · ${escapeHtml(qi.rotulo)}: ${escapeHtml(qi.texto)}</span>
+          <span class="slot-detalhe">Compreensão ${compreensao} vs. ${dificuldade} · ${chance}%</span>`;
       }
     }
     const conteudo = `
@@ -230,8 +258,13 @@ export function abrirInventario(character: Character, aoAlterar: () => void): vo
     const botaoEquipar = alvo.closest<HTMLElement>('[data-equipar]');
     const botaoDesequipar = alvo.closest<HTMLElement>('[data-desequipar]');
     const botaoUsar = alvo.closest<HTMLElement>('[data-usar]');
+    const botaoNatureza = alvo.closest<HTMLElement>('[data-natureza]');
 
-    if (botaoEquipar) {
+    if (botaoNatureza && !character.naturezaQi) {
+      const escolha = botaoNatureza.dataset.natureza;
+      character.naturezaQi = escolha === 'yin' || escolha === 'yang' ? escolha : sortearNaturezaQi(character.genero);
+      mensagens = [`Natureza do Qi definida: ${NOME_NATUREZA[character.naturezaQi]}.`];
+    } else if (botaoEquipar) {
       equipar(character, Number(botaoEquipar.dataset.equipar));
       mensagens = [];
     } else if (botaoDesequipar) {

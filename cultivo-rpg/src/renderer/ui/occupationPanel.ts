@@ -34,8 +34,11 @@ import {
   fundarFaccao,
   melhorarInstalacao,
   motivoBloqueioFundacao,
+  membrosDaFamilia,
   recrutarMembros,
+  rendaFaccao,
   requisitosFundacao,
+  sincronizarFamilia,
 } from '../../game/faction';
 import { criarOverlay, escapeHtml } from './dom';
 import { abrirResultado, avisar } from './resultView';
@@ -107,7 +110,9 @@ function renderFaccao(character: Character, pastaAberta: string | null, nomeDigi
     return pasta('fundar', 'Fundar Clã ou Seita', 'crie sua própria facção', conteudo, pastaAberta === 'fundar');
   }
 
-  const renda = Math.round(faccao.membros * (faccao.tipo === 'seita' ? 1.5 : 1));
+  sincronizarFamilia(character);
+  const renda = rendaFaccao(character);
+  const familia = membrosDaFamilia(character);
   const { salaCultivo, biblioteca, muralhas } = faccao.instalacoes;
   const manutencao = (salaCultivo + biblioteca + muralhas) * 3;
   const custoRecruta = custoRecrutamento(faccao);
@@ -128,7 +133,8 @@ function renderFaccao(character: Character, pastaAberta: string | null, nomeDigi
   return `
     <div class="ocupacao-atual">
       <strong>${escapeHtml(character.afiliacao.posto ?? 'Fundador')} — ${escapeHtml(faccao.nome)}${faccao.ortodoxa ? '' : ' (não-ortodoxa)'}</strong>
-      <span>${faccao.membros} membros · renda ~${renda} pedras/estação · manutenção ${manutencao}/estação</span>
+      <span>${faccao.membros} membros${familia ? ` (${familia} da sua família)` : ''} · renda ~${renda.total} pedras/estação (${renda.membros} dos membros + ${renda.prestigio} de ofertas pela sua fama) · manutenção ${manutencao}/estação</span>
+      <span class="dica">Cada membro rende mais quanto mais alto o seu reino (+30% por reino); cônjuges, Companheiros(as) de Dao e filhos entram na ${escapeHtml(faccao.nome)} sozinhos.</span>
       <span>Cultivo passivo: ${Math.round(fatorCultivoPassivo(character) * 100)}% · estudo de manuais −${biblioteca * 2} · ataques de inimigos −${muralhas * 25}%</span>
       <button data-acao="recrutar" ${character.inventario.pedrasEspirituais < custoRecruta ? 'disabled' : ''}>Recrutar membros (${custoRecruta} pedras)</button>
     </div>

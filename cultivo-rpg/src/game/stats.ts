@@ -17,6 +17,14 @@ export interface DerivedStats {
   velocidadeCultivo: number;
 }
 
+/**
+ * Nos reinos altos o talento pesa mais: cada grau de raiz acima do 3º rende +4% de cultivo por
+ * reino acima do primeiro (raiz 5 no 5º reino: +32%). Raízes comuns não ganham nada.
+ */
+export function talentoNosReinosAltos(raiz: SpiritualRoot, cultivo: CultivationState): number {
+  return 1 + Math.max(0, raiz.grau - 3) * 0.04 * (cultivo.rank - 1);
+}
+
 /** `raiz` null = sem cultivo próprio (inimigos). */
 export function getDerivedStats(
   atributos: Attributes,
@@ -37,7 +45,7 @@ export function getDerivedStats(
     critico: Math.min(50, 5 + atributos.sorte + atributos.inteligencia * 0.5),
     compreensao: atributos.inteligencia,
     velocidadeCultivo: raiz
-      ? multiplicadorRaiz(raiz) * (1 + atributos.espirito * 0.05) * multiplicadorCultivo * penalidadeToxina
+      ? multiplicadorRaiz(raiz) * talentoNosReinosAltos(raiz, cultivo) * (1 + atributos.espirito * 0.05) * multiplicadorCultivo * penalidadeToxina
       : 0,
   };
 }

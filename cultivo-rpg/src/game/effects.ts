@@ -19,12 +19,18 @@ import { aceitarMestreErrante } from './mentor';
 import type { StatusNoivado } from './betrothal';
 import { Feito, registrarFeito } from './lifeTraits';
 import { getHeranca } from './inheritance';
-import { conhecerAlguem, descreverRelacao } from './relationships';
+import { Relacao, conhecerAlguem, descreverRelacao } from './relationships';
 import { CORPOS_ESPECIAIS } from './origin';
 import { escolher } from './rng';
 import { destruirNucleo } from './coreDestruction';
 import { lerDestino } from './divination';
 import { reducaoEstudoFaccao } from './faction';
+import { ajustarReputacaoSuprema, repercutirAlinhamento } from './supremeSects';
+import { reagirAlinhamentoCompanheiros, recrutarCompanheiro } from './journeyCompanions';
+import { NivelConhecimento, elevarConhecimento } from './beastKnowledge';
+import { avaliarCompatibilidade } from './qiNature';
+import { aplicarEfeitoNarrativo } from './narrative';
+import type { EfeitoNarrativo } from './narrative';
 
 /** Tudo que uma escolha de história (ou um item) pode alterar. Precisa ser serializável em JSON. */
 export interface Efeitos {
@@ -101,6 +107,16 @@ export interface Efeitos {
   tornarDiscipuloErrante?: string;
   /** Vende/perde a moradia atual (market.ts). */
   perderMoradia?: boolean;
+  /** Deltas de reputação com Seitas Supremas, pelo nome (supremeSects.ts). */
+  reputacaoSuprema?: Record<string, number>;
+  /** Um Companheiro de Jornada entra no grupo (journeyCompanions.ts). */
+  companheiroJornada?: Relacao;
+  /** Muda a lealdade de um companheiro de jornada, pelo id da relação. */
+  lealdade?: { id: string; delta: number };
+  /** Sobe o conhecimento sobre uma espécie de besta (beastKnowledge.ts). */
+  conhecimentoBesta?: { especieId: string; nivel: NivelConhecimento; pista?: string };
+  /** Campanha roteirizada: variáveis, flags e próxima cena (narrative.ts). */
+  narrativa?: EfeitoNarrativo;
 }
 
 /**
@@ -125,6 +141,32 @@ export function aplicarEfeitos(character: Character, efeitos: Efeitos): string[]
     registrarFeito(character, efeitos.alinhamento > 0 ? 'bondades' : 'crueldades');
     character.alinhamento = shiftAlignment(character.alinhamento, efeitos.alinhamento);
     mensagens.push(`Alinhamento ${sinal(efeitos.alinhamento)} (${alignmentLabel(character.alinhamento)}).`);
+    mensagens.push(...repercutirAlinhamento(character, efeitos.alinhamento));
+    mensagens.push(...reagirAlinhamentoCompanheiros(character, efeitos.alinhamento));
+  }
+
+  if (efeitos.narrativa) mensagens.push(...aplicarEfeitoNarrativo(character, efeitos.narrativa));
+
+  if (efeitos.conhecimentoBesta) {
+    const especie = getEspecie(efeitos.conhecimentoBesta.especieId);
+    if (especie) mensagens.push(...elevarConhecimento(character, especie, efeitos.conhecimentoBesta.nivel, efeitos.conhecimentoBesta.pista));
+  }
+
+  if (efeitos.companheiroJornada) mensagens.push(recrutarCompanheiro(character, { ...efeitos.companheiroJornada }));
+
+  if (efeitos.lealdade) {
+    const alvo = character.relacoes.find((r) => r.id === efeitos.lealdade!.id && r.papel);
+    if (alvo) {
+      alvo.lealdade = Math.max(0, Math.min(100, (alvo.lealdade ?? 0) + efeitos.lealdade.delta));
+      mensagens.push(`Lealdade de ${alvo.nome} ${sinal(efeitos.lealdade.delta)}.`);
+    }
+  }
+
+  if (efeitos.reputacaoSuprema) {
+    for (const [nome, delta] of Object.entries(efeitos.reputacaoSuprema)) {
+      const mensagem = ajustarReputacaoSuprema(character, nome, delta);
+      if (mensagem) mensagens.push(mensagem);
+    }
   }
 
   if (efeitos.atributos) {
@@ -428,6 +470,10 @@ function estudarManual(character: Character, id: string): string[] {
     removerItem(character.inventario, id, 1);
     addPedrasEspirituais(character.inventario, valor);
     return [`Você já domina ${tecnica.nome}. Vendeu a cópia extra do manual a um sebo por ${valor} pedras.`];
+  }
+  const qi = avaliarCompatibilidade(character, tecnica.id);
+  if (!qi.executavel) {
+    return [`Você lê ${tecnica.nome} até o fim e compreende a teoria, mas não consegue completar a circulação: ${qi.texto}`];
   }
 
   const compreensao = getEffectiveAttributes(character).inteligencia;
