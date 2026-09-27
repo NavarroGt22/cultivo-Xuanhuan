@@ -13,16 +13,20 @@ import { RegiaoId } from './world';
 import { EstiloEstado, EstiloId, bonusDeEstilos, createEstilos } from './martialStyles';
 import { aplicarPassivas } from './techniques';
 import { aplicarModificadoresCicatrizes } from './scars';
-import { Companheira, criarCompanheira } from './companion';
+import { Companheira, filhoteDaEspecie } from './companion';
+import { especieParaFamilia } from './bestiary';
+import { Noivado, arranjarNoivado } from './betrothal';
+import type { GuerraClas } from './clanWar';
+import type { Feito } from './lifeTraits';
 import type { Relacao } from './relationships';
 import type { Faccao } from './faction';
-import { REGIOES } from './world';
-import { escolher } from './rng';
 
 export type Genero = 'masculino' | 'feminino';
 export type FlagValor = string | number | boolean;
 
 export interface Character {
+  campos?: import('./fields').CampoEspiritual[];
+  mestrePessoal?: import('./mentor').MestrePessoal;
   nome: string;
   genero: Genero;
   traco: Trait;
@@ -60,6 +64,16 @@ export interface Character {
   montaria?: string | null;
   /** Ordem da fornalha alquímica (GDD 4); sem valor = básica de 2ª Ordem. */
   fornalha?: number;
+  /** Noivado arranjado pela família (betrothal.ts). */
+  noivado?: Noivado | null;
+  /** Guerra de clãs em andamento (clanWar.ts). */
+  guerra?: GuerraClas | null;
+  /** Contadores do que você fez na vida (lifeTraits.ts). */
+  feitos?: Partial<Record<Feito, number>>;
+  /** Ids de TRACOS_VIDA ganhos pelos feitos ou pelo acaso. */
+  tracosVida?: string[];
+  /** Reputação e cotas com os grandes grupos mercadores (merchantGroups.ts). */
+  mercadores?: Record<string, { reputacao: number; cotas: number }>;
   /** Nome de arquivo em /assets para o retrato do protagonista (opcional). */
   retrato?: string;
   /** Marcadores de história (eventos únicos, rival, companheiro etc.). */
@@ -126,11 +140,13 @@ export function createCharacter(opcoes: CharacterCreationOptions): Character {
     cicatrizes: [],
     retrato: opcoes.retrato,
     flags: {},
+    noivado: arranjarNoivado(opcoes.origem, opcoes.genero),
   };
 
   if (opcoes.origem.familiaDomadora) {
-    const especie = escolher(REGIOES[opcoes.origem.regiao].fauna);
-    character.companheira = criarCompanheira(`${especie} (filhote)`, 1, 1, 6, true);
+    const especie = especieParaFamilia(opcoes.origem.regiao);
+    character.companheira = filhoteDaEspecie(especie, 6, true);
+    character.flags[`bestiario:${especie.id}`] = true;
     character.profissoes.domador = { nivel: 1, xp: 0 };
   }
   if (opcoes.origem.herancaSelada) {

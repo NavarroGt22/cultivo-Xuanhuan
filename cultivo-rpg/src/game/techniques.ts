@@ -289,6 +289,42 @@ export const TECNICAS: Tecnica[] = [
     custoVidaMeses: 36,
     heranca: true,
   },
+
+  // --- Heranças demoníacas ---
+  {
+    id: 'sutra-mar-de-sangue',
+    nome: 'Sutra do Mar de Sangue',
+    categoria: 'cultivo',
+    grau: 4,
+    nivel: 'Médio',
+    descricao: 'Cultivo demoníaco: o qi é refinado no próprio sangue, rápido e sem piedade. Velocidade de cultivo ×1,55.',
+    custoChakra: 0,
+    multiplicadorCultivo: 1.55,
+    heranca: true,
+  },
+  {
+    id: 'garras-cadaver',
+    nome: 'Garras do Cadáver Imortal',
+    categoria: 'ofensiva',
+    grau: 4,
+    nivel: 'Médio',
+    descricao: 'As mãos endurecem como as de um cadáver de mil anos e rasgam o qi do inimigo. Golpe ×2,8. Custa 22 de Chakra.',
+    custoChakra: 22,
+    multiplicadorDano: 2.8,
+    heranca: true,
+  },
+  {
+    id: 'veu-sombras-infernais',
+    nome: 'Véu das Sombras Infernais',
+    categoria: 'movimento',
+    grau: 4,
+    nivel: 'Médio',
+    descricao: 'Você anda dentro da própria sombra. Esquiva +14% e velocidade +5.',
+    custoChakra: 0,
+    bonusEsquiva: 14,
+    bonusVelocidade: 5,
+    heranca: true,
+  },
 ];
 
 export function getTecnica(id: string): Tecnica | undefined {

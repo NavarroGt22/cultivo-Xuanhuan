@@ -1,4 +1,7 @@
 import { formatarBonus } from '../../game/attributes';
+import { Feito, NOME_FEITO, feitosDe, tracosDaVida } from '../../game/lifeTraits';
+import { DICA_SEM_METODO, metodoDeCultivo } from '../../game/cultivationMethod';
+import { getIdentidade } from '../../game/soulAwakening';
 import { Character, SLOTS_POR_TIPO, desequipar, equipar, getCharacterStats, getEffectiveAttributes } from '../../game/character';
 import { Equipment, EquipmentType, NOME_TIPO_EQUIPAMENTO } from '../../game/equipment';
 import { podeUsarConsumivel, usarConsumivel } from '../../game/effects';
@@ -56,8 +59,32 @@ function renderFicha(character: Character): string {
     .map((t) => `<span title="${escapeHtml(t.descricao)}">${escapeHtml(t.nome)} (${nomeGrau(t)}, ${NOME_CATEGORIA_TECNICA[t.categoria]})</span>`)
     .join('; ');
 
+  const metodo = metodoDeCultivo(character);
+  const almaDesperta = getIdentidade(String(character.flags.almaDespertada ?? ''));
+  const tracosVida = tracosDaVida(character);
+  const contagem = feitosDe(character);
+  const feitos =
+    (Object.keys(NOME_FEITO) as Feito[])
+      .filter((f) => contagem[f] > 0)
+      .map((f) => `${contagem[f]} ${NOME_FEITO[f]}`)
+      .join(' · ') || 'nada digno de nota ainda';
+
   const linhas = [
     `<li><strong>Origem:</strong> ${escapeHtml(descreverOrigem(character.origem))} · <strong>Traço:</strong> ${escapeHtml(character.traco.nome)}</li>`,
+    tracosVida.length
+      ? `<li><strong>Traços da vida:</strong><ul>${tracosVida
+          .map((t) => `<li><strong>${escapeHtml(t.nome)}</strong> — ${escapeHtml(t.descricao)} <em>Ajuda: ${escapeHtml(t.vantagem)}. Atrapalha: ${escapeHtml(t.desvantagem)}.</em></li>`)
+          .join('')}</ul></li>`
+      : '',
+    `<li><strong>Feitos:</strong> ${escapeHtml(feitos)}</li>`,
+    almaDesperta
+      ? `<li><strong>${character.traco.id === 'heranca-escondida' ? 'Sangue desperto' : 'Alma desperta'}:</strong> ${escapeHtml(almaDesperta.titulo)}</li>`
+      : character.flags.almaDespertada === 'contida'
+        ? '<li><strong>Alma desperta:</strong> memórias contidas — você escolheu continuar sendo quem é</li>'
+        : '',
+    raizRevelada
+      ? `<li><strong>Método de cultivo:</strong> ${metodo ? escapeHtml(metodo) : `<em>nenhum</em> — ${escapeHtml(DICA_SEM_METODO)}`}</li>`
+      : '',
     `<li><strong>Influência da família:</strong> ${escapeHtml(familia.nome)} — ${escapeHtml(familia.alcance)}</li>`,
     `<li><strong>Influência pessoal:</strong> ${escapeHtml(pessoal.nome)} (${pontosInfluenciaPessoal(character)} pts) — ${escapeHtml(pessoal.alcance)}</li>`,
     `<li><strong>Estilos marciais:</strong> ${estilos || 'nenhum ainda'}</li>`,

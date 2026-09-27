@@ -6,16 +6,15 @@ import {
   ORDEM_GRUPOS,
   listarAtividades,
 } from '../../game/activities';
-import { DesfechoExibido, ENERGIA_POR_ESTACAO, StoryState, descreverEscolha, executarEscolha, gastarEnergia } from '../../game/story';
+import { ENERGIA_POR_ESTACAO, StoryState, descreverEscolha, executarEscolha, gastarEnergia } from '../../game/story';
 import { criarOverlay, escapeHtml } from './dom';
-import { renderEnergia, renderResultado } from './resultView';
+import { abrirResultado, renderEnergia } from './resultView';
 import { registrarJornada } from '../../game/journal';
 
 /** Atividades organizadas em pastas; cada uma custa energia e repetir demais tem consequências. */
 export function abrirAtividades(character: Character, historia: StoryState, aoAlterar: () => void): void {
   const overlay = criarOverlay();
   let listadas: AtividadeDisponivel[] = [];
-  let resultado: DesfechoExibido | null = null;
   let pastaAberta: string | null = null;
 
   const render = (): void => {
@@ -64,7 +63,6 @@ export function abrirAtividades(character: Character, historia: StoryState, aoAl
         <h2>Atividades</h2>
         ${renderEnergia(historia.energia, ENERGIA_POR_ESTACAO)}
         <p class="dica">Cada atividade custa ${ENERGIA_ATIVIDADE} de energia. Repetir a mesma mais de ${LIMITE_REPETICOES} vezes na estação não rende nada — e cultivar ou treinar demais pode causar desvio de qi ou lesão.</p>
-        ${resultado ? renderResultado(resultado) : ''}
         ${pastas}
       </div>`;
   };
@@ -92,11 +90,11 @@ export function abrirAtividades(character: Character, historia: StoryState, aoAl
     if (!gastarEnergia(historia, ENERGIA_ATIVIDADE)) return;
 
     historia.contagemAtividades[item.atividade.id] = item.vezes + 1;
-    resultado = executarEscolha(character, item.escolha);
+    const resultado = executarEscolha(character, item.escolha);
     registrarJornada(character, historia, 'atividade', item.escolha.texto, resultado.texto);
     aoAlterar();
     render();
-    overlay.querySelector('.painel')?.scrollTo({ top: 0 });
+    abrirResultado(resultado, [], item.escolha.texto);
   });
 
   render();

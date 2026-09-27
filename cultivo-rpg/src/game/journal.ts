@@ -12,6 +12,19 @@ export interface RegistroJornada {
 
 export const LIMITE_DIARIO = 300;
 
+export interface CronicaAncestral {
+  nome: string;
+  idadeMeses: number;
+  reino: string;
+  reputacao: number;
+  registros: RegistroJornada[];
+}
+
+export function arquivarVida(c: Character, h: StoryState): CronicaAncestral {
+  return { nome: c.nome, idadeMeses: c.idadeMeses, reino: realmLabel(c.cultivo), reputacao: c.reputacao,
+    registros: (h.diario ?? []).map(r => ({ ...r })) };
+}
+
 export function registrarJornada(c: Character, h: StoryState, categoria: RegistroJornada['categoria'], titulo: string, texto: string): void {
   h.diario = [...(h.diario ?? []), { turno: h.turno, idadeMeses: c.idadeMeses, categoria, titulo, texto }].slice(-LIMITE_DIARIO);
 }

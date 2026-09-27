@@ -7,7 +7,7 @@
     "build": "tsc -p tsconfig.json && node scripts/copy-renderer-assets.js",
     "start": "npm run build && electron .",
     "simular": "npm run build && node scripts/simular.js",
-    "test": "npm run build && node --test scripts/testar-jornada.js"
+    "test": "npm run build && node --test scripts/testar-jornada.js scripts/testar-expansao.js scripts/testar-bestas.js scripts/testar-noivado-guerra.js scripts/testar-tracos.js scripts/testar-faccoes-mercadores.js"
   },
   "devDependencies": {
     "@types/node": "^20.14.0",

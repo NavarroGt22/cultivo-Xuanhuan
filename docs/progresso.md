@@ -13,15 +13,24 @@ Legenda: **[x]** feito · **[~]** parcial · **[ ]** não feito
 - [x] Salvamento automático a cada escolha + botão **Continuar** no menu
 - [x] Simulador de vidas para testar equilíbrio (`npm run simular -- 30`)
 - [x] **Migração de saves antigos**: saves de versões anteriores são atualizados automaticamente (campos novos recebem valores padrão) em vez de descartados
-- [ ] Vários slots de save
-- [ ] Tela de opções/configurações
+- [x] Três slots de save, exportação/importação JSON, escrita por temporário e recuperação de backup
+- [x] Opções de leitura: fonte ampliada, alto contraste e redução de movimento (não inclui áudio)
 - [x] Suporte a **retratos e ilustrações** (opcionais): retrato do protagonista escolhido na criação, caixa de diálogo com retrato de quem fala, ilustração por evento (`assets/cenas/<evento>.png`) — ver `assets/LEIA-ME.txt`
 - [ ] Criar/gerar as imagens em si (a pasta `assets/` ainda não tem nenhuma)
 - [ ] Som e música
 
 ## Criação de personagem
 
-- [x] Nome (com gerador), gênero, traço (9 traços)
+- [x] Nome (com gerador), gênero, traço (17 traços: Olhos de Falcão, Alma Antiga, Brutamontes, Gênio de Corpo Frágil, Sangue de Mercador, Compassivo, Vingativo, Nascido na Tempestade e os 9 originais)
+- [x] Botão **Aleatorizar tudo** (nome, gênero, retrato, traço e atributos) e traço aleatório; chances de nascimento para a Sorte escolhida (raiz grau 4+/6+, nascer em clã ou seita)
+- [x] **Método de cultivo**: família comum e órfãos não têm cultivo passivo e meditam a 20% até conseguirem um método (seita/clã, mestre, manual de Método de Cultivo — vendido em Educação e Lazer —, facção própria ou memórias de vida passada); aviso no painel da jornada e na ficha
+- [x] **Autodidatas**: Inteligência 10 → Alquimia; Inteligência 12 → Inscrição; Espírito 10 → Divinação, sem mestre (atividades com teste)
+- [x] **Despertar da Alma** (traços Alma Antiga e Herança Escondida): entre 16 e 100 anos, quase sempre após uma quase-morte (~60% das vidas), desperta uma identidade antiga — Deus da Alquimia e das Pílulas, Soberano do Céu e da Terra, Demônio Supremo, Santo da Espada, Senhor das Mil Bestas, Grão-Mestre dos Talismãs ou Oráculo do Destino — com recompensas próprias, e a raiz é rolada de novo (mínimo grau 3, nunca piora); dá para conter as memórias e ficar só com a raiz
+- [x] **Traços da vida**: surgem pelos feitos ou ao acaso, cada um com vantagem e desvantagem (ficha do Inventário e Diário)
+  - Feitos contados: pessoas mortas, bestas abatidas, boas ações e crueldades (escolhas que mexem no alinhamento), vitórias, derrotas, quase-mortes, pílulas refinadas
+  - Pelos feitos: Mãos Manchadas de Sangue (30 mortes), **Psicopata** (100 mortes com mais crueldade que bondade), Coração de Pedra, **Coração Bondoso**, **Santo Vivo**, Caçador de Feras, Veterano de Mil Batalhas, Sobrevivente, Espírito Quebrado, Nariz de Alquimista
+  - Ao acaso (até 3 por vida): Insônia, Olhar de Águia, Tocado pela Sorte, Azarado, Memória Fotográfica, Carismático, Temperamento Explosivo, Saúde Frágil, Intuição Espiritual
+  - Efeitos: atributos, cultivo passivo, relações, chance de emboscadas e de vingadores, dificuldade para domar bestas, alinhamento que escorre com o tempo (Psicopata)
 - [x] Distribuição de atributos com limite (14 pontos, cada atributo de 3 a 15, sem sobras)
 - [x] Explicação de como cada atributo influencia o jogo
 - [x] Nascimento sorteado fora da criação (região, família/clã/seita, ramo, raiz, corpo especial), com a Sorte melhorando as chances
@@ -30,6 +39,11 @@ Legenda: **[x]** feito · **[~]** parcial · **[ ]** não feito
 
 ## Interface
 
+- [x] A história fica no centro: a cada escolha a tela centraliza o evento (ou alinha o começo do texto, se ele for maior que a tela), e as **escolhas grudam no rodapé** enquanto o texto rola; banner e barra do topo mais baixos
+- [x] Nenhum painel volta ao topo ao clicar: todos os modais guardam a rolagem e o foco quando se redesenham
+- [x] Resultados de lutas e testes (Atividades, Missões, Mundo, Relações) abrem numa janela própria por cima do painel; mensagens curtas (compras, conversas, refino, ocupação, campos) aparecem num aviso flutuante — o painel de baixo não se mexe
+- [x] Confirmações dentro do jogo no lugar do `confirm()` nativo (romper com o mestre, nova vida, substituir slot)
+- [x] "Terminar / romper": com parceiro(a) vira Ex; com amigos, conhecidos e ex corta os laços (a pessoa sai de Relações)
 - [x] HUD: nome, idade/expectativa de vida, reino e estágio, afiliação, local, ocupação, influência da família e pessoal
 - [x] HUD: barras de vida e progresso de cultivo, barra de alinhamento (Demoníaco ↔ Ortodoxo), pedras espirituais, atributos
 - [x] Painéis: Atividades, Missões, **Mundo** (Torre, Torneio, Comércio), Rankings, Relações, Seita e Ocupação, Ofícios, Inventário
@@ -37,7 +51,8 @@ Legenda: **[x]** feito · **[~]** parcial · **[ ]** não feito
 - [x] **Lutas reproduzidas devagar**: arena com barras de vida (sua, do inimigo, da besta), escudo e sincronia animadas, ação por ação, com velocidade 1×/2×/4× (lembrada entre sessões) e botão "Pular luta"
 - [x] Registro completo da luta disponível depois (recolhido)
 - [x] Tela de fim de vida com linhagem e escolha de herdeiro
-- [ ] Resumo/linha do tempo dos feitos da vida
+- [x] Diário pesquisável e crônicas das gerações anteriores, arquivadas ao continuar como herdeiro
+- [x] Layout centralizado com largura máxima e painéis responsivos
 
 ---
 
@@ -84,7 +99,7 @@ Legenda: **[x]** feito · **[~]** parcial · **[ ]** não feito
 - [x] Dificuldade dispara a cada Ordem; pílulas de 9ª e 10ª Ordem rendem fama histórica
 - [x] Emprego na Guilda de Alquimistas; aba de Ofícios para refinar e vender
 - [x] Ervas por idade (100/500/1000 anos) como ingredientes das Ordens altas (compra no Mercado)
-- [ ] Campos espirituais como patrimônio (plantar ervas)
+- [x] Campos espirituais: compra de até três lotes, plantio, maturação por meses, colheita para alquimia e herança
 - [x] **Ordem mínima da fornalha**: fornalhas da 3ª à 10ª Ordem no Mercado (a básica é de 2ª)
 - [x] Leilões com pílulas de Ordem alta e pureza sorteada
 - [ ] Leilões como evento social/político (rivais disputando lances)
@@ -123,13 +138,18 @@ Legenda: **[x]** feito · **[~]** parcial · **[ ]** não feito
 - [x] 5 regiões com força diferente (escalam inimigos, recompensas e salários); viagem entre regiões
 - [x] 9 Seitas Supremas (nomes propostos), recrutamento "sem direito a recusa"
 - [~] Torneio do Dragão Duplo só como boato
-- [ ] Ranking das Seitas Supremas, torneio jogável
+- [x] Ranking de seitas e clãs por região (Seitas Supremas incluídas), com líder, membros e poder
+- [ ] Torneio do Dragão Duplo jogável
 - [ ] Rixas históricas entre regiões, tributação
 
 ### 10. Bestas e Raças
 - [x] Bestas espirituais da fauna regional, com faixa e cultivo visíveis; núcleos de besta
 - [x] Besta companheira com cultivo próprio, vínculo, idade e evolução de faixa (Espiritual → Demoníaca → Divina → Ancestral)
 - [x] **Domador de Bestas** como profissão (Aprendiz → Mestre das Mil Bestas); domar e trocar de companheira
+- [x] **Bestiário** (barra lateral): 28 espécies em 5 linhagens (Comum, Espiritual, Demoníaca, Divina, Ancestral), com região, elemento, reinos dos adultos e idade adulta
+- [x] O reino da besta vem da espécie, não do domador: filhotes nascem no reino da linhagem (1º a 4º); adultas selvagens ficam na faixa da espécie; encontros escolhem espécies do reino de quem as encontra
+- [x] **Fases de vida**: Filhote (não rompe reinos, 40% da força) → Jovem (75%) → Adulta (100%, até o teto da espécie) → Anciã (110%, pode passar do teto); linhagens nobres cultivam mais rápido
+- [x] Bestas de famílias domadoras crescem e viram adultas junto com o personagem; a Evolução Conjunta sobe com você só até o teto da fase
 - [ ] Raça Demoníaca, Meio-Bestas, Espíritos Elementais, Cultivadores de Alma
 
 ### 11. Linha do Tempo
@@ -141,7 +161,9 @@ Legenda: **[x]** feito · **[~]** parcial · **[ ]** não feito
   - Bronze: ervas/pílulas · Prata: manual Xuan/Terra · Ouro: manual Céu ou fragmento de artefato · Ouro Negro: herança de um Imperador/Sábio · Lendário: despertar de Constituição Especial ou manual Divino
 - [x] Gatilhos da rolagem: nascimento, explorar (evento "Um Golpe de Sorte"), sobreviver a quase-morte
 - [x] Túmulo Ancestral com eco de memória (provas de Coração, Força e Sabedoria) e pingente selado no berço
-- [x] 9 heranças lendárias: Imperador Estelar, Rainha Fênix, Deus da Alquimia, Mestre das Mil Bestas, **Sábio da Espada**, **Dragão Ancestral**, **Rei Demoníaco**, **Nove Sóis**, **Forja Celestial**
+- [x] 12 heranças lendárias: Imperador Estelar, Rainha Fênix, Deus da Alquimia, Mestre das Mil Bestas, **Sábio da Espada**, **Dragão Ancestral**, **Rei Demoníaco**, **Nove Sóis**, **Forja Celestial** e as demoníacas **Imperatriz de Sangue**, **Vale dos Mil Cadáveres** e **Senhor das Sombras Infernais**
+- [x] **Herança por alinhamento**: demoníaco (≤ −40) só recebe legados demoníacos (ou neutros, se já herdou todos), nunca justos; alinhamento positivo nunca recebe demoníacos
+- [x] O ovo do Mestre das Mil Bestas choca um filhote de linhagem Divina ou Ancestral, já no 3º/4º reino, com Vínculo de Nascença
 - [x] Heranças se **acumulam** (nenhuma apaga a outra); em combate vale a técnica mais forte de cada categoria, e as passivas de corpo/movimento usam a melhor que você conhece
 - [x] 12 novas técnicas (Punho da Montanha, Lâmina do Vento, Lótus Carmesim, Pele de Ferro, Orvalho Celestial, Passo Relâmpago, Ossos de Jade, Sutra do Lótus Azul + 4 de herança)
 - [x] **Domadores Hereditários**: família de domadores dá uma besta desde a infância — **Vínculo de Nascença**
@@ -199,7 +221,9 @@ Legenda: **[x]** feito · **[~]** parcial · **[ ]** não feito
 - [x] Hierarquia completa da seita (Líder, Anciões, discípulos) com cultivo, idade e raiz; Bestas Guardiãs
 - [x] Desafiar discípulos do seu posto ou do posto acima para **tomar a vaga**
 - [x] Seita ortodoxa expulsa quem trabalha no Submundo ou destrói núcleos
-- [ ] Discípulo Pessoal de um Ancião, mestre (Shifu) com relação própria
+- [x] Discípulo pessoal de ancião: vínculo próprio, orientação por capítulo, custo de contribuição e encerramento do vínculo
+- [x] O velho de roupas gastas vira um mestre de verdade (lições por capítulo, sem precisar de seita)
+- [x] **Um único mestre**: quem é discípulo não pode ter outro; formar-se (alcançar o reino do mestre) é honroso; romper antes é desonra (reputação −15, alinhamento −10, ~5 anos sem que outro mestre aceite)
 - [ ] Mudar de seita, trair a seita
 - [ ] Clãs com sistema equivalente (hoje só estipêndio e intrigas)
 
@@ -210,7 +234,12 @@ Legenda: **[x]** feito · **[~]** parcial · **[ ]** não feito
 - [x] Recrutar membros (custo cresce com o tamanho); a fama atrai membros sozinha
 - [x] 3 instalações até o nível 3 (com manutenção): Sala de Cultivo (+8% de cultivo passivo), Biblioteca (−2 na dificuldade de estudar manuais), Muralhas (−25% de ataques de vingadores e bandidos)
 - [x] O tamanho da facção eleva a influência da família; herdeiros nascem dentro dela e a herdam
-- [ ] Anciões e discípulos próprios com nomes, guerras entre facções, território
+- [x] **Guerra de Clãs** (também entre seitas): rivais da região declaram guerra à sua facção ou à seita/clã a que você pertence
+  - Painel Mundo → Guerra: liderar ataques (luta contra um talento inimigo), desafiar o líder inimigo (força real), sabotar depósitos, propor trégua
+  - Placar de −5 a +5; a cada estação a guerra pende para o lado mais forte (as muralhas da sua facção seguram ataques); 12 estações = armistício
+  - Vitória: o inimigo vira Vassalo e paga tributo, espólios e reputação; derrota: pedras, reputação, membros e uma instalação
+  - Seitas e clãs do mundo também guerreiam entre si e mudam de força no ranking
+- [ ] Anciões e discípulos próprios com nomes, território
 
 ## Ocupações
 
@@ -228,26 +257,42 @@ Legenda: **[x]** feito · **[~]** parcial · **[ ]** não feito
 ## Mundo vivo, Rankings e Missões
 
 - [x] NPCs persistentes por região que envelhecem e cultivam com o tempo
-- [x] Rankings da região: mais fortes, maiores talentos, melhores alquimistas
+- [x] Rankings de **qualquer uma das 5 regiões**: mais fortes, maiores talentos, melhores alquimistas e **Seitas e Clãs**; você aparece no ranking da região onde está; cultivadores e facções de todas as regiões visitadas avançam com o tempo
 - [x] Quadro de missões: caçadas e duelos (com opção de Duelo Demoníaco)
 - [x] Campanha: Arco 1 (O Dragão Adormecido), Arco 2 (Ascensão Regional), Arco 3 (O Coração do Mundo)
 - [ ] Arco 4 em diante; missões com escolhas narrativas próprias
-- [ ] Rankings de outras regiões/continente; NPCs que reagem à sua influência
+- [x] Rankings de outras regiões (as cinco), com abas separadas de **Seitas**, **Clãs** e **Grupos Mercadores**; clãs têm líderes mais fracos e menos membros (só os raros clãs ancestrais rivalizam com uma seita), e o patriarca carrega o sobrenome da casa
+- [x] **Notícias do mundo das facções**: guerras e roubos de discípulos entre facções
+- [x] **Seitas Supremas roubam discípulos**: tiram membros das seitas menores da região e da sua própria facção (a influência protege), e podem tentar aliciar você (aceitar, recusar ou espionar)
+- [x] **Provocar guerra** (Mundo → Guerra de Clãs): escolha um rival do mesmo tipo (mais fraco, parelho ou mais forte); vencer faz seu clã/seita crescer (+35% de membros) e dá prestígio familiar
+- [x] Rixas de sangue e vassalos em Mundo → Rixas de Sangue e Vassalos
+- [x] **Grandes Grupos Mercadores** (Mercado → Grandes Grupos Mercadores): 4 casas comerciais pelas regiões, com cotas que pagam dividendos por estação, contratos (teste de atributo) e reputação que dá 5/10/15% de desconto em todo o Mercado
+- [ ] Ranking continental; NPCs que reagem à sua influência
 
 ## Atividades
 
 - [x] Pastas; energia por estação (5); repetir mais de 3 vezes não rende ou causa desvio de qi/lesão
 - [x] Estilos, Corpo e Cultivo, Seita, Trabalho, Educação e Lazer, Social, Finanças, Crime, Bestas e Espiritualidade, Viagem
 - [x] Conhecer pessoas; treinar a besta sozinha, cultivar junto com ela, domar bestas selvagens
-- [ ] Aceitar discípulo, romper aliança
-- [ ] Comprar montaria/espada voadora, território, abrir loja
+- [x] **Aceitar discípulos** (Relações → Seus Discípulos): a partir do 3º reino e com reputação 20; 1 discípulo no 3º reino, +1 por reino (até 5); ensinar custa 1 de energia; eles cultivam sozinhos, nunca passam do seu reino e cada reino que rompem dá reputação; pode expulsar
+- [x] **Campos espirituais automáticos**: colheita vai para a bolsa e o campo replanta sozinho (a semente fixada ou a melhor que o reino permite, sem gastar mais da metade das pedras)
+- [x] **Mais 12 eventos aleatórios** na história: mendigo misterioso, caravana atacada, festival das lanternas, fruto espiritual, jovem mestre arrogante, criança perdida, tempestade espiritual, batedor de carteira, vendedor de manuais, partida de Go, eclipse de sangue e vila doente
+- [ ] Romper aliança
+- [x] Comprar montaria, espada ou barco voador e moradia (painel Mercado)
+- [x] Aprender Alquimia, Inscrição e Divinação sozinho (autodidata) e comprar um manual de Método de Cultivo
+- [ ] Comprar território, abrir loja
 - [ ] Fama: demonstração pública, publicar manual; mais crimes (assaltar caravana, fraudar leilão, quebrar selo)
 
 ## Sistema de Vida (`Sistema-de-vida.md`)
 
 - [x] Relacionamentos: pais, tutor, mestre, rival, cônjuge, besta companheira, seita inteira, **Inimigos Jurados**
+- [x] O painel **Relações** mostra só os laços pessoais (família, noivado, mestre, discípulos, parceiros e pessoas conhecidas); a besta companheira foi para o **Bestiário**, rixas e vassalos para o **Mundo** e a hierarquia da seita para **Ocupação**
 - [x] Pessoas com atributos (idade, cultivo, aparência, inteligência, compatibilidade elemental, relação)
 - [x] Interações: conversar, presentear, namorar, casar, ter filhos, discutir, terminar
+- [x] **Noivado arranjado**: clãs e seitas de prestígio prometem a criança no berço a um talento de outra família poderosa, que cultiva com o tempo
+  - A partir dos 16 anos, com menos de 70% da força dela: rompimento público (aceitar, marcar o **duelo de três anos**, lutar ali mesmo ou rasgar a carta primeiro)
+  - Famílias orgulhosas ou demoníacas podem mandar um **assassino**; vencer e expor abre uma rixa de sangue
+  - Com 80% da força dela aos 18: **casamento** e dote (vira Cônjuge em Relações); quem humilhou você pode voltar arrependida quando você for muito mais forte
 - [x] Companheiro(a) de Dao (compatibilidade ≥ 70) dá +10% de cultivo passivo (acumula até +30%)
 - [x] **Harém**: vários parceiros(as) ao mesmo tempo; o limite cresce com a influência pessoal (1 → 5). Cada novo membro deixa os outros com ciúmes; ciúmes surgem ao longo do tempo; "Banquete para o harém" melhora todos; quem fica abandonado demais vai embora
 - [x] Filhos nascem com raiz espiritual sorteada (pela Sorte)
@@ -270,7 +315,8 @@ Legenda: **[x]** feito · **[~]** parcial · **[ ]** não feito
 ## Próximos passos sugeridos
 
 1. Mundos Perdidos de verdade (selo temporal, colapso, disputa entre seitas) e **Torneio do Dragão Duplo** jogável
-2. Anciões, Patriarca em Reclusão e Anciões Convidados (traição); anciões e guerras para a facção fundada
-3. Técnicas elementais e elementos superiores
-4. Moradias com densidade espiritual e montarias (viagens mais baratas/rápidas para o comércio)
-5. Demais categorias de ocupação
+2. Anciões com nome para a facção fundada, Patriarca em Reclusão e Anciões Convidados (que podem trair); território disputado nas guerras de clãs
+3. Técnicas elementais e elementos superiores (Raio, Vento, Luz, Trevas, Espaço, Tempo)
+4. Filhos que cultivam e agem por conta própria enquanto o pai vive; missões para discípulos
+5. Demais categorias de ocupação e o `ocupacoes.md` reescrito em listas
+6. Imagens (retratos e cenas) e som

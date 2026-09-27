@@ -3,6 +3,7 @@ import { createEstilos } from './martialStyles';
 import { createProfissoes } from './professions';
 import { createMundo } from './worldState';
 import { ENERGIA_POR_ESTACAO } from './story';
+import { especieDoNome } from './bestiary';
 
 /**
  * Atualiza saves de versões antigas preenchendo tudo que foi adicionado depois com valores padrão,
@@ -28,6 +29,30 @@ function normalizar(dados: Json): void {
     if (r.tipo === 'Inimigo Jurado' && (r.rank ?? 1) <= 1) {
       r.rank = Math.min(10, Math.max(2, (c.cultivo?.rank ?? 1) + 2));
       r.estagio = 5;
+    }
+  }
+
+  // O velho de roupas gastas virou um mestre de verdade: quem já era discípulo dele continua sendo.
+  const mestre = c.flags?.mestre;
+  if (typeof mestre === 'string' && !['recusou', 'ajudou'].includes(mestre) && !c.mestrePessoal && !c.flags.mestreFormado) {
+    c.mestrePessoal = {
+      id: 'mestre-errante',
+      nome: mestre,
+      seita: 'Sem seita — um andarilho',
+      vinculo: 40,
+      ultimaLicao: -1,
+      origem: 'errante',
+      rank: Math.min(13, (c.cultivo?.rank ?? 1) + 2),
+    };
+  }
+
+  // Bestas de saves antigos só tinham o nome: ligamos à espécie do bestiário quando ela existe.
+  const besta = c.companheira;
+  if (besta && !besta.especieId) {
+    const especie = especieDoNome(String(besta.especie ?? ''));
+    if (especie) {
+      besta.especieId = especie.id;
+      besta.especie = especie.nome;
     }
   }
 }

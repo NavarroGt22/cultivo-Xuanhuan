@@ -2,8 +2,8 @@ import { ATTRIBUTE_INFO, AttributeKey, Attributes } from './attributes';
 import { Character, FlagValor, alterarVidaPercentual, getEffectiveAttributes, limitarVida } from './character';
 import { alignmentLabel, shiftAlignment } from './alignment';
 import { ItemQuantidade, addItem, addPedrasEspirituais, removerItem } from './inventory';
-import { aplicarProgresso, avancarRank, progressoEfetivo } from './cultivation';
-import { grauRaizInfo } from './spiritualRoot';
+import { REINOS, aplicarProgresso, avancarRank, progressoEfetivo } from './cultivation';
+import { grauRaizInfo, rollSpiritualRoot } from './spiritualRoot';
 import { getEquipment } from './equipment';
 import { Afiliacao } from './origin';
 import { PROFISSAO_INFO, ProfissaoId, ganharXpProfissao, tituloProfissao } from './professions';
@@ -13,7 +13,11 @@ import { REGIOES, RegiaoId } from './world';
 import { ESTILOS, EstiloId, ganharXpEstilo } from './martialStyles';
 import { chaveEstudo, dificuldadeEstudo, getTecnica, nomeGrau, tecnicaDoManual } from './techniques';
 import { attributeCheck } from './dice';
-import { aplicarProgressoCompanheira, criarCompanheira } from './companion';
+import { adultaDaEspecie, aplicarProgressoCompanheira, criarCompanheira, faseDaCompanheira, filhoteDaEspecie } from './companion';
+import { getEspecie } from './bestiary';
+import { aceitarMestreErrante } from './mentor';
+import type { StatusNoivado } from './betrothal';
+import { Feito, registrarFeito } from './lifeTraits';
 import { getHeranca } from './inheritance';
 import { conhecerAlguem, descreverRelacao } from './relationships';
 import { CORPOS_ESPECIAIS } from './origin';
@@ -59,7 +63,19 @@ export interface Efeitos {
   /** Pontos de Contribuição da seita (só para discípulos). */
   contribuicao?: number;
   /** Contrato de alma com uma nova besta (substitui a atual). */
-  novaCompanheira?: { especie: string; rank: number; estagio: number; atributoMedio: number };
+  /**
+   * Contrato com uma besta. Com `especieId`, o reino segue a espécie (bestiary.ts):
+   * `filhote` nasce no reino da linhagem; sem ele, é uma adulta selvagem dentro da faixa da espécie.
+   */
+  novaCompanheira?: {
+    especie: string;
+    rank: number;
+    estagio: number;
+    atributoMedio: number;
+    especieId?: string;
+    filhote?: boolean;
+    deInfancia?: boolean;
+  };
   /** Treino da besta: pontos de progresso e vínculo. */
   treinoCompanheira?: { progresso: number; vinculo: number };
   /** Desperta uma herança (inheritance.ts). */
@@ -72,6 +88,17 @@ export interface Efeitos {
   destruirNucleo?: { nome: string; afiliacao: string; rank?: number };
   /** Vislumbre do Destino (GDD 14.6): 'proprio' = ler sozinho; 'pago' = consultar um adivinho. */
   lerDestino?: 'proprio' | 'pago';
+  /**
+   * Noivado arranjado (betrothal.ts): muda o status, marca o duelo (`duelo` = meses a partir de agora),
+   * casa (vira Cônjuge em Relações) ou abre uma rixa de sangue com a família de quem foi prometido.
+   */
+  noivado?: { status?: StatusNoivado; duelo?: number; assassinoEnviado?: boolean; casar?: boolean; rixa?: boolean };
+  /** Rola a raiz espiritual de novo (mantendo a melhor), com um grau mínimo — Despertar da Alma. */
+  rerolarRaiz?: { minimo: number };
+  /** Soma aos contadores de feitos da vida (lifeTraits.ts), ex.: `{ mortes: 3 }`. */
+  feitos?: Partial<Record<Feito, number>>;
+  /** O velho de roupas gastas aceita você como discípulo (mentor.ts). Recebe o nome dele. */
+  tornarDiscipuloErrante?: string;
   /** Vende/perde a moradia atual (market.ts). */
   perderMoradia?: boolean;
 }
@@ -95,6 +122,7 @@ export function aplicarEfeitos(character: Character, efeitos: Efeitos): string[]
   }
 
   if (efeitos.alinhamento) {
+    registrarFeito(character, efeitos.alinhamento > 0 ? 'bondades' : 'crueldades');
     character.alinhamento = shiftAlignment(character.alinhamento, efeitos.alinhamento);
     mensagens.push(`Alinhamento ${sinal(efeitos.alinhamento)} (${alignmentLabel(character.alinhamento)}).`);
   }
@@ -128,6 +156,18 @@ export function aplicarEfeitos(character: Character, efeitos: Efeitos): string[]
     const reino = avancarRank(character.cultivo);
     mensagens.push(`Você rompeu para o ${reino.nome}! Expectativa de vida: ~${reino.expectativaAnos.toLocaleString('pt-BR')} anos.`);
     alterarVidaPercentual(character, 100);
+  }
+
+  if (efeitos.rerolarRaiz) {
+    const antiga = character.raizEspiritual;
+    const nova = rollSpiritualRoot(getEffectiveAttributes(character).sorte);
+    nova.grau = Math.max(nova.grau, efeitos.rerolarRaiz.minimo, antiga.grau);
+    character.raizEspiritual = nova;
+    mensagens.push(
+      nova.grau > antiga.grau
+        ? `Sua raiz espiritual renasce: Grau ${antiga.grau} → Grau ${nova.grau} — ${grauRaizInfo(nova.grau).nome}!`
+        : `Sua raiz espiritual se remodela, mas não sobe do Grau ${nova.grau}.`,
+    );
   }
 
   if (efeitos.grauRaiz) {
@@ -227,9 +267,18 @@ export function aplicarEfeitos(character: Character, efeitos: Efeitos): string[]
   }
 
   if (efeitos.novaCompanheira) {
-    const { especie, rank, estagio, atributoMedio } = efeitos.novaCompanheira;
-    character.companheira = criarCompanheira(especie, rank, estagio, atributoMedio);
-    mensagens.push(`Contrato de alma: ${character.companheira.nome} (${especie}) agora luta ao seu lado.`);
+    const { especie, rank, estagio, atributoMedio, especieId, filhote, deInfancia } = efeitos.novaCompanheira;
+    const definida = getEspecie(especieId);
+    character.companheira = definida
+      ? filhote
+        ? filhoteDaEspecie(definida, atributoMedio, Boolean(deInfancia))
+        : adultaDaEspecie(definida, rank, estagio, atributoMedio)
+      : criarCompanheira(especie, rank, estagio, atributoMedio);
+    if (definida) character.flags[`bestiario:${definida.id}`] = true;
+    const besta = character.companheira;
+    mensagens.push(
+      `Contrato de alma: ${besta.nome} (${besta.especie}) agora luta ao seu lado — ${faseDaCompanheira(besta)}, ${REINOS[besta.rank - 1]?.nome ?? ''}.`,
+    );
   }
 
   if (efeitos.treinoCompanheira && character.companheira) {
@@ -261,6 +310,7 @@ export function aplicarEfeitos(character: Character, efeitos: Efeitos): string[]
 
   if (efeitos.destruirNucleo) {
     const { nome, afiliacao, rank } = efeitos.destruirNucleo;
+    registrarFeito(character, 'crueldades', 3);
     mensagens.push(...destruirNucleo(character, nome, afiliacao, rank));
   }
 
@@ -305,7 +355,55 @@ export function aplicarEfeitos(character: Character, efeitos: Efeitos): string[]
   }
 
   if (efeitos.flags) {
+    if (efeitos.flags.quaseMorte === true) registrarFeito(character, 'quaseMortes');
     Object.assign(character.flags, efeitos.flags);
+  }
+
+  for (const [feito, quantidade] of Object.entries(efeitos.feitos ?? {}) as [Feito, number][]) {
+    registrarFeito(character, feito, quantidade);
+  }
+
+  if (efeitos.noivado && character.noivado) {
+    const n = character.noivado;
+    const e = efeitos.noivado;
+    if (e.duelo) n.duelo = character.idadeMeses + e.duelo;
+    if (e.assassinoEnviado) n.assassinoEnviado = true;
+    if (e.status) n.status = e.status;
+    if (e.casar) {
+      n.status = 'casados';
+      character.relacoes.push({
+        id: n.id,
+        nome: n.nome,
+        tipo: 'Cônjuge',
+        idade: Math.floor(n.idade),
+        rank: n.rank,
+        estagio: n.estagio,
+        aparencia: 60 + Math.floor(Math.random() * 40),
+        inteligencia: 50 + Math.floor(Math.random() * 50),
+        compatibilidadeElemental: 40 + Math.floor(Math.random() * 50),
+        relacao: 55,
+      });
+      mensagens.push(`${n.nome} agora é seu cônjuge (veja em Relações). A aliança com o ${n.afiliacao} está selada.`);
+    }
+    if (e.rixa && !character.relacoes.some((r) => r.tipo === 'Inimigo Jurado' && r.nome === n.afiliacao)) {
+      character.relacoes.push({
+        id: Math.random().toString(36).slice(2, 10),
+        nome: n.afiliacao,
+        tipo: 'Inimigo Jurado',
+        idade: 0,
+        rank: Math.min(10, n.rank + 2),
+        estagio: 5,
+        aparencia: 0,
+        inteligencia: 0,
+        compatibilidadeElemental: 0,
+        relacao: 0,
+      });
+      mensagens.push(`O ${n.afiliacao} agora é seu Inimigo Jurado.`);
+    }
+  }
+
+  if (efeitos.tornarDiscipuloErrante) {
+    mensagens.push(...aceitarMestreErrante(character, efeitos.tornarDiscipuloErrante));
   }
 
   if (efeitos.perderMoradia && character.moradia) {

@@ -19,6 +19,8 @@ export interface InimigoDef {
   letal?: boolean;
   /** Elemento no ciclo Wu Xing (ausente = sem afinidade elemental). */
   elemento?: Elemento;
+  /** Besta (não conta como pessoa morta nos feitos da vida). */
+  besta?: boolean;
 }
 
 export interface Combatente {
@@ -123,7 +125,7 @@ export function gerarInimigo(
   for (const chave of ATTRIBUTE_KEYS) {
     atributos[chave] = Math.max(1, Math.round(variacao(mediaAtributos * PESOS_ARQUETIPO[arquetipo][chave], 0.12)));
   }
-  return { nome, atributos, rank, estagio, letal, elemento: elementoDeNome(nome) };
+  return { nome, atributos, rank, estagio, letal, elemento: elementoDeNome(nome), besta: arquetipo === 'besta' };
 }
 
 function montarCombatente(nome: string, vida: number, atributos: Attributes, stats: DerivedStats, bonusVelocidade = 0): Combatente {

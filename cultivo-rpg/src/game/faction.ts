@@ -4,6 +4,7 @@ import { influenciaPessoal } from './influence';
 import { addPedrasEspirituais } from './inventory';
 import type { TipoOrigem } from './origin';
 import { inteiro } from './rng';
+import { REGIOES } from './world';
 
 /**
  * Fundar a própria Seita ou Clã. O fundador vira Patriarca/Mestre da Seita:
@@ -133,6 +134,13 @@ export function processarFaccao(character: Character, estacoes: number): string[
   addPedrasEspirituais(character.inventario, renda - manutencao);
 
   const mensagens = [`${faccao.nome}: renda dos membros +${renda}, manutenção −${manutencao} pedras.`];
+  // Uma seita pequena perde talentos para as Seitas Supremas; sua fama segura parte deles.
+  const supremas = REGIOES[character.local.regiao].seitasSupremas;
+  if (faccao.tipo === 'seita' && supremas.length && faccao.membros > 10 && Math.random() < 0.05 * estacoes * Math.max(0.3, 1 - influenciaPessoal(character).nivel * 0.12)) {
+    const levados = Math.max(1, Math.round(faccao.membros * (0.03 + Math.random() * 0.05)));
+    faccao.membros -= levados;
+    mensagens.push(`A ${supremas[Math.floor(Math.random() * supremas.length)].nome} atraiu ${levados} discípulo(s) da ${faccao.nome} com recursos que você ainda não pode igualar.`);
+  }
   if (influenciaPessoal(character).nivel >= 3 && Math.random() < 0.3 * estacoes) {
     const novos = inteiro(1, 3);
     faccao.membros += novos;

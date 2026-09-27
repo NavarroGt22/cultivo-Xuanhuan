@@ -21,7 +21,7 @@ import { ENERGIA_POR_ESTACAO, StoryState, gastarEnergia } from '../../game/story
 import { tecnicaDoManual } from '../../game/techniques';
 import { ENERGIA_FORJA, QUALIDADES, RECEITAS_FORJA, descreverMateriais, forjar, motivoBloqueioForja, valorDeForja } from '../../game/forge';
 import { criarOverlay, escapeHtml } from './dom';
-import { renderEnergia, renderMensagens } from './resultView';
+import { avisar, renderEnergia } from './resultView';
 
 export function temOficio(character: Character): boolean {
   return character.profissoes.alquimia.nivel > 0 || character.profissoes.inscricao.nivel > 0 || character.profissoes.refinador.nivel > 0;
@@ -117,7 +117,6 @@ export function abrirOficios(character: Character, historia: StoryState, aoAlter
         <div class="abas">${abas}</div>
         <p><strong>${escapeHtml(tituloProfissao(profissaoAba, estado) ?? '')}</strong> · ${estado.xp}/${xpParaProximoNivel(estado.nivel)} xp · Nível ${estado.nivel}</p>
         ${renderEnergia(historia.energia, ENERGIA_POR_ESTACAO)}
-        ${renderMensagens(mensagens)}
 
         ${
           aba === 'forja'
@@ -175,6 +174,8 @@ export function abrirOficios(character: Character, historia: StoryState, aoAlter
       mensagens = forjar(character, receita);
       aoAlterar();
       render();
+      avisar(mensagens);
+      mensagens = [];
       return;
     }
 
@@ -193,6 +194,8 @@ export function abrirOficios(character: Character, historia: StoryState, aoAlter
 
     aoAlterar();
     render();
+    avisar(mensagens);
+    mensagens = [];
   });
 
   render();

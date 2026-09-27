@@ -4,6 +4,8 @@ import { REINOS } from './cultivation';
 import { TECNICAS, grauMaximoPorAcesso, idManual, nomeGrau } from './techniques';
 import { ORIGEM_INFO } from './origin';
 import { bonusCultivoMoradia } from './market';
+import { bonusCultivoTracos } from './lifeTraits';
+import { metodoDeCultivo } from './cultivationMethod';
 
 /**
  * Discípulos de seita não precisam de emprego: recebem estipêndio e ganham
@@ -99,14 +101,15 @@ export function processarDeveres(character: Character, estacoes: number): string
 
 /** Multiplicador do cultivo passivo: emprego rouba tempo; a seita oferece ambiente. */
 export function fatorCultivoPassivo(character: Character): number {
-  const bonusFaccao = (character.faccao?.instalacoes.salaCultivo ?? 0) * 0.08 + bonusCultivoMoradia(character);
-  if (character.ocupacao) return 0.15 + bonusFaccao;
-  if (character.faccao) return 0.3 + bonusFaccao;
-  if (ehDiscipulo(character)) {
-    const bonusSuprema = character.afiliacao.tipo === 'seita-suprema' ? 0.1 : 0;
-    return 0.3 + postoAtual(character).bonusCultivo + bonusSuprema + bonusCultivoMoradia(character);
-  }
-  return 0.3 + bonusCultivoMoradia(character);
+  if (!metodoDeCultivo(character)) return 0;
+  const salaDaFaccao = (character.faccao?.instalacoes.salaCultivo ?? 0) * 0.08;
+  const extra = bonusCultivoMoradia(character) + bonusCultivoTracos(character);
+  let base: number;
+  if (character.ocupacao) base = 0.15 + salaDaFaccao;
+  else if (character.faccao) base = 0.3 + salaDaFaccao;
+  else if (ehDiscipulo(character)) base = 0.3 + postoAtual(character).bonusCultivo + (character.afiliacao.tipo === 'seita-suprema' ? 0.1 : 0);
+  else base = 0.3;
+  return Math.max(0.05, base + extra);
 }
 
 export interface OfertaSeita {

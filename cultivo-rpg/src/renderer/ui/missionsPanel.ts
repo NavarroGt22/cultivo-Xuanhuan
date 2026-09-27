@@ -7,7 +7,7 @@ import { npcsDaRegiao } from '../../game/worldState';
 import { ehDiscipulo } from '../../game/sect';
 import { DesfechoExibido, ENERGIA_POR_ESTACAO, StoryState, descreverEscolha, executarEscolha, gastarEnergia } from '../../game/story';
 import { criarOverlay, escapeHtml } from './dom';
-import { ativarReproducao, renderEnergia, renderMensagens, renderResultado } from './resultView';
+import { abrirResultado, avisar, renderEnergia } from './resultView';
 
 const ROTULO_STATUS = {
   resgatado: '✓ Concluído',
@@ -18,8 +18,6 @@ const ROTULO_STATUS = {
 
 export function abrirMissoes(character: Character, historia: StoryState, aoAlterar: () => void): void {
   const overlay = criarOverlay();
-  let mensagens: string[] = [];
-  let resultado: DesfechoExibido | null = null;
   const destruir = new Set<number>();
 
   const render = (): void => {
@@ -74,14 +72,11 @@ export function abrirMissoes(character: Character, historia: StoryState, aoAlter
         <button class="fechar" data-acao="fechar" title="Fechar">×</button>
         <h2>Missões</h2>
         ${renderEnergia(historia.energia, ENERGIA_POR_ESTACAO)}
-        ${renderMensagens(mensagens)}
-        ${resultado ? renderResultado(resultado) : ''}
         <h3>Quadro de missões — ${escapeHtml(character.local.cidade)}</h3>
         <div class="lista-objetivos">${quadro}</div>
         <h2 class="subtitulo">Campanha</h2>
         <div class="lista-objetivos">${campanha}</div>
       </div>`;
-    ativarReproducao(overlay, resultado, render);
   };
 
   overlay.addEventListener('change', (evento) => {
@@ -103,15 +98,17 @@ export function abrirMissoes(character: Character, historia: StoryState, aoAlter
     const resgatar = alvo.closest<HTMLElement>('[data-resgatar]');
     const aceitar = alvo.closest<HTMLButtonElement>('[data-missao]');
 
+    let resultado: DesfechoExibido | null = null;
+    let mensagens: string[] = [];
+    let titulo = 'Missão';
     if (resgatar?.dataset.resgatar) {
       mensagens = resgatarObjetivo(character, historia.mundo, resgatar.dataset.resgatar);
-      resultado = null;
     } else if (aceitar && !aceitar.disabled) {
       const indice = Number(aceitar.dataset.missao);
       const missao = historia.mundo.quadro[indice];
       if (!missao || !gastarEnergia(historia, ENERGIA_MISSAO)) return;
+      titulo = missao.titulo;
       resultado = executarEscolha(character, escolhaDaMissao(missao));
-      mensagens = [];
       if (resultado.vitoria) {
         if (missao.npcId && destruir.has(indice)) {
           const npc = npcsDaRegiao(historia.mundo, character.local.regiao).find((n) => n.id === missao.npcId);
@@ -129,7 +126,8 @@ export function abrirMissoes(character: Character, historia: StoryState, aoAlter
 
     aoAlterar();
     render();
-    overlay.querySelector('.painel')?.scrollTo({ top: 0 });
+    if (resultado) abrirResultado(resultado, mensagens, titulo);
+    else avisar(mensagens);
   });
 
   render();

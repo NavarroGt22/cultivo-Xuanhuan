@@ -5,6 +5,7 @@ import { ItemQuantidade, addItem, addPedrasEspirituais, quantidadeItem, removerI
 import { getConsumivel, idComQualidade, nomeItem } from './items';
 import { REGIOES } from './world';
 import { QUALIDADES, indiceQualidadePorMargem } from './quality';
+import { registrarFeito } from './lifeTraits';
 
 /** Custo de energia de uma tentativa de refino ou gravação. */
 export const ENERGIA_REFINO = 1;
@@ -120,6 +121,7 @@ export function refinar(character: Character, receita: Receita, usarIngrediente:
     const quantidade = receita.ordem <= 3 && margem >= 8 ? 2 : 1;
     const id = idComQualidade(receita.id, pureza);
     addItem(character.inventario, id, quantidade);
+    registrarFeito(character, 'pilulas', quantidade);
     const mensagens = [
       resumo,
       `Sucesso! Núcleo de ${pureza + 1} anel(éis) — pureza ${QUALIDADES[pureza].nome}: ${quantidade}× ${nomeItem(id)}.`,

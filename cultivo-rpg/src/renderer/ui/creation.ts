@@ -14,11 +14,11 @@ import { rollSpiritualRoot } from '../../game/spiritualRoot';
 import { Character, Genero, calcularAtributosBase, createCharacter } from '../../game/character';
 import { getDerivedStats } from '../../game/stats';
 import { createCultivation } from '../../game/cultivation';
-import { CORPOS_ESPECIAIS, rollOrigin } from '../../game/origin';
+import { CORPOS_ESPECIAIS, ORIGEM_INFO, rollOrigin } from '../../game/origin';
 import { rolarTierHeranca } from '../../game/inheritance';
 import { gerarNomePessoa } from '../../game/world';
 import { escolher } from '../../game/rng';
-import { criarOverlay, escapeHtml } from './dom';
+import { criarOverlay, escapeHtml, redesenharMantendoPosicao } from './dom';
 import { imagemOpcional, retratosDoProtagonista } from './assets';
 import { renderAtributosGrid, renderStatsGrid } from './hud';
 
@@ -43,6 +43,31 @@ function distribuicaoAleatoria(): Attributes {
   return distribuicao;
 }
 
+/** Chances de nascimento para cada valor de Sorte, estimadas por sorteio (guardadas para não refazer). */
+const chancesPorSorte = new Map<number, { raizBoa: number; raizRara: number; claOuSeita: number }>();
+
+function chancesDoDestino(sorte: number): { raizBoa: number; raizRara: number; claOuSeita: number } {
+  const guardada = chancesPorSorte.get(sorte);
+  if (guardada) return guardada;
+  const amostras = 4000;
+  let raizBoa = 0;
+  let raizRara = 0;
+  let claOuSeita = 0;
+  for (let i = 0; i < amostras; i++) {
+    const grau = rollSpiritualRoot(sorte).grau;
+    if (grau >= 4) raizBoa++;
+    if (grau >= 6) raizRara++;
+    if (ORIGEM_INFO[rollOrigin(sorte).tipo].prestigio >= 1) claOuSeita++;
+  }
+  const chances = { raizBoa: (raizBoa / amostras) * 100, raizRara: (raizRara / amostras) * 100, claOuSeita: (claOuSeita / amostras) * 100 };
+  chancesPorSorte.set(sorte, chances);
+  return chances;
+}
+
+function porcentagem(valor: number): string {
+  return `${valor.toLocaleString('pt-BR', { maximumFractionDigits: 1 })}%`;
+}
+
 function pontosRestantes(distribuicao: Attributes): number {
   return PONTOS_DE_CRIACAO - pontosGastos(distribuicao);
 }
@@ -52,7 +77,9 @@ function abrirDistribuicao(estado: CreationState, aoConfirmar: () => void): void
   const rascunho: Attributes = { ...estado.distribuicao };
   const traco = getTrait(estado.tracoId);
 
-  const render = (): void => {
+  const render = (): void => redesenharMantendoPosicao(overlay, desenhar, '.painel');
+
+  const desenhar = (): void => {
     const restantes = pontosRestantes(rascunho);
     const finais = calcularAtributosBase(rascunho, traco);
 
@@ -142,12 +169,15 @@ export function renderCriacao(app: HTMLElement, aoComecar: (character: Character
 
   const podeComecar = (): boolean => estado.nome.trim().length > 0 && pontosRestantes(estado.distribuicao) === 0;
 
-  const render = (): void => {
+  const render = (): void => redesenharMantendoPosicao(app, desenhar);
+
+  const desenhar = (): void => {
     const traco = getTrait(estado.tracoId);
     const retratos = retratosDoProtagonista();
     const atributosFinais = calcularAtributosBase(estado.distribuicao, traco);
     const stats = getDerivedStats(atributosFinais, null, createCultivation());
     const restantes = pontosRestantes(estado.distribuicao);
+    const destino = chancesDoDestino(atributosFinais.sorte);
 
     const efeitosTraco = [
       formatarBonus(traco.bonusAtributos),
@@ -163,6 +193,7 @@ export function renderCriacao(app: HTMLElement, aoComecar: (character: Character
       <div class="criacao">
         <div class="painel painel-criacao">
           <h1>Criação de Cultivador</h1>
+          <button id="btn-aleatorizar" class="largo" title="Sorteia nome, gênero, retrato, traço e atributos">🎲 Aleatorizar tudo</button>
 
           <label for="campo-nome">Nome</label>
           <div class="linha">
@@ -189,9 +220,12 @@ export function renderCriacao(app: HTMLElement, aoComecar: (character: Character
           }
 
           <label for="campo-traco">Traço</label>
-          <select id="campo-traco">
-            ${TRAITS.map((t) => `<option value="${t.id}" ${t.id === traco.id ? 'selected' : ''}>${escapeHtml(t.nome)}</option>`).join('')}
-          </select>
+          <div class="linha">
+            <select id="campo-traco">
+              ${TRAITS.map((t) => `<option value="${t.id}" ${t.id === traco.id ? 'selected' : ''}>${escapeHtml(t.nome)}</option>`).join('')}
+            </select>
+            <button id="btn-traco-aleatorio" class="icone" title="Traço aleatório">⟳</button>
+          </div>
           <p class="descricao">${escapeHtml(traco.descricao)} ${efeitosTraco ? `<em>${efeitosTraco}</em>` : ''}</p>
 
           <label>Distribuição de Atributos</label>
@@ -212,6 +246,11 @@ export function renderCriacao(app: HTMLElement, aoComecar: (character: Character
               Onde você nasce — região, família, clã ou seita, ramo principal ou colateral —, sua
               <strong>raiz espiritual</strong> e um possível <strong>corpo especial</strong> serão sorteados no nascimento.
               Sorte alta (agora <strong>${atributosFinais.sorte}</strong>) melhora as chances.
+            </p>
+            <p class="dica">
+              Com Sorte ${atributosFinais.sorte}: raiz de grau 4 ou mais ~${porcentagem(destino.raizBoa)} · grau 6 ou mais ~${porcentagem(destino.raizRara)} ·
+              nascer em clã ou seita ~${porcentagem(destino.claOuSeita)}. Quem nasce em família comum ou órfão não tem quem ensine a cultivar:
+              vai precisar de uma seita, um mestre ou um manual de Método de Cultivo.
             </p>
             <p>
               Estilos marciais, técnicas, Alquimia e Inscrição são aprendidos ao longo da vida — o primeiro estilo vem da sua
@@ -237,6 +276,20 @@ export function renderCriacao(app: HTMLElement, aoComecar: (character: Character
 
     document.getElementById('btn-nome-aleatorio')?.addEventListener('click', () => {
       estado.nome = gerarNomePessoa();
+      render();
+    });
+
+    document.getElementById('btn-traco-aleatorio')?.addEventListener('click', () => {
+      estado.tracoId = escolher(TRAITS.filter((t) => t.id !== estado.tracoId)).id;
+      render();
+    });
+
+    document.getElementById('btn-aleatorizar')?.addEventListener('click', () => {
+      estado.nome = gerarNomePessoa();
+      estado.genero = escolher<Genero>(['masculino', 'feminino']);
+      if (retratos.length) estado.retrato = escolher(retratos);
+      estado.tracoId = escolher(TRAITS).id;
+      estado.distribuicao = distribuicaoAleatoria();
       render();
     });
 

@@ -18,8 +18,16 @@ import { ORDEM_PILULA, getConsumivel, idComQualidade } from './items';
 import { TECNICAS, dificuldadeAprendizado, grauMaximoPorAcesso, idManual, nomeGrau } from './techniques';
 import { ESTILOS, ESTILO_IDS, EstiloId } from './martialStyles';
 import { influenciaPessoal } from './influence';
-import { descreverCultivo, faixaBesta } from './npcs';
-import { HERANCAS, achadoDeHeranca, rolarTierHeranca } from './inheritance';
+import { descreverCultivo, inimigoDoNpc } from './npcs';
+import { LIMIAR_DIGNO, LIMIAR_INDIGNO, Noivado, forcaRelativa, tratamento } from './betrothal';
+import { escolherRival, motivoAleatorio, podeTerGuerra } from './clanWar';
+import { NOME_TIPO_FACCAO } from './regionalFactions';
+import type { MundoState } from './worldState';
+import { fatorEmboscadaTracos, fatorVingancaTracos } from './lifeTraits';
+import { quantidadeItem } from './inventory';
+import { GRAU_MINIMO_DESPERTAR, podeDespertar, sortearIdentidade } from './soulAwakening';
+import { achadoDeHeranca, herancasPorAlinhamento, rolarTierHeranca } from './inheritance';
+import { especieDeOvo, especieParaEncontro, rankNascimento, rankSelvagem } from './bestiary';
 import type { ProfissaoId } from './professions';
 import { inimigosJurados } from './coreDestruction';
 import { inimigoIntimidado } from './feuds';
@@ -35,6 +43,8 @@ interface Contexto {
   regiao: Regiao;
   idade: number;
   turno: number;
+  /** Estado do mundo (seitas e clãs da região). Ausente no prólogo. */
+  mundo?: MundoState;
 }
 
 interface ModeloEvento {
@@ -44,7 +54,7 @@ interface ModeloEvento {
   gerar: (ctx: Contexto) => StoryNode;
 }
 
-function criarContexto(character: Character, turno: number): Contexto {
+function criarContexto(character: Character, turno: number, mundo?: MundoState): Contexto {
   return {
     character,
     atributos: getEffectiveAttributes(character),
@@ -52,6 +62,7 @@ function criarContexto(character: Character, turno: number): Contexto {
     regiao: REGIOES[character.local.regiao],
     idade: idadeAnos(character),
     turno,
+    mundo,
   };
 }
 
@@ -204,6 +215,14 @@ export function gerarPrologo(character: Character, turno: number): StoryNode {
   if (o.reencarnacao) {
     paragrafos.push(
       'Desde bebê, você tem sonhos que não são seus: salões de jade, exércitos ajoelhados, uma traição. Às vezes, acorda sabendo palavras de uma língua que ninguém da família fala.',
+    );
+  }
+
+  if (character.noivado) {
+    const n = character.noivado;
+    const t = tratamento(n);
+    paragrafos.push(
+      `Antes mesmo de você aprender a andar, os anciões da família já decidiram seu casamento: você está prometid${g(ctx, 'o', 'a')} a ${n.nome}, ${n.genero === 'feminino' ? 'filha' : 'filho'} do **${n.afiliacao}**. Dizem que ${t.ela} nasceu com uma raiz espiritual de grau ${n.raizGrau}. É bom você crescer à altura.`,
     );
   }
 
@@ -598,10 +617,12 @@ const EVENTOS: ModeloEvento[] = [
     id: 'besta',
     peso: (ctx) => (ctx.idade >= 12 ? 2 : 0),
     gerar: (ctx) => {
-      const fera = escolher(ctx.regiao.fauna);
+      const especie = especieParaEncontro(ctx.character.local.regiao, ctx.character.cultivo.rank);
+      const fera = especie.nome;
       const atual = ctx.character.companheira;
       const nivelDomador = nivelProfissao(ctx, 'domador');
       const def = inimigo(ctx, fera, 'besta', 0.95);
+      def.rank = rankSelvagem(especie, def.rank);
       const escolhas: StoryChoice[] = [
         {
           texto: 'Lutar contra ela.',
@@ -622,7 +643,7 @@ const EVENTOS: ModeloEvento[] = [
       const contrato: Desfecho = {
         texto: `A ${fera} baixa a cabeça e toca sua mão. Um fio de alma liga vocês dois.${atual ? ` ${atual.nome} volta para a natureza.` : ''}`,
         efeitos: {
-          novaCompanheira: { especie: fera, rank: def.rank, estagio: def.estagio, atributoMedio: mediaAtributos(ctx) * 0.85 },
+          novaCompanheira: { especie: fera, especieId: especie.id, rank: def.rank, estagio: def.estagio, atributoMedio: mediaAtributos(ctx) * 0.85 },
           reputacao: 5,
           xpProfissao: { domador: 40 },
         },
@@ -639,7 +660,7 @@ const EVENTOS: ModeloEvento[] = [
         ctx,
         'besta',
         'Besta Espiritual',
-        `Nas matas perto de ${ctx.character.local.cidade}, você dá de cara com uma ${fera} jovem. Ela ainda não te viu.\n\n**${faixaBesta(def.rank)}** — cultivo equivalente a ${descreverCultivo(def.rank, def.estagio)}.`,
+        `Nas matas perto de ${ctx.character.local.cidade}, você dá de cara com uma ${fera} adulta. Ela ainda não te viu.\n\n**Linhagem ${especie.linhagem}** — cultivo equivalente a ${descreverCultivo(def.rank, def.estagio)}. ${especie.descricao}`,
         escolhas,
         2,
       );
@@ -647,7 +668,7 @@ const EVENTOS: ModeloEvento[] = [
   },
   {
     id: 'bandidos',
-    peso: (ctx) => (ctx.idade >= 13 ? 0.9 * protecaoFaccao(ctx.character) * fatorEmboscada(ctx.character) : 0),
+    peso: (ctx) => (ctx.idade >= 13 ? 0.9 * protecaoFaccao(ctx.character) * fatorEmboscada(ctx.character) * fatorEmboscadaTracos(ctx.character) : 0),
     gerar: (ctx) => {
       const chefe = `${gerarNomePessoa()}, o ${escolher(['Cicatriz', 'Lâmina Torta', 'Sem Orelha', 'Lobo Cinzento'])}`;
       return no(ctx, 'bandidos', 'Emboscada na Estrada', `Na estrada para ${escolher(ctx.regiao.cidades)}, três bandidos saem do mato. O líder, ${chefe}, estende a mão: "Pedras ou sangue."`, [
@@ -743,7 +764,7 @@ const EVENTOS: ModeloEvento[] = [
   {
     id: 'mestre-errante',
     peso: (ctx) => {
-      if (flag(ctx, 'mestre') || ctx.idade < 12) return 0;
+      if (flag(ctx, 'mestre') || ctx.character.mestrePessoal || ctx.idade < 12) return 0;
       const origemHumilde = ORIGEM_INFO[ctx.character.origem.tipo].prestigio <= 1;
       return 0.4 + (origemHumilde && ctx.character.raizEspiritual.grau >= 4 ? 1.5 : 0) + Math.max(0, ctx.atributos.sorte - 5) * 0.05;
     },
@@ -755,8 +776,8 @@ const EVENTOS: ModeloEvento[] = [
           texto: 'Ajoelhar e pedir para ser discípul' + g(ctx, 'o', 'a') + '.',
           teste: { atributo: 'espirito', dificuldade: dif(ctx, 12) },
           resultado: {
-            texto: `O velho diz se chamar ${mestre}. Os meses seguintes mudam tudo que você achava saber sobre cultivo.`,
-            efeitos: { ...ensinamento, flags: { mestre } },
+            texto: `O velho diz se chamar ${mestre}. "Se me chamar de mestre, não chamará mais ninguém assim. Um discípulo meu não se ajoelha diante de outro." Você bate a testa no chão três vezes. Os meses seguintes mudam tudo que você achava saber sobre cultivo.`,
+            efeitos: { ...ensinamento, tornarDiscipuloErrante: mestre, flags: { mestre } },
           },
           falha: { texto: '"Ainda não", ele diz, e some na multidão.', efeitos: { flags: { mestre: 'recusou' } } },
         },
@@ -765,7 +786,7 @@ const EVENTOS: ModeloEvento[] = [
           requisito: { pedras: 2 },
           resultado: {
             texto: `${mestre} come em silêncio. Depois, corrige sua postura com dois toques de bastão — e o mundo parece diferente.`,
-            efeitos: { pedras: -2, alinhamento: 5, progresso: ganho(ctx, 3, 1.5), flags: { mestre } },
+            efeitos: { pedras: -2, alinhamento: 5, progresso: ganho(ctx, 3, 1.5), flags: { mestre: 'ajudou' } },
           },
         },
         { texto: 'Ignorar o velho.', resultado: { texto: 'Quando você olha de novo, ele não está mais lá.', efeitos: { flags: { mestre: 'recusou' } } } },
@@ -853,7 +874,7 @@ const EVENTOS: ModeloEvento[] = [
     peso: (ctx) => (ctx.character.afiliacao.tipo === 'cla' && !ctx.character.faccao && ctx.idade >= 14 ? 2 : 0),
     gerar: (ctx) => {
       const c = ctx.character;
-      if (ctx.idade >= 16 && !flag(ctx, 'casamentoAlianca') && chance(0.5)) {
+      if (ctx.idade >= 16 && !flag(ctx, 'casamentoAlianca') && !c.noivado && chance(0.5)) {
         const outroCla = gerarNomeCla();
         const noivo = gerarNomePessoa();
         return no(ctx, 'politica-cla', 'Casamento de Aliança', `Os anciões do ${c.afiliacao.nome} anunciam: para selar uma aliança com o ${outroCla}, você vai se casar com ${noivo}. Ninguém perguntou sua opinião.`, [
@@ -895,6 +916,479 @@ const EVENTOS: ModeloEvento[] = [
         },
         { texto: 'Ignorar e cultivar.', resultado: { texto: 'A melhor resposta é ficar mais forte.', efeitos: { progresso: ganho(ctx, 3) } } },
       ], 3);
+    },
+  },
+  // --- Seitas Supremas aliciam talentos das seitas menores ---
+  {
+    id: 'seita-suprema-alicia',
+    peso: (ctx) => {
+      const c = ctx.character;
+      if (c.afiliacao.tipo !== 'seita' || c.faccao || ctx.idade < 14 || ctx.idade > 40) return 0;
+      if (c.idadeMeses - Number(flag(ctx, 'aliciadoIdade') ?? -999) < 60) return 0;
+      const talento = c.raizEspiritual.grau >= 5 || c.cultivo.rank >= 3;
+      return talento && ctx.regiao.seitasSupremas.length ? 0.4 : 0;
+    },
+    gerar: (ctx) => {
+      const c = ctx.character;
+      const suprema = escolher(ctx.regiao.seitasSupremas);
+      const anciao = gerarNomePessoa();
+      return falando(no(ctx, 'seita-suprema-alicia', 'Uma Oferta da Seita Suprema', `${anciao}, ancião da **${suprema.nome}**, espera você fora dos muros do ${c.afiliacao.nome}. "Um talento como o seu está sendo desperdiçado aqui. Venha conosco: pílulas, manuais de verdade, mestres de reinos que sua seita nem imagina. Ninguém precisa saber que foi você quem saiu."`, [
+        {
+          texto: `Aceitar e trocar o ${c.afiliacao.nome} pela ${suprema.nome}.`,
+          resultado: {
+            texto: `Você parte na calada da noite. No ${c.afiliacao.nome}, seu nome vira sinônimo de traição — mas na ${suprema.nome} as portas se abrem.`,
+            efeitos: {
+              afiliacao: { tipo: 'seita-suprema', nome: suprema.nome, ortodoxa: suprema.ortodoxa, posto: 'Discípulo Externo', estipendio: 3 },
+              contribuicao: -c.contribuicao,
+              reputacao: 5,
+              alinhamento: -5,
+              flags: { aliciadoIdade: c.idadeMeses, traiuSeita: c.afiliacao.nome },
+            },
+          },
+        },
+        {
+          texto: `Recusar: "Meu lugar é no ${c.afiliacao.nome}."`,
+          resultado: { texto: `O ancião ri. "Lealdade é um luxo caro." Mas a notícia da sua recusa chega aos anciões da sua seita, que passam a olhar você com outros olhos.`, efeitos: { contribuicao: 30, reputacao: 3, alinhamento: 3, flags: { aliciadoIdade: c.idadeMeses } } },
+        },
+        {
+          texto: 'Fingir interesse e arrancar informações (Inteligência).',
+          teste: { atributo: 'inteligencia', dificuldade: dif(ctx, 15) },
+          resultado: { texto: 'Você volta com os planos da Suprema para a região — e os anciões da sua seita pagam bem por eles.', efeitos: { contribuicao: 50, pedras: pedras(ctx, 15), flags: { aliciadoIdade: c.idadeMeses } } },
+          falha: { texto: 'O ancião percebe o jogo. "Esperto demais para o próprio bem." Você sai com uma marca de palma nas costas.', efeitos: { danoPercentual: 30, flags: { aliciadoIdade: c.idadeMeses } } },
+        },
+      ], 3), anciao);
+    },
+  },
+
+  // --- Eventos aleatórios do dia a dia do cultivador ---
+  {
+    id: 'mendigo-misterioso',
+    peso: (ctx) => (ctx.idade >= 10 ? 0.6 : 0),
+    gerar: (ctx) =>
+      no(ctx, 'mendigo-misterioso', 'O Mendigo na Ponte', 'Um mendigo cego estende uma tigela rachada na ponte da cidade. Todos passam direto. Os dedos dele, porém, têm calos de quem já segurou uma espada por séculos.', [
+        {
+          texto: 'Dar 3 pedras espirituais.',
+          requisito: { pedras: 3 },
+          resultado: chance(0.35)
+            ? { texto: 'Ele sorri sem dentes e coloca uma pílula dourada na sua mão. "O Céu vê." Quando você olha de novo, ele sumiu.', efeitos: { pedras: -3, alinhamento: 3, itens: [{ id: 'pilula-dourada', quantidade: 1 }] } }
+            : { texto: 'Ele agradece com uma bênção antiga. Você se sente um pouco mais leve.', efeitos: { pedras: -3, alinhamento: 3, toxina: -5 } },
+        },
+        { texto: 'Dividir sua comida e conversar com ele.', resultado: { texto: 'Ele fala de reinos que você nunca ouviu falar. Uma frase fica na sua cabeça por semanas.', efeitos: { alinhamento: 2, progresso: ganho(ctx, 1) } } },
+        { texto: 'Seguir caminho.', resultado: { texto: 'Atrás de você, alguém ri baixinho.' } },
+      ], 1),
+  },
+  {
+    id: 'caravana-atacada',
+    peso: (ctx) => (ctx.idade >= 13 ? 0.7 : 0),
+    gerar: (ctx) => {
+      const chefe = `${gerarNomePessoa()}, o Carniceiro`;
+      return no(ctx, 'caravana-atacada', 'Caravana sob Ataque', `Gritos na estrada: salteadores cercam uma caravana de mercadores. O líder deles, ${chefe}, já derrubou dois guardas.`, [
+        {
+          texto: 'Defender a caravana.',
+          combate: inimigo(ctx, chefe, 'guerreiro', 0.9),
+          resultado: { texto: 'Os salteadores fogem. O mercador-chefe insiste em recompensar você — e espalha seu nome pelas rotas comerciais.', efeitos: { pedras: pedras(ctx, 18), reputacao: 5, alinhamento: 5 } },
+          falha: { texto: 'Você é derrubado. A caravana é saqueada, mas o mercador arrasta você para a carroça antes de fugir.', efeitos: { danoPercentual: 30 } },
+        },
+        { texto: 'Esperar o fim e saquear o que sobrar.', resultado: { texto: 'Entre os destroços, algumas pedras e um olhar de ódio do único guarda que sobreviveu.', efeitos: { pedras: pedras(ctx, 8), alinhamento: -8 } } },
+        { texto: 'Não se meter.', resultado: { texto: 'Os gritos ficam para trás.' } },
+      ], 1);
+    },
+  },
+  {
+    id: 'festival-lanternas',
+    peso: (ctx) => (ctx.idade >= 12 ? 0.5 : 0),
+    gerar: (ctx) =>
+      no(ctx, 'festival-lanternas', 'Festival das Lanternas', `${ctx.character.local.cidade} se enche de lanternas vermelhas. Música, vinho de flor de pessegueiro e jovens cultivadores de todas as famílias nas ruas.`, [
+        { texto: 'Aproveitar a noite e conhecer gente nova.', resultado: { texto: 'Entre uma lanterna e outra, alguém puxa conversa com você.', efeitos: { conhecerAlguem: true, toxina: -5 } } },
+        { texto: 'Competir no torneio de enigmas (Inteligência).', teste: { atributo: 'inteligencia', dificuldade: dif(ctx, 13) }, resultado: { texto: 'Você decifra o último enigma diante da multidão.', efeitos: { pedras: pedras(ctx, 10), reputacao: 3 } }, falha: { texto: 'Um menino de dez anos resolve antes de você. A multidão ri.' } },
+        { texto: 'Meditar no telhado enquanto a cidade festeja.', resultado: { texto: 'O qi da multidão alegre é estranhamente puro.', efeitos: { progresso: ganho(ctx, 1.2) } } },
+      ], 1),
+  },
+  {
+    id: 'fruto-espiritual',
+    peso: (ctx) => (ctx.idade >= 10 ? 0.5 : 0),
+    gerar: (ctx) =>
+      no(ctx, 'fruto-espiritual', 'Um Fruto Brilhante', 'No alto de um penhasco, uma árvore retorcida carrega um único fruto que brilha como brasa. Nenhuma besta por perto — o que é, por si só, suspeito.', [
+        {
+          texto: 'Comer ali mesmo (Constituição).',
+          teste: { atributo: 'constituicao', dificuldade: dif(ctx, 13) },
+          resultado: { texto: 'Um calor imenso percorre os meridianos e se assenta no dantian.', efeitos: { progresso: ganho(ctx, 4, 2), atributos: { constituicao: 1 } } },
+          falha: { texto: 'Veneno espiritual. Você passa dias tremendo de febre.', efeitos: { danoPercentual: 35, toxina: 25 } },
+        },
+        { texto: 'Colher e vender a um alquimista.', resultado: { texto: 'O alquimista paga sem pechinchar — sinal de que valia mais.', efeitos: { pedras: pedras(ctx, 14) } } },
+        { texto: 'Deixar onde está.', resultado: { texto: 'Mais tarde, você ouve que uma besta demoníaca guardava aquela árvore.' } },
+      ], 1),
+  },
+  {
+    id: 'jovem-mestre-arrogante',
+    peso: (ctx) => (ctx.idade >= 13 ? 0.7 : 0),
+    gerar: (ctx) => {
+      const jovem = `Jovem Mestre ${gerarNomePessoa()}`;
+      return no(ctx, 'jovem-mestre-arrogante', 'O Jovem Mestre', `Na casa de chá, ${jovem}, herdeiro de uma família poderosa, derruba seu chá de propósito. "Saia da frente, verme. Esta mesa é minha."`, [
+        {
+          texto: 'Dar uma lição nele.',
+          combate: inimigo(ctx, jovem, 'agil', 0.95),
+          resultado: { texto: `${jovem} sai carregado pelos próprios guardas. A casa de chá inteira segura o riso.`, efeitos: { reputacao: 6 } },
+          falha: { texto: `${jovem} pisa na sua mão ao sair. "Aprenda seu lugar."`, efeitos: { reputacao: -4, danoPercentual: 20 } },
+        },
+        { texto: 'Humilhá-lo com palavras (Inteligência).', teste: { atributo: 'inteligencia', dificuldade: dif(ctx, 14) }, resultado: { texto: 'Três frases, e ele sai vermelho de vergonha. Ninguém esquece.', efeitos: { reputacao: 4 } }, falha: { texto: 'Ele manda os guardas jogarem você na rua.', efeitos: { danoPercentual: 15 } } },
+        { texto: 'Engolir o orgulho e sair.', resultado: { texto: 'Um dia ele vai se lembrar disso. Você também.', efeitos: { alinhamento: 1 } } },
+      ], 1);
+    },
+  },
+  {
+    id: 'crianca-perdida',
+    peso: (ctx) => (ctx.idade >= 12 ? 0.5 : 0),
+    gerar: (ctx) =>
+      no(ctx, 'crianca-perdida', 'A Criança Perdida', 'Uma criança chora sozinha no mercado. As roupas são de seda, bordadas com o brasão de uma família rica — e dois homens mal-encarados a observam de longe.', [
+        {
+          texto: 'Levar a criança para casa, mesmo com aqueles homens por perto.',
+          combate: inimigo(ctx, 'Sequestrador', 'guerreiro', 0.8),
+          resultado: { texto: 'A família chora de alívio e paga uma recompensa generosa. Você fez um amigo poderoso.', efeitos: { pedras: pedras(ctx, 20), reputacao: 6, alinhamento: 6, conhecerAlguem: true } },
+          falha: { texto: 'Os sequestradores levam a criança. A guarda da cidade chega tarde demais.', efeitos: { danoPercentual: 25, alinhamento: 2 } },
+        },
+        { texto: 'Chamar a guarda da cidade.', resultado: { texto: 'A guarda leva a criança. Ninguém anota seu nome, mas você dormiu bem.', efeitos: { alinhamento: 3 } } },
+        { texto: 'Pedir um resgate à família.', resultado: { texto: 'A família paga. E nunca mais esquece seu rosto.', efeitos: { pedras: pedras(ctx, 25), alinhamento: -12, reputacao: -3 } } },
+      ], 1),
+  },
+  {
+    id: 'tempestade-espiritual',
+    peso: (ctx) => (flag(ctx, 'raizRevelada') ? 0.4 : 0),
+    gerar: (ctx) =>
+      no(ctx, 'tempestade-espiritual', 'Tempestade Espiritual', 'Nuvens violetas cobrem o céu. Relâmpagos carregados de qi caem sobre as montanhas — perigosos, e preciosos.', [
+        {
+          texto: 'Subir a montanha e meditar no meio da tempestade (Espírito).',
+          teste: { atributo: 'espirito', dificuldade: dif(ctx, 15) },
+          resultado: { texto: 'Um relâmpago atravessa você e, em vez de matar, abre um meridiano que estava fechado.', efeitos: { progresso: ganho(ctx, 5, 2.5) } },
+          falha: { texto: 'O relâmpago acerta de raspão. Você acorda horas depois, chamuscado.', efeitos: { danoPercentual: 45, flags: { quaseMorte: true } } },
+        },
+        { texto: 'Recolher cristais de relâmpago depois que passar.', resultado: { texto: 'Cristais valiosos brilham nas pedras queimadas.', efeitos: { pedras: pedras(ctx, 10) } } },
+      ], 1),
+  },
+  {
+    id: 'batedor-carteira',
+    peso: (ctx) => (ctx.character.inventario.pedrasEspirituais >= 20 && ctx.idade >= 12 ? 0.5 : 0),
+    gerar: (ctx) => {
+      const perda = Math.max(5, Math.round(ctx.character.inventario.pedrasEspirituais * 0.1));
+      return no(ctx, 'batedor-carteira', 'Ladrão!', `Um garoto esbarra em você no meio da multidão — e some com a sua bolsa de pedras.`, [
+        {
+          texto: 'Correr atrás dele pelos telhados (Destreza).',
+          teste: { atributo: 'destreza', dificuldade: dif(ctx, 13) },
+          resultado: { texto: 'Você o alcança num beco. Ele devolve tudo, tremendo. É só uma criança com fome.', efeitos: { alinhamento: 1 } },
+          falha: { texto: 'Ele desaparece entre as barracas. Sua bolsa ficou mais leve.', efeitos: { pedras: -perda } },
+        },
+        { texto: 'Deixar ir — ele parecia faminto.', resultado: { texto: 'Pedras se recuperam. Consciência pesada, nem tanto.', efeitos: { pedras: -perda, alinhamento: 4 } } },
+      ], 1);
+    },
+  },
+  {
+    id: 'vendedor-manuais',
+    peso: (ctx) => (ctx.idade >= 12 && ctx.character.inventario.pedrasEspirituais >= 20 ? 0.4 : 0),
+    gerar: (ctx) => {
+      const preco = Math.round(20 * ctx.regiao.fatorPoder);
+      const amarelos = TECNICAS.filter((t) => t.grau <= 2 && !t.heranca && !ctx.character.tecnicas.includes(t.id));
+      const verdadeiro = amarelos.length > 0 && chance(0.4);
+      const manual = verdadeiro ? escolher(amarelos) : null;
+      return no(ctx, 'vendedor-manuais', 'O Vendedor de Segredos', `Num beco escuro, um homem abre o casaco cheio de pergaminhos. "Técnicas secretas das Seitas Supremas! Só ${preco} pedras, só hoje."`, [
+        {
+          texto: `Comprar um "manual secreto" (${preco} pedras).`,
+          requisito: { pedras: preco },
+          resultado: manual
+            ? { texto: `Incrível: o manual é verdadeiro — ${manual.nome}. Estude-o pelo Inventário.`, efeitos: { pedras: -preco, itens: [{ id: idManual(manual.id), quantidade: 1 }] } }
+            : { texto: 'Em casa, você descobre que o "manual" é uma receita de sopa com desenhos de posturas inventadas.', efeitos: { pedras: -preco } },
+        },
+        { texto: 'Examinar os pergaminhos antes (Inteligência).', teste: { atributo: 'inteligencia', dificuldade: dif(ctx, 14) }, resultado: manual ? { texto: `Entre as falsificações, um verdadeiro: ${manual.nome}. Você paga metade do preço.`, efeitos: { pedras: -Math.round(preco / 2), itens: [{ id: idManual(manual.id), quantidade: 1 }] } } : { texto: 'Todos falsos. Você vai embora de bolso cheio.' }, falha: { texto: 'Você não consegue distinguir nada e desiste.' } },
+        { texto: 'Ignorar.', resultado: { texto: 'Provavelmente era golpe mesmo.' } },
+      ], 1);
+    },
+  },
+  {
+    id: 'partida-go',
+    peso: (ctx) => (ctx.idade >= 12 ? 0.4 : 0),
+    gerar: (ctx) =>
+      no(ctx, 'partida-go', 'Uma Partida de Go', 'Sob um pinheiro, um velho de barba branca joga Go sozinho. "Sente-se. Se me vencer, ganha o que está na caixa ao lado do tabuleiro."', [
+        {
+          texto: 'Jogar (Inteligência).',
+          teste: { atributo: 'inteligencia', dificuldade: dif(ctx, 15) },
+          resultado: { texto: 'O velho olha o tabuleiro por muito tempo e ri. "Há anos ninguém me vencia." A caixa guarda pílulas antigas.', efeitos: { itens: [{ id: 'pilula-chakra', quantidade: 2 }], atributos: { inteligencia: 1 } } },
+          falha: { texto: 'Ele vence em quarenta movimentos. "Volte quando pensar três jogadas à frente."', efeitos: { progresso: ganho(ctx, 0.5) } },
+        },
+        { texto: 'Apenas observar a partida dele.', resultado: { texto: 'Cada pedra que ele coloca parece uma técnica de combate.', efeitos: { progresso: ganho(ctx, 0.8) } } },
+      ], 1),
+  },
+  {
+    id: 'eclipse-sangue',
+    peso: (ctx) => (flag(ctx, 'raizRevelada') && ctx.idade >= 15 ? 0.3 : 0),
+    gerar: (ctx) =>
+      no(ctx, 'eclipse-sangue', 'Eclipse de Sangue', 'A lua fica vermelha. Cultivadores demoníacos saem das sombras para realizar rituais proibidos — e um deles oferece um lugar no círculo a você.', [
+        { texto: 'Participar do ritual.', resultado: { texto: 'Um poder sujo e rápido enche seus meridianos. O preço você só vai sentir depois.', efeitos: { progresso: ganho(ctx, 6, 2.5), alinhamento: -15, toxina: 15 } } },
+        {
+          texto: 'Interromper o ritual.',
+          combate: inimigo(ctx, 'Cultivador Demoníaco', 'mistico', 1.0),
+          resultado: { texto: 'O círculo se desfaz. Os moradores da cidade não sabem o que você impediu — mas o Céu sabe.', efeitos: { alinhamento: 10, reputacao: 5 } },
+          falha: { texto: 'Eles fogem antes de terminar, mas deixam você sangrando.', efeitos: { danoPercentual: 35 } },
+        },
+        { texto: 'Trancar-se em casa até a lua voltar ao normal.', resultado: { texto: 'Lá fora, gritos até o amanhecer.' } },
+      ], 1),
+  },
+  {
+    id: 'vila-doente',
+    peso: (ctx) => (ctx.idade >= 14 ? 0.4 : 0),
+    gerar: (ctx) => {
+      const temPilulas = quantidadeItem(ctx.character.inventario, 'pilula-cura') >= 2;
+      const alquimista = nivelProfissao(ctx, 'alquimia') > 0;
+      const escolhas: StoryChoice[] = [];
+      if (temPilulas) escolhas.push({ texto: 'Distribuir 2 Pílulas de Cura aos mais graves.', resultado: { texto: 'As crianças mais doentes sobrevivem. A vila grava seu nome no portão do templo.', efeitos: { removerItens: [{ id: 'pilula-cura', quantidade: 2 }], alinhamento: 8, reputacao: 6 } } });
+      if (alquimista) escolhas.push({ texto: 'Estudar a doença e preparar um remédio (Inteligência).', teste: { atributo: 'inteligencia', dificuldade: dif(ctx, 14) }, resultado: { texto: 'O remédio funciona. Alquimistas da região vêm perguntar como você fez.', efeitos: { alinhamento: 6, reputacao: 8, xpProfissao: { alquimia: 60 } } }, falha: { texto: 'O remédio só alivia a febre. Ainda assim, agradecem.', efeitos: { alinhamento: 3 } } });
+      escolhas.push({ texto: 'Ajudar a enterrar os mortos e cuidar dos doentes.', resultado: { texto: 'Dias difíceis. Você sai mais velho por dentro.', efeitos: { alinhamento: 4, danoPercentual: 10 } } });
+      escolhas.push({ texto: 'Ir embora antes de pegar a doença.', resultado: { texto: 'Prudente. Frio, mas prudente.' } });
+      return no(ctx, 'vila-doente', 'A Vila Doente', 'Uma febre espiritual se espalha por uma vila de camponeses. Os curandeiros locais não sabem o que fazer.', escolhas, 3);
+    },
+  },
+
+  // --- Despertar da Alma (soulAwakening.ts): traços Alma Antiga e Herança Escondida ---
+  {
+    id: 'despertar-alma',
+    peso: (ctx) => {
+      if (!podeDespertar(ctx.character) || ctx.idade < 16 || ctx.idade > 100 || !flag(ctx, 'raizRevelada')) return 0;
+      return flag(ctx, 'quaseMorte') ? 0.3 : 0.008;
+    },
+    gerar: (ctx) => {
+      const c = ctx.character;
+      const quaseMorte = Boolean(flag(ctx, 'quaseMorte'));
+      const identidade = sortearIdentidade(c);
+      const almaAntiga = c.traco.id === 'alma-antiga';
+      const gatilho = quaseMorte
+        ? 'Entre a vida e a morte, com o sangue escorrendo e a visão escurecendo, algo muito antigo dentro de você se recusa a morrer.'
+        : 'Numa noite comum, meditando sozinh' + g(ctx, 'o', 'a') + ', uma dor rasga seu peito de dentro para fora.';
+      const revelacao = almaAntiga
+        ? `Memórias que não são desta vida explodem na sua mente. Você se lembra: já foi o **${identidade.titulo}**.\n\n${identidade.lembranca}`
+        : `A bolsa de pedras do seu berço tinha um selo que ninguém percebeu. Agora ele se rompe dentro do seu sangue: você descende do **${identidade.titulo}**, que escondeu o próprio herdeiro entre mortais.\n\n${identidade.lembranca}`;
+      const comum = { rerolarRaiz: { minimo: GRAU_MINIMO_DESPERTAR } };
+      return no(ctx, 'despertar-alma', almaAntiga ? 'A Alma Antiga Desperta' : 'O Sangue Selado Desperta', `${gatilho}\n\n${revelacao}\n\nSua raiz espiritual começa a se refazer.`, [
+        {
+          texto: `Abraçar o legado do ${identidade.titulo}.`,
+          resultado: {
+            texto: `O poder de outra era corre pelos seus meridianos. ${identidade.textoRecompensa}.`,
+            efeitos: { ...identidade.recompensa, ...comum, flags: { ...(identidade.recompensa.flags ?? {}), almaDespertada: identidade.id, quaseMorte: false } },
+          },
+        },
+        {
+          texto: 'Conter as memórias e ficar só com a raiz renovada (Espírito).',
+          teste: { atributo: 'espirito', dificuldade: dif(ctx, 13) },
+          resultado: { texto: 'Você empurra as memórias de volta para o fundo. Quem você é agora continua sendo você — com uma raiz nova.', efeitos: { ...comum, atributos: { espirito: 1 }, flags: { almaDespertada: 'contida', quaseMorte: false } } },
+          falha: {
+            texto: `As memórias são fortes demais e levam você junto. O ${identidade.titulo} desperta de qualquer jeito.`,
+            efeitos: { ...identidade.recompensa, ...comum, flags: { ...(identidade.recompensa.flags ?? {}), almaDespertada: identidade.id, quaseMorte: false } },
+          },
+        },
+      ], 1);
+    },
+  },
+
+  // --- Noivado arranjado (betrothal.ts) ---
+  {
+    id: 'noivado-rompimento',
+    peso: (ctx) => {
+      const n = ctx.character.noivado;
+      if (!n || n.status !== 'prometidos' || ctx.idade < 16 || ctx.idade > 24 || forcaRelativa(ctx.character) >= LIMIAR_INDIGNO) return 0;
+      return 1.2 * (0.5 + n.orgulho / 100);
+    },
+    gerar: (ctx) => {
+      const c = ctx.character;
+      const n = c.noivado as Noivado;
+      const t = tratamento(n);
+      const casa = c.origem.nomeCasa || c.afiliacao.nome;
+      const escolhas: StoryChoice[] = [
+        {
+          texto: 'Engolir a humilhação em silêncio.',
+          resultado: { texto: `${n.nome} vai embora sem olhar para trás. Por meses, você ouve os risos pelos corredores.`, efeitos: { reputacao: -10, noivado: { status: 'rompido-por-ela' } } },
+        },
+        {
+          texto: '"Hoje você rompe comigo. Daqui a três anos, sou eu quem rompe com você." (marcar um duelo)',
+          resultado: {
+            texto: `O salão fica em silêncio. ${n.nome} sorri com desprezo: "Três anos, então. No topo da montanha, diante de todos." Agora você tem um prazo — e um motivo.`,
+            efeitos: { reputacao: 3, noivado: { status: 'desafio', duelo: 36 } },
+          },
+        },
+        {
+          texto: `Desafiá-l${t.artigo} aqui mesmo, diante de todos.`,
+          combate: inimigoDoNpc(n),
+          resultado: { texto: `Ninguém acredita no que vê: ${n.nome} cai de joelhos no chão do salão. Quem rompe o noivado agora é você.`, efeitos: { reputacao: 20, noivado: { status: 'rompido-por-voce' } } },
+          falha: { texto: `${n.nome} te derruba com um só golpe. "Era isso que eu queria que todos vissem."`, efeitos: { reputacao: -15, danoPercentual: 20, noivado: { status: 'rompido-por-ela' } } },
+        },
+      ];
+      if (forcaRelativa(c) >= 0.5) {
+        escolhas.push({
+          texto: 'Tomar a carta e rasgá-la você mesmo: "Sou eu quem rompe." (Espírito)',
+          teste: { atributo: 'espirito', dificuldade: dif(ctx, 14) },
+          resultado: { texto: 'Sua calma desconcerta a comitiva. Metade do salão sai achando que foi você quem rejeitou.', efeitos: { reputacao: 5, noivado: { status: 'rompido-por-voce' } } },
+          falha: { texto: 'Sua voz treme. Ninguém se convence.', efeitos: { reputacao: -8, noivado: { status: 'rompido-por-ela' } } },
+        });
+      }
+      return no(
+        ctx,
+        'noivado-rompimento',
+        'O Noivado Rompido',
+        `Os portões do ${casa} se abrem para uma comitiva do **${n.afiliacao}**. À frente vem ${n.nome}, ${t.artigo} ${t.titulo} que seus pais escolheram quando você ainda era um bebê — agora no ${descreverCultivo(n.rank, n.estagio)}.\n\nDiante de todo o clã, ${t.ela} rasga a carta de noivado ao meio. "Alguém no ${descreverCultivo(c.cultivo.rank, c.cultivo.estagio)} não é digno de mim. Este noivado acabou."`,
+        escolhas,
+        3,
+      );
+    },
+  },
+  {
+    id: 'noivado-assassino',
+    peso: (ctx) => {
+      const n = ctx.character.noivado;
+      if (!n || n.assassinoEnviado || ctx.idade < 14) return 0;
+      const fraco = forcaRelativa(ctx.character) < 0.6;
+      const motivo = n.status === 'desafio' || n.status === 'rompido-por-voce' || (n.status === 'prometidos' && fraco && (n.demoniaca || n.orgulho >= 75));
+      return motivo ? 0.6 * (n.demoniaca ? 2 : 1) : 0;
+    },
+    gerar: (ctx) => {
+      const n = ctx.character.noivado as Noivado;
+      const t = tratamento(n);
+      const porque =
+        n.status === 'prometidos'
+          ? `A família ${t.dela} quer se livrar do noivado sem perder a face — e um prometido morto não precisa ser rejeitado.`
+          : n.status === 'desafio'
+            ? 'Alguém prefere que você não chegue vivo ao duelo marcado.'
+            : 'A humilhação que você impôs precisa ser lavada com sangue.';
+      const assassino = inimigo(ctx, `Assassino do ${n.afiliacao}`, 'agil', 1.1, 1);
+      const derrota = { texto: 'A lâmina entra fundo. Você só sobrevive porque o assassino foge ao ouvir os guardas.', efeitos: { danoPercentual: 55, flags: { quaseMorte: true }, noivado: { assassinoEnviado: true } } };
+      return no(ctx, 'noivado-assassino', 'Uma Lâmina na Noite', `Você acorda com o cheiro de incenso envenenado. Uma sombra está sobre a sua cama, com uma adaga que traz o emblema do **${n.afiliacao}**.\n\n${porque}`, [
+        {
+          texto: `Lutar — e depois expor o ${n.afiliacao} diante de todos.`,
+          combate: assassino,
+          resultado: {
+            texto: `Você arrasta o corpo do assassino até a praça. O emblema do ${n.afiliacao} fala por si. Ninguém mais os respeita — e eles nunca vão perdoar você.`,
+            efeitos: { reputacao: 12, noivado: { assassinoEnviado: true, rixa: true, ...(n.status === 'prometidos' ? { status: 'rompido-por-voce' as const } : {}) } },
+          },
+          falha: derrota,
+        },
+        {
+          texto: 'Lutar e guardar segredo (a aliança ainda pode ser útil).',
+          combate: assassino,
+          resultado: { texto: 'O corpo some no rio antes do amanhecer. Você sabe quem mandou. Eles sabem que você sabe.', efeitos: { reputacao: 3, noivado: { assassinoEnviado: true } } },
+          falha: derrota,
+        },
+        {
+          texto: 'Fugir pela janela (Destreza).',
+          teste: { atributo: 'destreza', dificuldade: dif(ctx, 13) },
+          resultado: { texto: 'Você escapa pelos telhados. O assassino desaparece antes do amanhecer.', efeitos: { noivado: { assassinoEnviado: true } } },
+          falha: { texto: 'A adaga te alcança nas costas antes da janela.', efeitos: { danoPercentual: 45, noivado: { assassinoEnviado: true } } },
+        },
+      ], 1);
+    },
+  },
+  {
+    id: 'noivado-duelo',
+    peso: (ctx) => {
+      const n = ctx.character.noivado;
+      return n && n.status === 'desafio' && n.duelo !== undefined && ctx.character.idadeMeses >= n.duelo ? 60 : 0;
+    },
+    gerar: (ctx) => {
+      const c = ctx.character;
+      const n = c.noivado as Noivado;
+      const t = tratamento(n);
+      return no(ctx, 'noivado-duelo', 'O Duelo de Três Anos', `Três anos se passaram. No topo da montanha, milhares de cultivadores vieram assistir. ${n.nome}, do ${n.afiliacao}, espera no centro da arena — agora no **${descreverCultivo(n.rank, n.estagio)}**. Você chega no **${descreverCultivo(c.cultivo.rank, c.cultivo.estagio)}**.\n\n"Vamos ver se esses três anos valeram alguma coisa", diz ${t.ela}.`, [
+        {
+          texto: 'Lutar o duelo.',
+          combate: inimigoDoNpc(n),
+          resultado: {
+            texto: `${n.nome} cai de joelhos diante de milhares de testemunhas. Você devolve a carta de noivado, rasgada: "Agora sou eu quem rompe com você." Seu nome corre a região inteira.`,
+            efeitos: { reputacao: 30, noivado: { status: 'rompido-por-voce' } },
+          },
+          falha: { texto: `${n.nome} vence sem pressa. "Três anos, e continua indigno." A multidão ri.`, efeitos: { reputacao: -20, danoPercentual: 25, noivado: { status: 'rompido-por-ela' } } },
+        },
+        {
+          texto: 'Não comparecer.',
+          resultado: { texto: 'A arena espera até o pôr do sol. Seu nome vira piada em toda a região.', efeitos: { reputacao: -25, noivado: { status: 'rompido-por-ela' } } },
+        },
+      ], 3);
+    },
+  },
+  {
+    id: 'noivado-casamento',
+    peso: (ctx) => {
+      const n = ctx.character.noivado;
+      return n && n.status === 'prometidos' && ctx.idade >= 18 && forcaRelativa(ctx.character) >= LIMIAR_DIGNO ? 3 : 0;
+    },
+    gerar: (ctx) => {
+      const n = ctx.character.noivado as Noivado;
+      const t = tratamento(n);
+      return no(ctx, 'noivado-casamento', 'O Casamento Prometido', `Uma carruagem do **${n.afiliacao}** chega carregada de presentes. ${n.nome} — no ${descreverCultivo(n.rank, n.estagio)} — veio em pessoa: "Esperei para ver quem você se tornaria. Você é digno." A data do casamento que seus pais marcaram quando vocês eram bebês finalmente chegou.`, [
+        {
+          texto: 'Casar e selar a aliança.',
+          resultado: { texto: `A cerimônia une duas famílias poderosas. O dote do ${n.afiliacao} é generoso.`, efeitos: { pedras: pedras(ctx, 40), reputacao: 10, alinhamento: 3, noivado: { casar: true } } },
+        },
+        {
+          texto: 'Recusar: seu caminho é seu.',
+          resultado: { texto: `${n.nome} empalidece. A família ${t.dela} jamais vai esquecer essa afronta.`, efeitos: { reputacao: -5, noivado: { status: 'rompido-por-voce' } } },
+        },
+      ], 3);
+    },
+  },
+  {
+    id: 'noiva-arrependida',
+    peso: (ctx) => {
+      const n = ctx.character.noivado;
+      if (!n || flag(ctx, 'noivaVoltou') || (n.status !== 'rompido-por-ela' && n.status !== 'rompido-por-voce')) return 0;
+      return forcaRelativa(ctx.character) >= 2 ? 1.5 : 0;
+    },
+    gerar: (ctx) => {
+      const n = ctx.character.noivado as Noivado;
+      const t = tratamento(n);
+      return no(ctx, 'noiva-arrependida', 'O Arrependimento', `${n.nome} aparece sozinh${t.artigo}, sem comitiva, à sua porta. Seu nome agora pesa mais que o do ${n.afiliacao} inteiro. "Eu estava errad${t.artigo}. Se ainda houver um lugar para mim ao seu lado…"`, [
+        {
+          texto: `Aceitá-l${t.artigo} de volta e casar.`,
+          resultado: { texto: 'O que começou com uma carta rasgada termina num casamento que ninguém na região esperava.', efeitos: { alinhamento: 5, flags: { noivaVoltou: true }, noivado: { casar: true } } },
+        },
+        {
+          texto: 'Humilhá-l' + t.artigo + ' como fez com você.',
+          resultado: { texto: `Você diz as mesmas palavras que ouviu anos atrás. ${n.nome} vai embora em lágrimas.`, efeitos: { reputacao: 10, alinhamento: -5, flags: { noivaVoltou: true } } },
+        },
+        {
+          texto: 'Mandá-l' + t.artigo + ' embora em paz.',
+          resultado: { texto: '"O passado acabou." Você fecha a porta sem rancor.', efeitos: { alinhamento: 3, flags: { noivaVoltou: true } } },
+        },
+      ], 1);
+    },
+  },
+
+  // --- Guerra de clãs (clanWar.ts) ---
+  {
+    id: 'guerra-declarada',
+    peso: (ctx) => {
+      const c = ctx.character;
+      if (!ctx.mundo || c.guerra || !podeTerGuerra(c) || ctx.idade < 15) return 0;
+      if (c.idadeMeses - Number(flag(ctx, 'fimGuerraIdade') ?? -999) < 120) return 0;
+      return c.faccao ? 0.4 : 0.2;
+    },
+    gerar: (ctx) => {
+      const c = ctx.character;
+      const rival = escolherRival(ctx.mundo as MundoState, c);
+      if (!rival) return gerarProximoEvento(c, ctx.turno, ['guerra-declarada']);
+      const motivo = motivoAleatorio();
+      const lider = c.faccao !== undefined && c.faccao !== null;
+      const lado = c.faccao?.nome ?? c.afiliacao.nome;
+      const declaracao = { guerraDeclarada: rival.nome, guerraMotivo: motivo };
+      const texto = `Um mensageiro do **${rival.nome}** (${NOME_TIPO_FACCAO[rival.tipo]}) chega com uma declaração de guerra contra o ${lado}. O motivo: ${motivo}. O líder deles, ${rival.lider.nome}, está no ${descreverCultivo(rival.lider.rank, rival.lider.estagio)}.`;
+      const custo = pedras(ctx, 30);
+      const escolhas: StoryChoice[] = lider
+        ? [
+            { texto: 'Aceitar a guerra!', resultado: { texto: 'Você manda de volta a cabeça do mensageiro — não, só a resposta: "Venham."', efeitos: { reputacao: 3, flags: declaracao } } },
+            {
+              texto: `Negociar a paz (${custo} pedras).`,
+              requisito: { pedras: custo },
+              resultado: { texto: 'O ouro compra o que a espada custaria. Por enquanto.', efeitos: { pedras: -custo, reputacao: -3, flags: { fimGuerraIdade: c.idadeMeses } } },
+            },
+          ]
+        : [
+            { texto: 'Alistar-se na linha de frente.', resultado: { texto: `Os anciões do ${lado} aceitam a guerra — e anotam o seu nome entre os primeiros voluntários.`, efeitos: { reputacao: 5, flags: declaracao } } },
+            { texto: 'Cultivar enquanto os anciões decidem.', resultado: { texto: `O ${lado} aceita a guerra mesmo assim. Ela vai chegar até você, queira ou não.`, efeitos: { flags: declaracao } } },
+          ];
+      return no(ctx, 'guerra-declarada', 'Declaração de Guerra', texto, escolhas, 1);
     },
   },
   {
@@ -1256,7 +1750,7 @@ const EVENTOS: ModeloEvento[] = [
     peso: (ctx) => {
       const inimigos = inimigosJurados(ctx.character);
       if (!inimigos.length) return 0;
-      return (inimigos.some((r) => !inimigoIntimidado(ctx.character, r)) ? 1.6 : 0.5) * protecaoFaccao(ctx.character) * fatorSegurancaCasa(ctx.character);
+      return (inimigos.some((r) => !inimigoIntimidado(ctx.character, r)) ? 1.6 : 0.5) * protecaoFaccao(ctx.character) * fatorSegurancaCasa(ctx.character) * fatorVingancaTracos(ctx.character);
     },
     gerar: (ctx) => {
       const ativos = inimigosJurados(ctx.character).filter((r) => !inimigoIntimidado(ctx.character, r));
@@ -1295,8 +1789,7 @@ const EVENTOS: ModeloEvento[] = [
     },
     gerar: (ctx) => {
       ctx.character.flags.tumulosVistos = Number(flag(ctx, 'tumulosVistos') ?? 0) + 1;
-      const restantes = HERANCAS.filter((h) => !flag(ctx, `heranca:${h.id}`));
-      const heranca = escolher(restantes.length ? restantes : HERANCAS);
+      const heranca = escolher(herancasPorAlinhamento(ctx.character, true));
       const eco = inimigo(ctx, `Eco de Memória de ${heranca.dono.split(',')[0]}`, 'mistico', 1.1, 1);
       const recebe: Desfecho = {
         texto: `O eco sorri e se desfaz em luz. "Que meu caminho continue em você." ${heranca.textoRecompensa}.`,
@@ -1328,8 +1821,7 @@ const EVENTOS: ModeloEvento[] = [
     id: 'pingente-desperta',
     peso: (ctx) => (flag(ctx, 'herancaSelada') && ctx.idade >= 16 ? 50 : 0),
     gerar: (ctx) => {
-      const restantes = HERANCAS.filter((h) => !flag(ctx, `heranca:${h.id}`));
-      const heranca = escolher(restantes.length ? restantes : HERANCAS);
+      const heranca = escolher(herancasPorAlinhamento(ctx.character, true));
       return no(ctx, 'pingente-desperta', 'O Pingente Desperta', `Numa noite de lua cheia, o pingente de jade do seu berço racha. De dentro dele sai uma voz antiga: é o eco de **${heranca.dono}**, selado ali para esperar um herdeiro de sangue.\n\n"Você cresceu. Agora está pront${g(ctx, 'o', 'a')}."`, [
         {
           texto: 'Aceitar a herança.',
@@ -1342,13 +1834,17 @@ const EVENTOS: ModeloEvento[] = [
     id: 'ovo-besta',
     peso: (ctx) => (flag(ctx, 'ovoBestaAncestral') ? 30 : 0),
     gerar: (ctx) => {
-      const especie = `${escolher(ctx.regiao.fauna)} de Sangue Ancestral`;
-      return no(ctx, 'ovo-besta', 'O Ovo Racha', `O ovo que você trouxe do túmulo começa a rachar. Dele sai uma **${especie}**, que olha para você como se já te conhecesse.`, [
+      const especie = especieDeOvo(ctx.character.local.regiao);
+      const reino = REINOS[rankNascimento(especie) - 1].nome;
+      return no(ctx, 'ovo-besta', 'O Ovo Racha', `O ovo que você trouxe do túmulo começa a rachar. Dele sai um filhote de **${especie.nome}** — linhagem **${especie.linhagem}** —, que olha para você como se já te conhecesse.\n\nMesmo recém-nascido, o qi dele equivale ao ${reino}: o sangue da espécie não depende de quem o encontrou. Mas ainda é um filhote. Só na idade adulta, daqui a uns ${especie.maturidade} anos, a força da linhagem desperta por inteiro.`, [
         {
           texto: 'Formar o contrato de alma com o filhote.',
           resultado: {
-            texto: 'O vínculo se forma no mesmo instante. Esta besta vai crescer muito além do comum.',
-            efeitos: { novaCompanheira: { especie, rank: 1, estagio: 1, atributoMedio: mediaAtributos(ctx) * 1.2 }, flags: { ovoBestaAncestral: false } },
+            texto: 'O vínculo se forma no mesmo instante, como se vocês tivessem nascido juntos. Esta besta vai crescer muito além do comum.',
+            efeitos: {
+              novaCompanheira: { especie: especie.nome, especieId: especie.id, filhote: true, deInfancia: true, rank: 1, estagio: 1, atributoMedio: mediaAtributos(ctx) * 1.2 },
+              flags: { ovoBestaAncestral: false },
+            },
           },
         },
       ], 1);
@@ -1594,8 +2090,8 @@ const EVENTOS: ModeloEvento[] = [
   },
 ];
 
-export function gerarProximoEvento(character: Character, turno: number, recentes: string[]): StoryNode {
-  const ctx = criarContexto(character, turno);
+export function gerarProximoEvento(character: Character, turno: number, recentes: string[], mundo?: MundoState): StoryNode {
+  const ctx = criarContexto(character, turno, mundo);
 
   if (ctx.idade >= expectativaDeVidaAnos(character)) return gerarVelhice(ctx);
   if (!character.flags.raizRevelada) return gerarDespertar(ctx);

@@ -66,9 +66,60 @@ export const TRAITS: Trait[] = [
   {
     id: 'heranca-escondida',
     nome: 'Herança Escondida',
-    descricao: 'Alguém escondeu uma bolsa de pedras espirituais no seu berço. Ninguém sabe quem.',
+    descricao: 'Alguém escondeu uma bolsa de pedras espirituais no seu berço. Ninguém sabe quem. Um dia o selo no seu sangue pode se romper e revelar de quem você descende — e a raiz renasce (no mínimo grau 3).',
     bonusAtributos: { sorte: -1 },
     pedrasEspirituaisBonus: 40,
+  },
+  {
+    id: 'olhos-de-falcao',
+    nome: 'Olhos de Falcão',
+    descricao: 'Enxerga uma folha caindo a cem passos. O corpo, porém, nunca foi dos mais fortes.',
+    bonusAtributos: { destreza: 2, constituicao: -1 },
+  },
+  {
+    id: 'alma-antiga',
+    nome: 'Alma Antiga',
+    descricao: 'Criança de olhar velho. O qi responde a você com respeito, mas a sorte parece desconfiar. Um dia — talvez à beira da morte — quem você foi em outra era pode despertar, e a raiz renasce (no mínimo grau 3).',
+    bonusAtributos: { espirito: 2, sorte: -1 },
+  },
+  {
+    id: 'brutamontes',
+    nome: 'Brutamontes',
+    descricao: 'Aos dez anos já carregava sacos de arroz de dois em dois. Ler é outra história.',
+    bonusAtributos: { forca: 3, inteligencia: -2 },
+  },
+  {
+    id: 'genio-fragil',
+    nome: 'Gênio de Corpo Frágil',
+    descricao: 'Aprendeu a ler sozinho aos três anos — e passa metade do inverno de cama.',
+    bonusAtributos: { inteligencia: 3, constituicao: -2 },
+  },
+  {
+    id: 'sangue-de-mercador',
+    nome: 'Sangue de Mercador',
+    descricao: 'Filho de negociantes: sabe o preço de tudo e nasceu com a bolsa cheia, mas o qi é preguiçoso.',
+    bonusAtributos: { sorte: 1, espirito: -1 },
+    pedrasEspirituaisBonus: 25,
+  },
+  {
+    id: 'compassivo',
+    nome: 'Compassivo',
+    descricao: 'Chora pelos animais feridos e divide a comida com mendigos. Começa muito inclinado à Ordem.',
+    bonusAtributos: { espirito: 1, sorte: 1, forca: -1 },
+    alinhamentoInicial: 40,
+  },
+  {
+    id: 'vingativo',
+    nome: 'Vingativo',
+    descricao: 'Nunca esquece uma ofensa. A raiva fortalece o corpo e escurece o coração.',
+    bonusAtributos: { forca: 1, destreza: 1, sorte: -1 },
+    alinhamentoInicial: -35,
+  },
+  {
+    id: 'nascido-na-tempestade',
+    nome: 'Nascido na Tempestade',
+    descricao: 'Um raio caiu sobre a casa na noite em que você nasceu. Desde então, algo em você nunca fica parado.',
+    bonusAtributos: { forca: 1, espirito: 1, destreza: 1, constituicao: -1, sorte: -1 },
   },
 ];
 

@@ -21,10 +21,26 @@ import {
   motivoBloqueioSuprimento,
   precoEquipamento,
   precoSuprimento,
+  precoComDesconto,
   valorRevenda,
 } from '../../game/market';
 import { criarOverlay, escapeHtml } from './dom';
-import { renderMensagens } from './resultView';
+import { abrirResultado, avisar } from './resultView';
+import type { StoryState } from '../../game/story';
+import { executarEscolha, gastarEnergia } from '../../game/story';
+import { REGIOES } from '../../game/world';
+import {
+  ENERGIA_CONTRATO,
+  GRUPOS_MERCADORES,
+  comprarCota,
+  descontoMercador,
+  escolhaContrato,
+  precoCota,
+  registrarContrato,
+  riqueza,
+  tituloReputacao,
+  venderCota,
+} from '../../game/merchantGroups';
 
 function pasta(id: string, titulo: string, resumo: string, conteudo: string, aberta: boolean): string {
   return `
@@ -52,7 +68,7 @@ function renderMoradias(character: Character): string {
     botao(
       `data-moradia="${m.id}"`,
       `${escapeHtml(m.nome)} <small>(${escapeHtml(m.classe)} · ${m.raridade})</small>`,
-      `${m.preco} pedras · cultivo +${Math.round(m.densidade * 100)}% · segurança ${Math.round(m.seguranca * 100)}% · manutenção ${m.manutencao}/estação${m.prestigio ? ` · reputação +${m.prestigio}` : ''}`,
+      `${precoComDesconto(character, m.preco)} pedras · cultivo +${Math.round(m.densidade * 100)}% · segurança ${Math.round(m.seguranca * 100)}% · manutenção ${m.manutencao}/estação${m.prestigio ? ` · reputação +${m.prestigio}` : ''}`,
       motivoBloqueioMoradia(character, m),
       m.descricao,
     ),
@@ -77,7 +93,7 @@ function renderMontarias(character: Character): string {
     return botao(
       `data-montaria="${m.id}"`,
       `${escapeHtml(m.nome)} <small>(${escapeHtml(m.classe)} · ${m.raridade})</small>`,
-      `${m.preco} pedras · ${extras}`,
+      `${precoComDesconto(character, m.preco)} pedras · ${extras}`,
       motivoBloqueioMontaria(character, m),
       m.descricao,
     );
@@ -89,7 +105,7 @@ function renderMontarias(character: Character): string {
 
 function renderFornalhas(character: Character): string {
   const lista = FORNALHAS.map((f) =>
-    botao(`data-fornalha="${f.ordem}"`, escapeHtml(f.nome), `${f.preco} pedras`, motivoBloqueioFornalha(character, f)),
+    botao(`data-fornalha="${f.ordem}"`, escapeHtml(f.nome), `${precoComDesconto(character, f.preco)} pedras`, motivoBloqueioFornalha(character, f)),
   ).join('');
   return `
     <p class="dica">Uma pílula só pode ser refinada numa fornalha de Ordem igual ou maior. Sua fornalha atual: <strong>${character.fornalha ?? 2}ª Ordem</strong>.</p>
@@ -130,8 +146,33 @@ function renderSuprimentos(character: Character): string {
     <div class="lista-atividades">${lista}</div>`;
 }
 
-/** Painel Mercado: moradias, montarias e barcos voadores, fornalhas, armas e suprimentos. */
-export function abrirMercado(character: Character, aoAlterar: () => void): void {
+function renderMercadores(character: Character, historia: StoryState): string {
+  const semEnergia = historia.energia < ENERGIA_CONTRATO;
+  const desconto = Math.round(descontoMercador(character) * 100);
+  const cartoes = GRUPOS_MERCADORES.map((g) => {
+    const rel = character.mercadores?.[g.id] ?? { reputacao: 0, cotas: 0 };
+    const preco = precoCota(historia.mundo, g);
+    return `
+      <div class="objetivo">
+        <div><strong>${escapeHtml(g.nome)}</strong><small>${escapeHtml(REGIOES[g.sede].nome)} · ${escapeHtml(g.especialidade)}</small></div>
+        <p><small>${escapeHtml(g.descricao)}</small></p>
+        <p><small>Reputação ${rel.reputacao} (<strong>${tituloReputacao(rel.reputacao)}</strong>) · ${rel.cotas} cota(s) · cota a ${preco} pedras · riqueza ${riqueza(historia.mundo, g).toLocaleString('pt-BR')}</small></p>
+        <div class="botoes-interacao">
+          <button class="botao-pequeno" data-contrato="${g.id}" ${semEnergia ? 'disabled title="Sem energia"' : ''}>Aceitar contrato (${ENERGIA_CONTRATO} de energia · ${ATTRIBUTE_INFO[g.atributo].nome})</button>
+          <button class="botao-pequeno" data-cota="${g.id}" ${character.inventario.pedrasEspirituais < preco ? 'disabled' : ''}>Comprar cota (${preco})</button>
+          <button class="botao-pequeno" data-vender-cota="${g.id}" ${rel.cotas <= 0 ? 'disabled' : ''}>Vender cota</button>
+        </div>
+      </div>`;
+  }).join('');
+  return `
+    <p class="dica">Casas comerciais mais antigas que muitas seitas. Cotas pagam dividendos a cada estação (o valor segue a riqueza do grupo).
+    Contratos rendem pedras e reputação: Parceiro (20) dá 5% de desconto em todo o Mercado, Associado (50) 10% e Conselheiro (100) 15% e dividendos maiores.
+    Seu desconto atual: <strong>${desconto}%</strong>.</p>
+    <div class="lista-objetivos">${cartoes}</div>`;
+}
+
+/** Painel Mercado: moradias, montarias e barcos voadores, fornalhas, armas, suprimentos e grupos mercadores. */
+export function abrirMercado(character: Character, historia: StoryState, aoAlterar: () => void): void {
   const overlay = criarOverlay();
   let mensagens: string[] = [];
   let pastaAberta: string | null = null;
@@ -145,12 +186,12 @@ export function abrirMercado(character: Character, aoAlterar: () => void): void 
         <button class="fechar" data-acao="fechar" title="Fechar">×</button>
         <h2>Mercado</h2>
         <p><strong>${character.inventario.pedrasEspirituais}</strong> pedras espirituais · Moradia: <strong>${escapeHtml(casa?.nome ?? 'nenhuma')}</strong> · Montaria: <strong>${escapeHtml(montaria?.nome ?? 'nenhuma')}</strong> · Fornalha: <strong>${character.fornalha ?? 2}ª Ordem</strong></p>
-        ${renderMensagens(mensagens)}
         ${pasta('moradias', 'Moradias', casa ? `você mora em ${casa.nome}` : 'sem casa própria', renderMoradias(character), pastaAberta === 'moradias')}
         ${pasta('montarias', 'Montarias, Espadas e Barcos Voadores', montaria ? `você tem ${montaria.nome}` : 'a pé', renderMontarias(character), pastaAberta === 'montarias')}
         ${pasta('armas', 'Armas e Armaduras', `${equipamentosAVenda().length} peças`, renderArmas(character), pastaAberta === 'armas')}
         ${pasta('fornalhas', 'Fornalhas Alquímicas', `até a 10ª Ordem`, renderFornalhas(character), pastaAberta === 'fornalhas')}
         ${pasta('suprimentos', 'Ervas, Pílulas e Talismãs', `${SUPRIMENTOS.length} itens`, renderSuprimentos(character), pastaAberta === 'suprimentos')}
+        ${pasta('mercadores', 'Grandes Grupos Mercadores', `desconto atual ${Math.round(descontoMercador(character) * 100)}%`, renderMercadores(character, historia), pastaAberta === 'mercadores')}
       </div>`;
     const painel = overlay.querySelector('.painel');
     if (painel) painel.scrollTop = scroll;
@@ -168,6 +209,26 @@ export function abrirMercado(character: Character, aoAlterar: () => void): void 
       pastaAberta = pastaAberta === botaoPasta.dataset.pasta ? null : (botaoPasta.dataset.pasta ?? null);
       mensagens = [];
       render();
+      return;
+    }
+
+    const mercador = alvo.closest<HTMLButtonElement>('[data-contrato], [data-cota], [data-vender-cota]');
+    if (mercador && !mercador.disabled) {
+      const dm = mercador.dataset;
+      if (dm.contrato) {
+        if (!gastarEnergia(historia, ENERGIA_CONTRATO)) return;
+        const resultado = executarEscolha(character, escolhaContrato(character, dm.contrato));
+        const extras = registrarContrato(character);
+        aoAlterar();
+        render();
+        abrirResultado(resultado, extras, 'Contrato mercante');
+        return;
+      }
+      mensagens = dm.cota ? comprarCota(character, historia.mundo, dm.cota) : venderCota(character, historia.mundo, dm.venderCota ?? '');
+      aoAlterar();
+      render();
+      avisar(mensagens);
+      mensagens = [];
       return;
     }
 
@@ -196,6 +257,8 @@ export function abrirMercado(character: Character, aoAlterar: () => void): void 
 
     aoAlterar();
     render();
+    avisar(mensagens);
+    mensagens = [];
   });
 
   render();

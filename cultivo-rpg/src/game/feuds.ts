@@ -77,6 +77,7 @@ export function exterminarFamilia(character: Character, inimigo: Relacao): Desfe
         reputacao: 20,
         alinhamento: -30,
         itens: [{ id: 'pilula-dourada', quantidade: 1 }],
+        feitos: { mortes: 20, crueldades: 5 },
       }),
     );
     mensagens.push('Quem ouvir essa história vai pensar duas vezes antes de cruzar seu caminho.');

@@ -18,8 +18,29 @@ import { IMPOSTO, PRODUTOS_REGIONAIS, comprarProduto, descreverRota, precoCompra
 import { quantidadeItem } from '../../game/inventory';
 import { descreverCultivo } from '../../game/npcs';
 import { REGIOES, RegiaoId } from '../../game/world';
+import { REINOS } from '../../game/cultivation';
+import {
+  ENERGIA_ATAQUE,
+  ENERGIA_PROVOCAR,
+  ENERGIA_SABOTAGEM,
+  bloqueioProvocar,
+  provocarGuerra,
+  rivaisProvocaveis,
+  ESTACOES_MAXIMAS,
+  PLACAR_DECISIVO,
+  custoTregua,
+  escolhaAtaque,
+  escolhaDueloLider,
+  escolhaSabotagem,
+  podeTerGuerra,
+  proporTregua,
+  registrarPontoDeGuerra,
+  situacaoDaGuerra,
+  verificarFimDaGuerra,
+} from '../../game/clanWar';
 import { criarOverlay, escapeHtml } from './dom';
-import { ativarReproducao, renderEnergia, renderMensagens, renderResultado } from './resultView';
+import { abrirResultado, avisar, renderEnergia } from './resultView';
+import { renderRixas, resumoRixas, tratarCliqueRixa } from './feudsView';
 
 function pasta(id: string, titulo: string, resumo: string, conteudo: string, aberta: boolean): string {
   return `
@@ -151,9 +172,58 @@ function renderComercio(character: Character, contrabando: boolean): { resumo: s
   };
 }
 
+function renderGuerra(character: Character, historia: StoryState): { resumo: string; conteudo: string } {
+  const g = character.guerra;
+  if (!g) {
+    if (!podeTerGuerra(character)) {
+      return { resumo: 'sem clã ou seita', conteudo: '<p class="dica">Guerras acontecem entre seitas e clãs. Pertença a um (ou funde o seu) para ter inimigos à altura.</p>' };
+    }
+    const bloqueio = bloqueioProvocar(character, historia.energia);
+    const rivais = rivaisProvocaveis(historia.mundo, character)
+      .map(({ faccao, razao }) => {
+        const forca = razao >= 1.3 ? 'mais fortes que vocês' : razao <= 0.75 ? 'mais fracos' : 'parelhos';
+        return `<button class="escolha" data-provocar="${escapeHtml(faccao.nome)}" ${bloqueio ? 'disabled' : ''}>
+          <span>Provocar guerra contra o ${escapeHtml(faccao.nome)}</span>
+          <small>${escapeHtml(bloqueio ?? `${forca} (poder ×${razao.toLocaleString('pt-BR')}) · ${ENERGIA_PROVOCAR} de energia`)}</small></button>`;
+      })
+      .join('');
+    return {
+      resumo: 'em paz',
+      conteudo: `<p class="dica">Nenhuma guerra no momento. Rivais podem declarar guerra à sua casa a qualquer momento — ou você mesmo pode provocar uma.
+        Vencer faz seu clã ou seita crescer (membros e prestígio da família) e transforma o rival em vassalo; perder custa caro. Escolher rivais mais fracos é mais seguro; mais fortes, mais glorioso.</p>
+        <div class="lista-atividades">${rivais || '<p class="vazio-texto">Nenhum rival à altura na região.</p>'}</div>`,
+    };
+  }
+  const barra = Math.round(((g.placar + PLACAR_DECISIVO) / (PLACAR_DECISIVO * 2)) * 100);
+  const semEnergia = (custo: number): boolean => historia.energia < custo;
+  const dueloFeito = character.flags.dueloLiderTurno === historia.turno;
+  const tregua = custoTregua(character);
+  const comparacao = g.razao >= 1.3 ? 'mais fortes que vocês' : g.razao <= 0.75 ? 'mais fracos que vocês' : 'parelhos com vocês';
+  return {
+    resumo: `contra o ${g.inimigo} · ${situacaoDaGuerra(g)}`,
+    conteudo: `
+      <p><strong>Guerra contra o ${escapeHtml(g.inimigo)}</strong> — ${escapeHtml(g.motivo)}. Eles começaram ${comparacao}.</p>
+      <div class="barra" title="${PLACAR_DECISIVO} = vitória, −${PLACAR_DECISIVO} = derrota">
+        <div class="barra-preenchimento" style="width: ${barra}%"></div>
+        <span class="barra-texto">Placar ${g.placar > 0 ? '+' : ''}${g.placar} · ${escapeHtml(situacaoDaGuerra(g))} · estação ${g.estacoes}/${ESTACOES_MAXIMAS}</span>
+      </div>
+      <p class="dica">A cada estação a guerra pende para o lado mais forte${character.faccao ? ' (suas muralhas seguram parte dos ataques)' : ''}. Placar +${PLACAR_DECISIVO}: o inimigo vira vassalo e você leva os espólios. −${PLACAR_DECISIVO}: você perde pedras, reputação${character.faccao ? ', membros e uma instalação' : ''}. Depois de ${ESTACOES_MAXIMAS} estações, armistício.</p>
+      <div class="lista-atividades">
+        <button class="escolha" data-acao="guerra-ataque" ${semEnergia(ENERGIA_ATAQUE) ? 'disabled' : ''}>
+          <span>Liderar um ataque</span><small>${semEnergia(ENERGIA_ATAQUE) ? 'Sem energia' : `${ENERGIA_ATAQUE} de energia · luta contra um talento inimigo · placar +1`}</small></button>
+        <button class="escolha" data-acao="guerra-duelo" ${semEnergia(ENERGIA_ATAQUE) || dueloFeito ? 'disabled' : ''}>
+          <span>Desafiar ${escapeHtml(g.lider.nome)}, o líder</span><small>${dueloFeito ? 'Uma vez por capítulo' : semEnergia(ENERGIA_ATAQUE) ? 'Sem energia' : `${ENERGIA_ATAQUE} de energia · ${escapeHtml(REINOS[g.lider.rank - 1]?.nome ?? '')} (força real) · placar +3`}</small></button>
+        <button class="escolha" data-acao="guerra-sabotagem" ${semEnergia(ENERGIA_SABOTAGEM) ? 'disabled' : ''}>
+          <span>Sabotar os depósitos</span><small>${semEnergia(ENERGIA_SABOTAGEM) ? 'Sem energia' : `${ENERGIA_SABOTAGEM} de energia · Destreza · placar +1`}</small></button>
+        <button class="escolha" data-acao="guerra-tregua" ${character.inventario.pedrasEspirituais < tregua ? 'disabled' : ''}>
+          <span>Propor trégua</span><small>${tregua > 0 ? `Indenização de ${tregua} pedras` : 'Com vantagem, sem custo'}</small></button>
+      </div>`,
+  };
+}
+
 export function abrirMundo(character: Character, historia: StoryState, aoAlterar: () => void): void {
   const overlay = criarOverlay();
-  let pastaAberta: string | null = 'torre';
+  let pastaAberta: string | null = character.guerra ? 'guerra' : 'torre';
   let mensagens: string[] = [];
   let resultado: DesfechoExibido | null = null;
   let contrabando = false;
@@ -163,20 +233,20 @@ export function abrirMundo(character: Character, historia: StoryState, aoAlterar
     const torneio = renderTorneio(character, historia);
     const alquimia = renderTorneioAlquimia(character, historia);
     const comercio = renderComercio(character, contrabando);
+    const guerra = renderGuerra(character, historia);
 
     overlay.innerHTML = `
       <div class="painel painel-atividades">
         <button class="fechar" data-acao="fechar" title="Fechar">×</button>
         <h2>Mundo — ${escapeHtml(REGIOES[character.local.regiao].nome)}</h2>
         ${renderEnergia(historia.energia, ENERGIA_POR_ESTACAO)}
-        ${renderMensagens(mensagens)}
-        ${resultado ? renderResultado(resultado) : ''}
+        ${pasta('guerra', 'Guerra de Clãs', guerra.resumo, guerra.conteudo, pastaAberta === 'guerra')}
+        ${pasta('rixas', 'Rixas de Sangue e Vassalos', resumoRixas(character), renderRixas(character, historia), pastaAberta === 'rixas')}
         ${pasta('torre', 'Torre de Prova', torre.resumo, torre.conteudo, pastaAberta === 'torre')}
         ${pasta('torneio', 'Torneio Regional', torneio.resumo, torneio.conteudo, pastaAberta === 'torneio')}
         ${pasta('alquimia', 'Torneio de Alquimia', alquimia.resumo, alquimia.conteudo, pastaAberta === 'alquimia')}
         ${pasta('comercio', 'Rotas Comerciais', comercio.resumo, comercio.conteudo, pastaAberta === 'comercio')}
       </div>`;
-    ativarReproducao(overlay, resultado, render);
   };
 
   overlay.addEventListener('change', (evento) => {
@@ -202,6 +272,25 @@ export function abrirMundo(character: Character, historia: StoryState, aoAlterar
       return;
     }
 
+    const rixa = tratarCliqueRixa(alvo, character, historia);
+    if (rixa) {
+      aoAlterar();
+      render();
+      if (rixa.resultado) abrirResultado(rixa.resultado, rixa.mensagens, rixa.titulo);
+      else avisar(rixa.mensagens);
+      return;
+    }
+
+    const provocar = alvo.closest<HTMLButtonElement>('[data-provocar]');
+    if (provocar && !provocar.disabled) {
+      if (bloqueioProvocar(character, historia.energia) || !gastarEnergia(historia, ENERGIA_PROVOCAR)) return;
+      const mensagens = provocarGuerra(historia.mundo, character, provocar.dataset.provocar ?? '');
+      aoAlterar();
+      render();
+      avisar(mensagens);
+      return;
+    }
+
     const acao = alvo.closest<HTMLButtonElement>('[data-acao]');
     const venda = alvo.closest<HTMLElement>('[data-vender-produto]');
     if (acao?.disabled) return;
@@ -221,6 +310,23 @@ export function abrirMundo(character: Character, historia: StoryState, aoAlterar
       if (!torneioAlquimiaAberto(historia) || character.profissoes.alquimia.nivel === 0 || !gastarEnergia(historia, ENERGIA_TORNEIO_ALQUIMIA)) return;
       resultado = disputarTorneioAlquimia(character, historia);
       mensagens = [];
+    } else if (acao?.dataset.acao?.startsWith('guerra-') && character.guerra) {
+      const tipo = acao.dataset.acao;
+      if (tipo === 'guerra-tregua') {
+        mensagens = proporTregua(character);
+        resultado = null;
+      } else {
+        const custo = tipo === 'guerra-sabotagem' ? ENERGIA_SABOTAGEM : ENERGIA_ATAQUE;
+        if (tipo === 'guerra-duelo' && character.flags.dueloLiderTurno === historia.turno) return;
+        if (!gastarEnergia(historia, custo)) return;
+        if (tipo === 'guerra-duelo') character.flags.dueloLiderTurno = historia.turno;
+        const escolha = tipo === 'guerra-ataque' ? escolhaAtaque(character) : tipo === 'guerra-duelo' ? escolhaDueloLider(character) : escolhaSabotagem(character);
+        resultado = executarEscolha(character, escolha);
+        const ponto = registrarPontoDeGuerra(character);
+        if (ponto) resultado.mensagens.push(`Placar da guerra ${ponto > 0 ? '+' : ''}${ponto}.`);
+        resultado.mensagens.push(...verificarFimDaGuerra(historia.mundo, character));
+        mensagens = [];
+      }
     } else if (acao?.dataset.acao === 'comprar-1' || acao?.dataset.acao === 'comprar-5') {
       mensagens = comprarProduto(character, acao.dataset.acao === 'comprar-5' ? 5 : 1);
       resultado = null;
@@ -235,7 +341,10 @@ export function abrirMundo(character: Character, historia: StoryState, aoAlterar
 
     aoAlterar();
     render();
-    overlay.querySelector('.painel')?.scrollTo({ top: 0 });
+    if (resultado) abrirResultado(resultado, mensagens, 'Mundo');
+    else avisar(mensagens);
+    resultado = null;
+    mensagens = [];
   });
 
   render();

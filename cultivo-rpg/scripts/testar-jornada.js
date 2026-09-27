@@ -49,7 +49,7 @@ test('avanço e viagem geram marcos apenas uma vez e sobrevivem à serializaçã
   const { c, h } = novo();
   atualizarMarcos(c, h);
   c.cultivo.estagio += 1;
-  c.local.cidade = 'Cidade das Mil Ervas';
+  c.local.cidade = c.local.cidade === 'Cidade das Mil Ervas' ? 'Porto do Salgueiro' : 'Cidade das Mil Ervas';
   atualizarMarcos(c, h);
   assert.equal(h.diario.length, 3);
   const salvo = JSON.parse(JSON.stringify({ versao: SAVE_VERSION, character: c, historia: h }));

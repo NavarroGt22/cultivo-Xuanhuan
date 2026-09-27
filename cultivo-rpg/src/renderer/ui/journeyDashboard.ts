@@ -3,6 +3,7 @@ import { StoryState, ENERGIA_POR_ESTACAO } from '../../game/story';
 import { estadoCampanha } from '../../game/campaign';
 import { REGIOES } from '../../game/world';
 import { precisaTribulacao } from '../../game/cultivation';
+import { DICA_SEM_METODO, metodoDeCultivo } from '../../game/cultivationMethod';
 import { escapeHtml } from './dom';
 
 export function icone(nome: string): string {
@@ -21,6 +22,9 @@ export function icone(nome: string): string {
     guia: '<circle cx="12" cy="12" r="9"/><path d="M9 9a3 3 0 1 1 4 3c-1 0-1 1-1 2M12 17h.01"/>',
     opcoes: '<path d="M4 6h16M4 12h16M4 18h16"/><circle cx="8" cy="6" r="2"/><circle cx="16" cy="12" r="2"/><circle cx="9" cy="18" r="2"/>',
     salvar: '<path d="M4 3h13l3 3v15H4V3Zm4 0v6h8V3M8 21v-8h8v8"/>',
+    saves: '<rect x="3" y="3" width="18" height="5" rx="1"/><rect x="3" y="10" width="18" height="5" rx="1"/><path d="M3 18v3h18v-3M7 5.5h.1M7 12.5h.1"/>',
+    campos: '<path d="M3 21h18M12 21V9M12 14C5 14 4 9 4 5c5 0 8 3 8 9ZM12 11c0-5 3-8 8-8 0 5-3 8-8 8Z"/>',
+    bestiario: '<circle cx="12" cy="15" r="4"/><circle cx="5.5" cy="10" r="2"/><circle cx="18.5" cy="10" r="2"/><circle cx="9" cy="5.5" r="2"/><circle cx="15" cy="5.5" r="2"/>',
     menu: '<path d="M10 3H4v18h6m-1-9h12m-4-4 4 4-4 4"/>',
   };
   return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${desenhos[nome] ?? desenhos.jornada}</svg>`;
@@ -33,6 +37,7 @@ export function renderPainelJornada(c: Character, h: StoryState): string {
   const vidaBaixa = c.vidaAtual < getCharacterStats(c).vida * .35;
   const conselho = h.desfecho?.final ? 'Sua vida chegou ao fim. Escolha um herdeiro, se houver, para continuar a linhagem.'
     : vidaBaixa ? 'Sua vida está baixa. Abra o inventário para verificar suas pílulas antes de um novo confronto.'
+    : c.flags.raizRevelada && !metodoDeCultivo(c) ? DICA_SEM_METODO
     : precisaTribulacao(c.cultivo) ? 'Você alcançou o ápice deste reino. Prepare-se para uma Tribulação Celestial.'
     : h.energia === 0 ? 'Sua energia acabou. Continue a história para avançar o tempo e recuperar energia.'
     : 'Aproveite sua energia para cultivar, explorar ou desenvolver um ofício antes de avançar a história.';

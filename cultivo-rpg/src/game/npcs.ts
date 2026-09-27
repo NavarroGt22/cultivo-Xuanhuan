@@ -21,7 +21,7 @@ export interface Npc {
 }
 
 /** Rank mais alto que costuma aparecer em cada região (a Planície Central é a mais forte). */
-const RANK_MAX_REGIAO: Record<RegiaoId, number> = { central: 8, norte: 7, sul: 6, leste: 5, oeste: 5 };
+export const RANK_MAX_REGIAO: Record<RegiaoId, number> = { central: 8, norte: 7, sul: 6, leste: 5, oeste: 5 };
 
 function novoId(): string {
   return Math.random().toString(36).slice(2, 10);

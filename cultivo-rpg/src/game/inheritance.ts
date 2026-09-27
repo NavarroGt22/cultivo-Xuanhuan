@@ -15,6 +15,8 @@ export interface Heranca {
   descricao: string;
   recompensa: Efeitos;
   textoRecompensa: string;
+  /** Caminho do antigo dono. Sem valor = neutra (qualquer um pode herdar). */
+  alinhamento?: 'justa' | 'demoniaca';
 }
 
 export const HERANCAS: Heranca[] = [
@@ -31,6 +33,7 @@ export const HERANCAS: Heranca[] = [
       reputacao: 10,
     },
     textoRecompensa: 'Manuais de Grau Divino: Sutra do Imperador Estelar e Punho do Imperador Estelar',
+    alinhamento: 'justa',
   },
   {
     id: 'rainha-fenix',
@@ -42,6 +45,7 @@ export const HERANCAS: Heranca[] = [
       atributos: { constituicao: 1, espirito: 1 },
     },
     textoRecompensa: 'Manual de Grau Céu: Chama Renascente da Fênix, 2 Pílulas Douradas e +1 CON/ESP',
+    alinhamento: 'justa',
   },
   {
     id: 'deus-alquimia',
@@ -81,6 +85,7 @@ export const HERANCAS: Heranca[] = [
       xpEstilo: { espada: 200 },
     },
     textoRecompensa: 'Manual de Grau Céu: Espada dos Mil Ventos, a Espada do Sábio (4º grau) e o Caminho da Espada',
+    alinhamento: 'justa',
   },
   {
     id: 'dragao-ancestral',
@@ -105,6 +110,7 @@ export const HERANCAS: Heranca[] = [
       alinhamento: -30,
     },
     textoRecompensa: 'Arte Proibida de Devorar Almas, +2 FOR, +2 ESP — e −30 de alinhamento',
+    alinhamento: 'demoniaca',
   },
   {
     id: 'nove-sois',
@@ -116,6 +122,7 @@ export const HERANCAS: Heranca[] = [
       progresso: 150,
     },
     textoRecompensa: 'Manual de Grau Céu: Método dos Nove Sóis (cultivo ×1,6) e um grande avanço de cultivo',
+    alinhamento: 'justa',
   },
   {
     id: 'forja-celestial',
@@ -130,7 +137,68 @@ export const HERANCAS: Heranca[] = [
     },
     textoRecompensa: 'Mestre Refinador (+350 xp), 5 Minérios Estelares, 3 Núcleos de Besta, +1 FOR, +1 INT',
   },
+
+  // Heranças do caminho demoníaco: só se revelam a quem já anda por ele.
+  {
+    id: 'imperatriz-sangue',
+    nome: 'Herança da Imperatriz de Sangue',
+    dono: 'Xue Ji, a Imperatriz de Sangue, que cultivou num lago feito do sangue dos inimigos',
+    descricao: 'O chão do túmulo é um espelho vermelho. Ele reflete você — sorrindo.',
+    recompensa: {
+      itens: [{ id: idManual('sutra-mar-de-sangue'), quantidade: 1 }],
+      atributos: { espirito: 2, constituicao: 1 },
+      alinhamento: -15,
+    },
+    textoRecompensa: 'Manual de Grau Céu: Sutra do Mar de Sangue (cultivo ×1,55), +2 ESP, +1 CON — e −15 de alinhamento',
+    alinhamento: 'demoniaca',
+  },
+  {
+    id: 'vale-mil-cadaveres',
+    nome: 'Herança do Vale dos Mil Cadáveres',
+    dono: 'Shi Gu, Ancião do Vale dos Mil Cadáveres, que fez de exércitos mortos o próprio corpo',
+    descricao: 'Ossos empilhados até o teto formam um trono. Nenhum deles é de besta.',
+    recompensa: {
+      itens: [{ id: idManual('garras-cadaver'), quantidade: 1 }],
+      atributos: { forca: 2, constituicao: 2 },
+      alinhamento: -15,
+    },
+    textoRecompensa: 'Manual de Grau Céu: Garras do Cadáver Imortal (golpe ×2,8), +2 FOR, +2 CON — e −15 de alinhamento',
+    alinhamento: 'demoniaca',
+  },
+  {
+    id: 'senhor-das-sombras',
+    nome: 'Herança do Senhor das Sombras Infernais',
+    dono: 'Ye Mo, o Senhor das Sombras, assassino de três Patriarcas numa só noite',
+    descricao: 'A tocha apaga sozinha. Algo se move na escuridão sem fazer barulho.',
+    recompensa: {
+      itens: [{ id: idManual('veu-sombras-infernais'), quantidade: 1 }],
+      atributos: { destreza: 2, sorte: 1 },
+      alinhamento: -10,
+    },
+    textoRecompensa: 'Manual de Grau Céu: Véu das Sombras Infernais (esquiva +14%), +2 DES, +1 SOR — e −10 de alinhamento',
+    alinhamento: 'demoniaca',
+  },
 ];
+
+/**
+ * GDD 12: a herança acompanha o caminho de quem a encontra.
+ * Demoníaco (≤ −40) só recebe legados demoníacos (ou neutros, se já herdou todos); nunca os justos.
+ * Quem tem alinhamento positivo nunca recebe legados demoníacos. Entre −39 e −1, tudo é possível.
+ * `permitirRepetidas`: quando já herdou todas as elegíveis, repete uma do mesmo caminho.
+ */
+export function herancasPorAlinhamento(character: Character, permitirRepetidas = false): Heranca[] {
+  const valor = character.alinhamento.valor;
+  const doCaminho = (h: Heranca): boolean =>
+    valor <= -40 ? h.alinhamento === 'demoniaca' : valor >= 0 ? h.alinhamento !== 'demoniaca' : true;
+  const aceitavel = (h: Heranca): boolean => (valor <= -40 ? h.alinhamento !== 'justa' : doCaminho(h));
+  const novas = HERANCAS.filter((h) => !character.flags[`heranca:${h.id}`]);
+  for (const lista of [novas.filter(doCaminho), novas.filter(aceitavel)]) {
+    if (lista.length) return lista;
+  }
+  if (!permitirRepetidas) return [];
+  const mesmas = HERANCAS.filter(doCaminho);
+  return mesmas.length ? mesmas : HERANCAS.filter(aceitavel);
+}
 
 export function getHeranca(id: string): Heranca | undefined {
   return HERANCAS.find((h) => h.id === id);
@@ -197,7 +265,7 @@ export function achadoDeHeranca(character: Character, tier: TierHeranca): Achado
     }
     case 'Ouro Negro': {
       const jaTemHeranca = HERANCAS.some((h) => character.flags[`heranca:${h.id}`]);
-      const restantes = HERANCAS.filter((h) => !character.flags[`heranca:${h.id}`]);
+      const restantes = herancasPorAlinhamento(character);
       if (restantes.length && !jaTemHeranca) {
         const heranca = escolher(restantes);
         return { tier, texto: `O legado de uma lenda: ${heranca.nome}.`, efeitos: { heranca: heranca.id } };

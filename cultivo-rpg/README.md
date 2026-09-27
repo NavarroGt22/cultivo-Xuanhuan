@@ -11,13 +11,22 @@ npm install
 npm start
 ```
 
-`npm start` compila o projeto e abre a janela do Electron. O save fica em `save.json` na pasta de execução; conserve esse arquivo ao atualizar o código.
+`npm start` compila o projeto e abre a janela do Electron. Os três slots ficam em `save.json`, `save-2.json` e `save-3.json` na pasta de execução, com cópias `.bak`; conserve esses arquivos ao atualizar. O slot 1 abre seu save original. Use **Jornadas salvas** para escolher slots, exportar ou importar JSON.
 
 ## A interface
 
-- **Jornada:** evento atual, personagem, próximo objetivo e energia disponível.
-- **Navegação lateral:** atividades, missões, mundo, rankings, relações, ocupação, ofícios disponíveis, mercado e inventário.
-- **Diário:** escolhas, atividades e marcos, com pesquisa e filtros. Mantém os 300 registros mais recentes da vida atual; em saves anteriores, começa a partir desta atualização.
+- **Jornada:** evento atual, personagem, próximo objetivo e energia disponível. A história fica centralizada e as escolhas grudam no rodapé da tela enquanto o texto rola; nenhum painel volta ao topo ao clicar.
+- **Criação:** botão para aleatorizar tudo (nome, gênero, retrato, traço, atributos), 17 traços e as chances que a Sorte dá no nascimento.
+- **Layout centralizado:** largura limitada em monitores grandes, coluna de leitura e adaptação para janelas menores.
+- **Campos espirituais:** compra e herança dos lotes; plantio e colheita automáticos (a semente pode ser fixada).
+- **Relações:** só laços pessoais (família, noivado, mestre, discípulos, parceiros); a besta companheira fica no Bestiário, rixas e vassalos no Mundo, a hierarquia da seita em Ocupação.
+- **Mundo → Guerra de Clãs:** provocar guerra contra um rival para fazer seu clã ou seita crescer.
+- **Mercado → Grandes Grupos Mercadores:** cotas, contratos e desconto por reputação.
+- **Rankings:** abas de cultivadores, Seitas, Clãs e Grupos Mercadores, com notícias do mundo das facções.
+- **Mestre pessoal:** ancião da seita ou o velho de roupas gastas; um único mestre por vez (formar-se com honra ou romper com desonra).
+- **Navegação lateral:** atividades, missões, mundo (torres, torneios, comércio e guerra de clãs), rankings das cinco regiões (pessoas e seitas/clãs), relações (noivado arranjado, mestre, besta companheira), ocupação e facção própria, ofícios disponíveis, mercado, campos e inventário.
+- **Bestiário:** todas as espécies de bestas, com linhagem, região, reinos dos adultos e fases de vida.
+- **Diário:** escolhas, atividades e marcos com pesquisa, filtros e seletor de geração. Mantém os 300 registros mais recentes da vida atual e os arquiva quando você continua como herdeiro; o passado de saves anteriores não é reconstruído.
 - **Guia do cultivador:** fundamentos, 13 reinos e cinco regiões, com pesquisa que ignora acentos.
 - **Opções de leitura:** texto ampliado, alto contraste e redução de animações, lembrados no dispositivo.
 
@@ -31,7 +40,7 @@ npm test
 npm run simular -- 5
 ```
 
-Os testes cobrem a compatibilidade do diário, escolhas bloqueadas, cliques duplicados, marcos e limite de registros.
+Os testes cobrem o diário (escolhas bloqueadas, cliques duplicados, marcos, limite de registros), slots de save e migração de saves antigos, campos, mestre pessoal, bestas e bestiário, heranças por alinhamento, noivado arranjado, guerra de clãs, rankings por região, traços da vida, método de cultivo e o Despertar da Alma. `npm run simular` roda vidas inteiras com escolhas aleatórias para conferir o balanceamento.
 
 ## Estrutura
 

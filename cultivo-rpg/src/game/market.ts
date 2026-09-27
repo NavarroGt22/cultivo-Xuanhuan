@@ -4,6 +4,7 @@ import { addItem, addPedrasEspirituais } from './inventory';
 import { nomeItem } from './items';
 import { REINOS } from './cultivation';
 import { REGIOES } from './world';
+import { descontoMercador } from './merchantGroups';
 
 /**
  * Mercado (Sistema de Vida — Moradias, Montarias e Transportes; GDD 4 — fornalhas).
@@ -142,7 +143,7 @@ export function valorRevenda(preco: number): number {
 export function motivoBloqueioMoradia(character: Character, moradia: Moradia): string | null {
   if (character.moradia === moradia.id) return 'Você já mora aqui';
   const atual = getMoradia(character.moradia);
-  return bloqueioCompra(character, moradia.preco, moradia.rankMinimo, atual ? valorRevenda(atual.preco) : 0);
+  return bloqueioCompra(character, precoComDesconto(character, moradia.preco), moradia.rankMinimo, atual ? valorRevenda(atual.preco) : 0);
 }
 
 export function comprarMoradia(character: Character, moradia: Moradia): string[] {
@@ -153,11 +154,11 @@ export function comprarMoradia(character: Character, moradia: Moradia): string[]
     addPedrasEspirituais(character.inventario, valorRevenda(atual.preco));
     mensagens.push(`Vendeu ${atual.nome} por ${valorRevenda(atual.preco)} pedras.`);
   }
-  addPedrasEspirituais(character.inventario, -moradia.preco);
+  addPedrasEspirituais(character.inventario, -precoComDesconto(character, moradia.preco));
   character.moradia = moradia.id;
   character.reputacao += moradia.prestigio;
   mensagens.push(
-    `Você se muda para ${moradia.nome} (${moradia.raridade}) por ${moradia.preco} pedras.`,
+    `Você se muda para ${moradia.nome} (${moradia.raridade}) por ${precoComDesconto(character, moradia.preco)} pedras.`,
     `Cultivo passivo +${Math.round(moradia.densidade * 100)}% · manutenção ${moradia.manutencao} pedras/estação${moradia.prestigio ? ` · reputação +${moradia.prestigio}` : ''}.`,
   );
   return mensagens;
@@ -166,7 +167,7 @@ export function comprarMoradia(character: Character, moradia: Moradia): string[]
 export function motivoBloqueioMontaria(character: Character, montaria: Montaria): string | null {
   if (character.montaria === montaria.id) return 'Já é sua';
   const atual = getMontaria(character.montaria);
-  return bloqueioCompra(character, montaria.preco, montaria.rankMinimo, atual ? valorRevenda(atual.preco) : 0);
+  return bloqueioCompra(character, precoComDesconto(character, montaria.preco), montaria.rankMinimo, atual ? valorRevenda(atual.preco) : 0);
 }
 
 export function comprarMontaria(character: Character, montaria: Montaria): string[] {
@@ -177,11 +178,11 @@ export function comprarMontaria(character: Character, montaria: Montaria): strin
     addPedrasEspirituais(character.inventario, valorRevenda(atual.preco));
     mensagens.push(`Vendeu ${atual.nome} por ${valorRevenda(atual.preco)} pedras.`);
   }
-  addPedrasEspirituais(character.inventario, -montaria.preco);
+  addPedrasEspirituais(character.inventario, -precoComDesconto(character, montaria.preco));
   character.montaria = montaria.id;
   character.reputacao += montaria.prestigio;
   mensagens.push(
-    `${montaria.nome} (${montaria.raridade}) agora é sua, por ${montaria.preco} pedras.`,
+    `${montaria.nome} (${montaria.raridade}) agora é sua, por ${precoComDesconto(character, montaria.preco)} pedras.`,
     `Viagens ${Math.round(montaria.desconto * 100)}% mais baratas${montaria.voadora ? ', sem emboscadas na estrada' : ''}${montaria.comercio ? `, +${Math.round(montaria.comercio * 100)}% nas vendas das Rotas Comerciais` : ''}.`,
   );
   return mensagens;
@@ -190,14 +191,14 @@ export function comprarMontaria(character: Character, montaria: Montaria): strin
 export function motivoBloqueioFornalha(character: Character, fornalha: Fornalha): string | null {
   if ((character.fornalha ?? 2) >= fornalha.ordem) return 'Sua fornalha já é desta Ordem ou maior';
   if (character.profissoes.alquimia.nivel === 0) return 'Só alquimistas sabem usar';
-  return bloqueioCompra(character, fornalha.preco, 1);
+  return bloqueioCompra(character, precoComDesconto(character, fornalha.preco), 1);
 }
 
 export function comprarFornalha(character: Character, fornalha: Fornalha): string[] {
   if (motivoBloqueioFornalha(character, fornalha)) return [];
-  addPedrasEspirituais(character.inventario, -fornalha.preco);
+  addPedrasEspirituais(character.inventario, -precoComDesconto(character, fornalha.preco));
   character.fornalha = fornalha.ordem;
-  return [`Você compra a ${fornalha.nome} por ${fornalha.preco} pedras. Agora pode refinar pílulas até a ${fornalha.ordem}ª Ordem.`];
+  return [`Você compra a ${fornalha.nome} por ${precoComDesconto(character, fornalha.preco)} pedras. Agora pode refinar pílulas até a ${fornalha.ordem}ª Ordem.`];
 }
 
 /** Armas e armaduras à venda: até o 3º grau em qualquer loja; 4º e 5º no Pavilhão de Tesouros, para quem tem fama. */
@@ -206,7 +207,12 @@ export function equipamentosAVenda(): Equipment[] {
 }
 
 export function precoEquipamento(character: Character, equipamento: Equipment): number {
-  return Math.round(equipamento.grau * equipamento.grau * 20 * fatorRegional(character));
+  return precoComDesconto(character, Math.round(equipamento.grau * equipamento.grau * 20 * fatorRegional(character)));
+}
+
+/** Reputação com os grandes grupos mercadores dá desconto em tudo o que se compra aqui. */
+export function precoComDesconto(character: Character, preco: number): number {
+  return Math.round(preco * (1 - descontoMercador(character)));
 }
 
 export function motivoBloqueioEquipamento(character: Character, equipamento: Equipment): string | null {
@@ -224,7 +230,7 @@ export function comprarEquipamento(character: Character, equipamento: Equipment)
 }
 
 export function precoSuprimento(character: Character, suprimento: Suprimento): number {
-  return Math.max(1, Math.round(suprimento.preco * fatorRegional(character)));
+  return Math.max(1, precoComDesconto(character, Math.round(suprimento.preco * fatorRegional(character))));
 }
 
 export function motivoBloqueioSuprimento(character: Character, suprimento: Suprimento, quantidade: number): string | null {

@@ -6,7 +6,9 @@ import {
   iniciarHistoria,
   resolverEscolha,
 } from '../game/story';
-import { saveGame, loadGame, hasSave } from '../game/saveLoad';
+import { saveGame, loadGame, hasSave, getSlotAtivo } from '../game/saveLoad';
+import { abrirSaves } from './ui/savePanel';
+import { abrirCampos } from './ui/fieldsPanel';
 import { renderCriacao } from './ui/creation';
 import { renderHud } from './ui/hud';
 import { abrirInventario } from './ui/inventoryPanel';
@@ -23,6 +25,8 @@ import { precisaReproduzir, reproduzirCombate } from './ui/combatPlayer';
 import { imagemOpcional } from './ui/assets';
 import { abrirMundo } from './ui/worldPanel';
 import { abrirMercado } from './ui/marketPanel';
+import { abrirBestiario } from './ui/bestiaryPanel';
+import { confirmar } from './ui/resultView';
 import { torneioAberto } from '../game/tournaments';
 import { criarHerdeiro, herdeirosDisponiveis } from '../game/heirs';
 import { grauRaizInfo } from '../game/spiritualRoot';
@@ -92,15 +96,16 @@ function renderTelaInicial(): void {
         <p class="intro-descricao">Cultive seu poder. Escreva seu destino.<br>Deixe um legado que atravesse gerações.</p>
         <div class="menu-acoes"><button id="btn-continuar" class="primario" ${temSave ? '' : 'disabled title="Nenhum jogo salvo ainda"'}>Continuar jornada <span aria-hidden="true">→</span></button>
         ${dados ? `<p class="save-resumo">${escapeHtml(dados.character.nome)} · ${Math.floor(dados.character.idadeMeses / 12)} anos · Capítulo ${dados.historia.turno + 1}</p>` : ''}
-        <button id="btn-novo">Iniciar uma nova vida</button></div>
+        <button id="btn-novo">Iniciar uma nova vida</button><button id="btn-saves">Jornadas salvas · Slot ${getSlotAtivo()}</button></div>
         <div class="intro-links"><button id="btn-guia" class="link-botao">Guia do cultivador</button><span>·</span><button id="btn-opcoes" class="link-botao">Opções de leitura</button></div>
       </div><footer class="intro-rodape"><span>13 reinos · 5 regiões · Infinitos destinos</span><span>Salvamento automático a cada escolha</span></footer>
     </main>`;
-  document.getElementById('btn-novo')?.addEventListener('click', () => {
-    if (temSave && !confirm('Iniciar uma nova vida substituirá o save atual quando a criação for concluída. Deseja continuar?')) return;
+  document.getElementById('btn-novo')?.addEventListener('click', async () => {
+    if (temSave && !(await confirmar('Iniciar uma nova vida substituirá o save atual quando a criação for concluída. Deseja continuar?', 'Nova vida'))) return;
     iniciarNovoJogo();
   });
   document.getElementById('btn-continuar')?.addEventListener('click', continuarJogo);
+  document.getElementById('btn-saves')?.addEventListener('click', () => abrirSaves(() => hasSave() ? continuarJogo() : renderTelaInicial()));
   document.getElementById('btn-guia')?.addEventListener('click', abrirGuia);
   document.getElementById('btn-opcoes')?.addEventListener('click', abrirPreferencias);
 }
@@ -139,7 +144,7 @@ function renderEvento(): string {
     ${cena}
     <h2 class="titulo-evento">${escapeHtml(no.titulo)}</h2>
     ${texto}
-    <p class="eyebrow escolha-rotulo">Qual será sua decisão?</p><div class="escolhas">${escolhas}</div>`;
+    <div class="bloco-escolhas"><p class="eyebrow escolha-rotulo">Qual será sua decisão?</p><div class="escolhas">${escolhas}</div></div>`;
 }
 
 function renderDesfecho(): string {
@@ -165,7 +170,7 @@ function renderDesfecho(): string {
     ${log}
     <div class="texto-narrativa">${formatarTexto(d.texto)}</div>
     ${d.mensagens.length ? `<div class="mensagens">${d.mensagens.map((m) => `<p>${escapeHtml(m)}</p>`).join('')}</div>` : ''}
-    <div class="escolhas">
+    <div class="${d.final ? '' : 'bloco-escolhas '}escolhas">
       ${d.final ? renderFimDeVida() : '<button id="btn-continuar-historia" class="primario">Continuar</button>'}
     </div>`;
 }
@@ -202,10 +207,43 @@ function salvar(): void {
   }
 }
 
+/**
+ * Recria a tela e deixa a história no centro: o evento (texto + escolhas) fica centralizado na tela;
+ * se for mais alto que ela, o começo do texto fica no topo. A barra lateral mantém a rolagem.
+ */
+function centralizarHistoria(desenhar: () => void): void {
+  const lateralY = document.querySelector<HTMLElement>('.sidebar')?.scrollTop ?? 0;
+
+  desenhar();
+
+  const lateral = document.querySelector<HTMLElement>('.sidebar');
+  if (lateral) lateral.scrollTop = lateralY;
+  const evento = document.querySelector<HTMLElement>('.evento-conteudo');
+  const area = document.querySelector<HTMLElement>('.area-jogo');
+  if (!evento || !area) return;
+
+  const margem = 12;
+  const altura = evento.offsetHeight;
+  const rolaNaArea = getComputedStyle(area).overflowY !== 'visible' && area.scrollHeight > area.clientHeight;
+  if (rolaNaArea) {
+    const topo = evento.getBoundingClientRect().top - area.getBoundingClientRect().top + area.scrollTop;
+    const visivel = area.clientHeight;
+    area.scrollTop = Math.max(0, altura + margem * 2 <= visivel ? topo - (visivel - altura) / 2 : topo - margem);
+  } else {
+    const topo = evento.getBoundingClientRect().top + window.scrollY;
+    const visivel = window.innerHeight;
+    window.scrollTo(window.scrollX, Math.max(0, altura + margem * 2 <= visivel ? topo - (visivel - altura) / 2 : topo - margem));
+  }
+}
+
 /** Toda mudança de estado passa por aqui, então salvar aqui é o autosave. */
 function renderJogo(): void {
   atualizarMarcos(character, historia);
   salvar();
+  centralizarHistoria(desenharJogo);
+}
+
+function desenharJogo(): void {
   const temRecompensa = estadoCampanha(character, historia.mundo).some((e) => e.status === 'concluido');
   app.innerHTML = `
     <div class="jogo">
@@ -223,11 +261,12 @@ function renderJogo(): void {
           ${botaoNav('ocupacao', ehDiscipulo(character) ? 'Seita e ocupação' : 'Ocupação')}
           ${temOficio(character) ? botaoNav('alquimia', 'Ofícios') : ''}
           ${botaoNav('mercado', 'Mercado')}
+          ${botaoNav('campos', 'Campos espirituais')}
           ${botaoNav('inventario', 'Inventário')}
         </nav>
-        <div class="sidebar-rodape">${botaoNav('guia', 'Guia do cultivador')}${botaoNav('opcoes', 'Opções de leitura')}${botaoNav('menu', 'Menu inicial')}</div>
+        <div class="sidebar-rodape">${botaoNav('saves', 'Jornadas salvas')}${botaoNav('guia', 'Guia do cultivador')}${botaoNav('bestiario', 'Bestiário')}${botaoNav('opcoes', 'Opções de leitura')}${botaoNav('menu', 'Menu inicial')}</div>
       </aside>
-      <div class="area-jogo">
+      <div class="area-jogo"><div class="centro-jornada">
         <header class="topbar"><div><span class="eyebrow">O livro da sua vida</span><h1>Sua jornada</h1></div><div class="topbar-direita"><span class="save-status ${avisoSave ? 'erro' : ''}" role="status">${avisoSave ? 'Falha ao salvar' : 'Progresso salvo'}</span><button id="btn-salvar" class="botao-salvar">${icone('salvar')} Salvar</button></div></header>
         ${avisoSave ? `<p class="erro-save" role="alert">${escapeHtml(avisoSave)}</p>` : ''}
         ${renderHud(character)}
@@ -240,7 +279,7 @@ function renderJogo(): void {
           </main>
           ${renderPainelJornada(character, historia)}
         </div>
-      </div>
+      </div></div>
     </div>`;
 
   const areaCombate = document.getElementById('reproducao-combate');
@@ -273,13 +312,15 @@ function renderJogo(): void {
   document.getElementById('btn-novo-jogo')?.addEventListener('click', iniciarNovoJogo);
   document.getElementById('btn-inventario')?.addEventListener('click', () => abrirInventario(character, renderJogo));
   document.getElementById('btn-atividades')?.addEventListener('click', () => abrirAtividades(character, historia, renderJogo));
-  document.getElementById('btn-ocupacao')?.addEventListener('click', () => abrirOcupacao(character, renderJogo));
+  document.getElementById('btn-ocupacao')?.addEventListener('click', () => abrirOcupacao(character, historia, renderJogo));
   document.getElementById('btn-missoes')?.addEventListener('click', () => abrirMissoes(character, historia, renderJogo));
   document.getElementById('btn-rankings')?.addEventListener('click', () => abrirRankings(character, historia, renderJogo));
   document.getElementById('btn-mundo')?.addEventListener('click', () => abrirMundo(character, historia, renderJogo));
   document.getElementById('btn-relacoes')?.addEventListener('click', () => abrirRelacoes(character, historia, renderJogo));
   document.getElementById('btn-alquimia')?.addEventListener('click', () => abrirOficios(character, historia, renderJogo));
-  document.getElementById('btn-mercado')?.addEventListener('click', () => abrirMercado(character, renderJogo));
+  document.getElementById('btn-mercado')?.addEventListener('click', () => abrirMercado(character, historia, renderJogo));
+  document.getElementById('btn-campos')?.addEventListener('click', () => abrirCampos(character, historia, renderJogo));
+  document.getElementById('btn-saves')?.addEventListener('click', () => abrirSaves(() => hasSave() ? continuarJogo() : renderTelaInicial()));
 
   document.getElementById('btn-salvar')?.addEventListener('click', () => {
     salvar();
@@ -290,6 +331,7 @@ function renderJogo(): void {
 
   document.getElementById('btn-diario')?.addEventListener('click', () => abrirDiario(historia));
   document.getElementById('btn-guia')?.addEventListener('click', abrirGuia);
+  document.getElementById('btn-bestiario')?.addEventListener('click', () => abrirBestiario(character, renderJogo));
   document.getElementById('btn-opcoes')?.addEventListener('click', abrirPreferencias);
   document.querySelectorAll<HTMLElement>('[data-abrir]').forEach(botao => botao.addEventListener('click', () => document.getElementById(`btn-${botao.dataset.abrir}`)?.click()));
   document.getElementById('btn-menu')?.addEventListener('click', renderTelaInicial);

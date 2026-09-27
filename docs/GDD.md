@@ -600,6 +600,80 @@ Não é lore nova — é ferramenta de jogo. Conforme o personagem descobre cois
 
 ---
 
+## 16. SISTEMAS ADICIONAIS III — DESTINO, LAÇOS E GUERRA
+
+Sistemas nascidos durante o desenvolvimento do protótipo. Todos seguem a mesma ideia do resto do documento: o mundo não gira em torno do protagonista — ele tem que conquistar o próprio lugar.
+
+### 16.1 Método de Cultivo (quem ensina você a cultivar)
+
+Uma raiz espiritual sozinha não faz ninguém cultivar. É preciso alguém — ou algo — que ensine a circular o qi.
+
+- Quem nasce em **clã ou seita** aprende desde criança e carrega esse método para sempre, mesmo se sair depois.
+- Quem nasce em **família comum ou órfão** cresce entre mortais: sem método, o qi não se acumula sozinho e meditar rende quase nada.
+- Portas de saída: entrar para uma seita ou clã, ser aceito por um mestre, estudar um manual de Método de Cultivo comprado num sebo, fundar a própria facção ou despertar memórias de uma vida passada.
+- É o que dá peso real à origem humilde — o começo da jornada é *achar o caminho*, não só percorrê-lo.
+
+### 16.2 Mestre e Discípulo (Shifu)
+
+- Um discípulo serve a **um único mestre**. Quem já tem mestre não é aceito por outro.
+- Dois tipos: o **ancião da seita** (custa contribuição) e o **mestre errante** — o velho de roupas gastas que aparece na estrada e aceita qualquer um, sem seita.
+- **Formar-se**: ao alcançar o reino do mestre, o discípulo se despede com honra e pode buscar outro.
+- **Romper** antes disso é desonra: reputação e alinhamento caem, e nenhum mestre aceita um discípulo desleal por anos.
+
+### 16.3 Autodidatas
+
+Atributos muito altos abrem portas sem mestre: Inteligência alta permite aprender Alquimia (e, um pouco acima, Inscrição) sozinho; Espírito alto permite aprender a ler o destino (Divinação). O gênio solitário existe no gênero — mas custa tentativas, pedras e algumas explosões de fornalha.
+
+### 16.4 Traços da Vida (o que você faz molda quem você é)
+
+Além do traço escolhido no nascimento, o personagem ganha traços pelos **feitos**: pessoas mortas, bestas abatidas, boas ações e crueldades, vitórias, derrotas, quase-mortes, pílulas refinadas.
+
+- Cada traço **ajuda e atrapalha**. Exemplos: *Mãos Manchadas de Sangue* (bandidos temem você, mas as pessoas também); *Psicopata* (cem mortes sem remorso: mente inabalável, mas relações arruinadas, mais vingadores e um alinhamento que escorre para o demoníaco); *Coração Bondoso* (as pessoas gostam de você, mas você parece um alvo fácil); *Santo Vivo* (o coração em paz cultiva melhor, mas hesita em ferir).
+- Outros traços surgem **ao acaso** com os anos (Insônia, Memória Fotográfica, Temperamento Explosivo…), no máximo três por vida.
+- Complementa o Karma (15.4): o Karma é o peso dos atos diante do Céu; os traços são o que esses atos fazem com a pessoa.
+
+### 16.5 Alma Antiga e Herança Escondida (o despertar)
+
+Dois traços de nascimento carregam uma promessa:
+
+- **Alma Antiga**: uma alma de outra era. Um dia, quase sempre à beira da morte, as memórias explodem — o personagem se lembra de que já foi o **Deus da Alquimia e das Pílulas**, o **Soberano do Céu e da Terra**, o **Demônio Supremo**, o **Santo da Espada**, o **Senhor das Mil Bestas**, o **Grão-Mestre dos Talismãs** ou o **Oráculo do Destino**.
+- **Herança Escondida**: a bolsa de pedras do berço tinha um selo. Quando ele se rompe no sangue, revela de quem o personagem descende — alguém que escondeu o herdeiro entre mortais.
+- O despertar refaz a raiz espiritual (no mínimo grau 3; uma raiz melhor nunca piora) e traz o legado daquela identidade. Quem não quer virar outra pessoa pode tentar **conter as memórias** e ficar só com a raiz nova — útil quando quem desperta é o Demônio Supremo.
+- Não é garantido: é uma possibilidade ao longo da vida, não um bônus certo.
+
+### 16.6 Noivado Arranjado
+
+Costume das grandes seitas e clãs: a criança é prometida ainda no berço a alguém de outra família poderosa — geralmente um grande talento, que também cresce e cultiva.
+
+- **O rompimento**: se o personagem crescer fraco demais perto de quem foi prometido, essa pessoa pode aparecer diante do clã inteiro e rasgar a carta de noivado. O personagem pode engolir a humilhação, lutar ali mesmo, rasgar a carta primeiro, ou marcar o clássico **duelo de três anos** ("hoje você rompe comigo; em três anos, eu rompo com você").
+- **A lâmina na noite**: famílias orgulhosas ou demoníacas podem preferir um prometido morto a um prometido indigno — e mandam um assassino. Sobreviver e expor o crime abre uma rixa de sangue.
+- **O casamento**: quem cresce à altura casa aos 18 e sela a aliança entre as famílias.
+- **O arrependimento**: quem humilhou pode voltar anos depois, quando o personagem já está muito acima — e a escolha de perdoar ou humilhar é dele.
+
+### 16.7 Guerra de Clãs e Seitas
+
+Seitas e clãs da mesma região disputam veias de pedras espirituais, campos de ervas, rotas comerciais e velhas humilhações.
+
+- Um rival de força parecida declara guerra ao clã ou seita do personagem (ou à facção que ele fundou). Quem lidera pode aceitar ou comprar a paz; quem é só membro vai à guerra de qualquer jeito.
+- A guerra é um cabo de guerra: a cada estação pende para o lado mais forte, e o personagem empurra o placar liderando ataques, **desafiando o líder inimigo** (com a força real dele — não se ajusta ao personagem) ou sabotando depósitos.
+- Vitória: o inimigo vira **vassalo** e paga tributo. Derrota: pedras, reputação, membros e instalações perdidos. Guerras longas demais terminam em armistício.
+- As facções do mundo também guerreiam entre si — o ranking de seitas e clãs muda sozinho com o tempo.
+
+### 16.8 Rankings por Região
+
+Cada uma das cinco regiões tem seus próprios rankings — cultivadores mais fortes, maiores talentos, melhores alquimistas e **seitas e clãs** (incluindo as Seitas Supremas). O personagem só aparece no ranking da região onde está. A facção dele disputa lugar ao lado das outras.
+
+### 16.9 Linhagem e Idade das Bestas (Bestiário)
+
+Complementa a seção 10: o poder de uma besta vem da **espécie** e da **idade**, não do reino de quem a encontra.
+
+- Cinco linhagens: Comum, Espiritual, Demoníaca, Divina e Ancestral. Cada espécie tem região, elemento, faixa de reinos dos adultos selvagens e idade adulta.
+- **Fases de vida**: Filhote (não rompe reinos e luta com pouca força), Jovem, Adulta (alcança o teto da espécie) e Anciã (pode passar do teto).
+- Um filhote divino já nasce acima de um aprendiz — mas ainda é um filhote. Bestas de famílias domadoras crescem junto com o personagem.
+- O **Bestiário** reúne todas as espécies do mundo.
+
+---
+
 ## Sistemas do documento
 
 - [x] Reinos de Cultivo
@@ -617,3 +691,4 @@ Não é lore nova — é ferramenta de jogo. Conforme o personagem descobre cois
 - [x] Prestígio Familiar, Fama por Profissão e Duelo Demoníaco
 - [x] Sistemas Adicionais (Torres de Prova, Cicatrizes, Reencarnação, Rotas Comerciais, Torneios Regionais, Divinação)
 - [x] Sistemas Adicionais II (Reputação por Facção, Estações, Companheiros de Jornada, Karma, Codex)
+- [x] Sistemas Adicionais III (Método de Cultivo, Mestre e Discípulo, Autodidatas, Traços da Vida, Alma Antiga e Herança Escondida, Noivado Arranjado, Guerra de Clãs, Rankings por Região, Linhagem e Idade das Bestas)

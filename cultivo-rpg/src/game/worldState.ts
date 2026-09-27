@@ -4,6 +4,8 @@ import { SeitaRoster, envelhecerRoster, gerarRoster } from './sectRoster';
 import { ehDiscipulo } from './sect';
 import { RegiaoId } from './world';
 import type { MissaoQuadro } from './bounties';
+import { FaccaoMundo, avancarFaccoes, faccoesDaRegiao } from './regionalFactions';
+import { avancarMercadores } from './merchantGroups';
 
 /** Tudo do mundo que precisa persistir entre sessões. */
 export interface MundoState {
@@ -20,6 +22,12 @@ export interface MundoState {
   titulosTorneio: number;
   proximoTorneioAlquimia?: number;
   titulosAlquimia?: number;
+  /** Seitas e clãs de cada região (regionalFactions.ts), gerados na primeira consulta. */
+  faccoesPorRegiao?: Partial<Record<RegiaoId, FaccaoMundo[]>>;
+  /** Notícias recentes do mundo das facções (roubos de discípulos, guerras). */
+  cronicaFaccoes?: string[];
+  /** Riqueza atual de cada grande grupo mercador (merchantGroups.ts). */
+  riquezaMercadores?: Record<string, number>;
 }
 
 export function createMundo(): MundoState {
@@ -52,9 +60,16 @@ export function rosterDaSeita(mundo: MundoState, character: Character): SeitaRos
   return mundo.seitas[nome];
 }
 
-/** O mundo não para: cultivadores da região atual e da sua seita envelhecem e avançam. */
+/**
+ * O mundo não para: cultivadores de todas as regiões já conhecidas, as seitas e clãs delas
+ * e a sua seita envelhecem e avançam.
+ */
 export function avancarMundo(mundo: MundoState, character: Character, meses: number): void {
-  envelhecerNpcs(npcsDaRegiao(mundo, character.local.regiao), meses);
+  npcsDaRegiao(mundo, character.local.regiao);
+  for (const npcs of Object.values(mundo.npcsPorRegiao)) if (npcs) envelhecerNpcs(npcs, meses);
+  faccoesDaRegiao(mundo, character.local.regiao);
+  for (const regiao of Object.keys(mundo.faccoesPorRegiao ?? {}) as RegiaoId[]) avancarFaccoes(mundo, regiao, meses);
+  avancarMercadores(mundo, meses);
   const roster = rosterDaSeita(mundo, character);
   if (roster) envelhecerRoster(roster, meses);
 }

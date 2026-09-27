@@ -2,12 +2,13 @@ import type { Character } from './character';
 import { idadeAnos } from './character';
 import { attributeCheck } from './dice';
 import { addPedrasEspirituais } from './inventory';
-import { descreverCultivo, gerarNpc } from './npcs';
+import { descreverCultivo, estagiosDoRank, gerarNpc } from './npcs';
 import { ELEMENTOS_BASE, rollSpiritualRoot, grauRaizInfo } from './spiritualRoot';
 import { gerarNomePessoa } from './world';
 import { chance, inteiro } from './rng';
 import { influenciaPessoal } from './influence';
 import { doFamilia } from './world';
+import { fatorRelacoesTracos } from './lifeTraits';
 
 /** docs/Sistema-de-vida.md — Relacionamentos. */
 export type TipoRelacao =
@@ -22,7 +23,8 @@ export type TipoRelacao =
   | 'Inimigo Jurado'
   | 'Irmão(ã)'
   | 'Mãe/Pai'
-  | 'Vassalo';
+  | 'Vassalo'
+  | 'Discípulo';
 
 /** Família de sangue: nada de namoro, casamento ou término. */
 export function ehFamilia(r: Relacao): boolean {
@@ -77,6 +79,9 @@ export function conhecerAlguem(character: Character): Relacao {
 export function descreverRelacao(r: Relacao): string {
   if (r.tipo === 'Inimigo Jurado') return `Rixa de sangue — Patriarca no ${descreverCultivo(r.rank, r.estagio)}`;
   if (r.tipo === 'Vassalo') return `Família vassala — paga ${r.rank * 2} pedras de tributo por estação`;
+  if (r.tipo === 'Discípulo') {
+    return `${Math.floor(r.idade)} anos · ${descreverCultivo(r.rank, r.estagio)} · Raiz grau ${r.raizGrau ?? '?'} (${grauRaizInfo(r.raizGrau ?? 1).nome})`;
+  }
   if (r.tipo === 'Filho(a)') {
     return `${Math.floor(r.idade)} anos · Raiz ${r.raizGrau} (${grauRaizInfo(r.raizGrau ?? 1).nome})`;
   }
@@ -124,11 +129,23 @@ const CUSTO_BANQUETE = 10;
 
 export const INTERACOES: Interacao[] = [
   {
+    id: 'ensinar',
+    rotulo: 'Ensinar',
+    bloqueio: (_, r) => (r.tipo !== 'Discípulo' ? 'Não se aplica' : null),
+    executar: (c, r) => {
+      ajustar(r, 5);
+      c.reputacao += 1;
+      const avanco = avancarDiscipulo(c, r, 0.35 + (r.raizGrau ?? 3) * 0.05);
+      const progresso = avanco ?? `${r.nome} agora está no ${descreverCultivo(r.rank, r.estagio)}.`;
+      return [`Você passa a estação corrigindo a postura e a circulação de qi de ${r.nome}. Relação +5, reputação +1.`, progresso];
+    },
+  },
+  {
     id: 'conversar',
     rotulo: 'Conversar',
     bloqueio: () => null,
-    executar: (_, r) => {
-      const delta = inteiro(3, 8);
+    executar: (c, r) => {
+      const delta = Math.max(1, Math.round(inteiro(3, 8) * fatorRelacoesTracos(c)));
       ajustar(r, delta);
       return [`Uma boa conversa com ${r.nome}. Relação +${delta}.`];
     },
@@ -139,7 +156,7 @@ export const INTERACOES: Interacao[] = [
     bloqueio: (c) => (c.inventario.pedrasEspirituais < 3 ? 'Requer 3 pedras' : null),
     executar: (c, r) => {
       addPedrasEspirituais(c.inventario, -3);
-      const delta = inteiro(8, 15);
+      const delta = Math.max(1, Math.round(inteiro(8, 15) * fatorRelacoesTracos(c)));
       ajustar(r, delta);
       return [`${r.nome} adora o presente. Relação +${delta}.`];
     },
@@ -148,7 +165,7 @@ export const INTERACOES: Interacao[] = [
     id: 'namorar',
     rotulo: 'Pedir em namoro',
     bloqueio: (c, r) =>
-      ehFamilia(r) || ehParceiro(r) || r.tipo === 'Namorado(a)'
+      ehFamilia(r) || ehParceiro(r) || r.tipo === 'Namorado(a)' || r.tipo === 'Discípulo'
         ? 'Não se aplica'
         : r.relacao < 60
           ? 'Requer relação 60'
@@ -172,7 +189,7 @@ export const INTERACOES: Interacao[] = [
   {
     id: 'casar',
     rotulo: 'Pedir em casamento',
-    bloqueio: (_, r) => (r.tipo !== 'Namorado(a)' ? 'Só com quem você namora' : r.relacao < 80 ? 'Requer relação 80' : null),
+    bloqueio: (_, r) => (r.tipo === 'Discípulo' ? 'Não se aplica' : r.tipo !== 'Namorado(a)' ? 'Só com quem você namora' : r.relacao < 80 ? 'Requer relação 80' : null),
     executar: (_, r) => {
       const dao = r.compatibilidadeElemental >= 70 && r.rank >= 1;
       r.tipo = dao ? 'Companheiro(a) de Dao' : 'Cônjuge';
@@ -185,7 +202,7 @@ export const INTERACOES: Interacao[] = [
     id: 'ter-filho',
     rotulo: 'Tentar ter um filho',
     bloqueio: (c, r) =>
-      !ehParceiro(r) ? 'Só com cônjuge ou Companheiro(a) de Dao' : idadeAnos(c) < 18 ? 'Requer 18 anos' : c.relacoes.filter((x) => x.tipo === 'Filho(a)').length >= 5 ? 'Máximo de 5 filhos' : null,
+      r.tipo === 'Discípulo' ? 'Não se aplica' : !ehParceiro(r) ? 'Só com cônjuge ou Companheiro(a) de Dao' : idadeAnos(c) < 18 ? 'Requer 18 anos' : c.relacoes.filter((x) => x.tipo === 'Filho(a)').length >= 5 ? 'Máximo de 5 filhos' : null,
     executar: (c, r) => {
       if (!chance(0.5)) return ['Ainda não foi desta vez.'];
       const raiz = rollSpiritualRoot(c.atributosBase.sorte);
@@ -220,8 +237,9 @@ export const INTERACOES: Interacao[] = [
     executar: (c) => {
       addPedrasEspirituais(c.inventario, -CUSTO_BANQUETE);
       const parceiros = parceirosRomanticos(c);
-      for (const p of parceiros) ajustar(p, 10);
-      return [`Um banquete com vinho espiritual e música. O clima no harém melhora: ${parceiros.map((p) => p.nome).join(', ')} (relação +10).`];
+      const ganho = Math.max(1, Math.round(10 * fatorRelacoesTracos(c)));
+      for (const p of parceiros) ajustar(p, ganho);
+      return [`Um banquete com vinho espiritual e música. O clima no harém melhora: ${parceiros.map((p) => p.nome).join(', ')} (relação +${ganho}).`];
     },
   },
   {
@@ -236,12 +254,17 @@ export const INTERACOES: Interacao[] = [
   {
     id: 'terminar',
     rotulo: 'Terminar / romper',
-    bloqueio: (_, r) => (ehFamilia(r) || r.tipo === 'Ex' ? 'Não se aplica' : null),
-    executar: (_, r) => {
+    bloqueio: (_, r) => (ehFamilia(r) ? 'Não se aplica' : null),
+    executar: (c, r) => {
       const eraParceiro = ehParceiro(r) || r.tipo === 'Namorado(a)';
-      r.tipo = eraParceiro ? 'Ex' : 'Conhecido';
-      r.relacao = Math.min(r.relacao, 20);
-      return [eraParceiro ? `Você e ${r.nome} se separam.` : `Você se afasta de ${r.nome}.`];
+      if (eraParceiro) {
+        r.tipo = 'Ex';
+        r.relacao = Math.min(r.relacao, 20);
+        return [`Você e ${r.nome} se separam. ${r.nome} agora é seu/sua ex.`];
+      }
+      // Amigos, conhecidos e ex: cortar os laços tira a pessoa da sua vida.
+      c.relacoes = c.relacoes.filter((x) => x.id !== r.id);
+      return [`Você corta os laços com ${r.nome}. Vocês não se falam mais.`];
     },
   },
 ];
@@ -260,6 +283,13 @@ export function passarTempoRelacoes(character: Character, meses: number): string
       continue;
     }
     r.idade += meses / 12;
+    if (r.tipo === 'Discípulo') {
+      for (let i = 0; i < estacoes; i++) {
+        const avanco = avancarDiscipulo(character, r, 0.05 * ((r.raizGrau ?? 3) / 5));
+        if (avanco) mensagens.push(avanco);
+      }
+      continue;
+    }
     if (!ehFamilia(r) && !ehParceiro(r)) ajustar(r, -meses / 6);
     if (r.tipo === 'Companheiro(a) de Dao' && chance(0.1)) r.estagio += 1;
   }
@@ -280,6 +310,70 @@ export function passarTempoRelacoes(character: Character, meses: number): string
     }
   }
   return mensagens;
+}
+
+// ---------------------------------------------------------------------------
+// Discípulos: a partir do 3º reino você pode ter os seus.
+// ---------------------------------------------------------------------------
+
+export const ENERGIA_BUSCAR_DISCIPULO = 1;
+export const REINO_MINIMO_MESTRE = 3;
+export const REPUTACAO_MINIMA_MESTRE = 20;
+
+export function discipulosDe(character: Character): Relacao[] {
+  return character.relacoes.filter((r) => r.tipo === 'Discípulo');
+}
+
+/** 1 discípulo no 3º reino, +1 a cada reino (até 5). */
+export function limiteDiscipulos(character: Character): number {
+  return character.cultivo.rank < REINO_MINIMO_MESTRE ? 0 : Math.min(5, character.cultivo.rank - REINO_MINIMO_MESTRE + 1);
+}
+
+export function bloqueioBuscarDiscipulo(character: Character): string | null {
+  if (character.cultivo.rank < REINO_MINIMO_MESTRE) return 'Para ensinar alguém você precisa alcançar o 3º reino (Two Force Realm).';
+  if (character.reputacao < REPUTACAO_MINIMA_MESTRE) return `Ninguém conhece seu nome ainda (requer reputação ${REPUTACAO_MINIMA_MESTRE}).`;
+  if (discipulosDe(character).length >= limiteDiscipulos(character)) return `Você já tem o máximo de discípulos para o seu reino (${limiteDiscipulos(character)}).`;
+  return null;
+}
+
+/** Um jovem que quer ser seu discípulo: quanto maior sua fama, mais talentosos os que batem à porta. */
+export function gerarCandidatoDiscipulo(character: Character): Relacao {
+  const bonusFama = Math.min(3, Math.floor(character.reputacao / 60));
+  return {
+    id: Math.random().toString(36).slice(2, 10),
+    nome: gerarNomePessoa(),
+    tipo: 'Discípulo',
+    idade: inteiro(12, 17),
+    rank: 1,
+    estagio: inteiro(1, 3),
+    aparencia: inteiro(30, 100),
+    inteligencia: inteiro(30, 100),
+    compatibilidadeElemental: compatibilidade(character),
+    relacao: 45,
+    raizGrau: Math.min(9, inteiro(1, 4) + bonusFama + (chance(0.1) ? 2 : 0)),
+  };
+}
+
+export function aceitarDiscipulo(character: Character, candidato: Relacao): string {
+  const bloqueio = bloqueioBuscarDiscipulo(character);
+  if (bloqueio) return bloqueio;
+  character.relacoes.push(candidato);
+  return `${candidato.nome} se ajoelha e oferece chá: agora é seu discípulo. Ensine-o em Relações.`;
+}
+
+/** Um estágio a mais para o discípulo (nunca passa do reino do mestre). Rompendo um reino, o mestre ganha fama. */
+function avancarDiscipulo(character: Character, r: Relacao, probabilidade: number): string | null {
+  if (!chance(probabilidade)) return null;
+  const ultimo = r.estagio >= estagiosDoRank(r.rank);
+  if (ultimo && r.rank + 1 >= character.cultivo.rank) return null;
+  if (!ultimo) {
+    r.estagio += 1;
+    return null;
+  }
+  r.rank += 1;
+  r.estagio = 1;
+  character.reputacao += 3;
+  return `Seu discípulo ${r.nome} rompeu para o ${descreverCultivo(r.rank, 1).split(' — ')[0]}. Seu nome como mestre cresce (reputação +3).`;
 }
 
 /** Cada Companheiro(a) de Dao acelera o cultivo passivo em +10% (até +30%). */

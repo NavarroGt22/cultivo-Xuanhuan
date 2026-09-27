@@ -38,6 +38,9 @@ import {
   requisitosFundacao,
 } from '../../game/faction';
 import { criarOverlay, escapeHtml } from './dom';
+import { abrirResultado, avisar } from './resultView';
+import { renderHierarquiaSeita, tratarCliqueHierarquia, tratarMudancaHierarquia } from './sectHierarchyView';
+import type { StoryState } from '../../game/story';
 
 function renderSeita(character: Character, pastaAberta: string | null): string {
   if (!ehDiscipulo(character)) return '';
@@ -221,7 +224,7 @@ function renderVagas(character: Character, pastaAberta: string | null): string {
   }).join('');
 }
 
-export function abrirOcupacao(character: Character, aoAlterar: () => void): void {
+export function abrirOcupacao(character: Character, historia: StoryState, aoAlterar: () => void): void {
   const overlay = criarOverlay();
   let mensagens: string[] = [];
   let pastaAberta: string | null = character.ocupacao ? `cat-${character.ocupacao.categoria}` : null;
@@ -233,9 +236,9 @@ export function abrirOcupacao(character: Character, aoAlterar: () => void): void
       <div class="painel painel-atividades">
         <button class="fechar" data-acao="fechar" title="Fechar">×</button>
         <h2>${titulo}</h2>
-        ${mensagens.length ? `<div class="mensagens">${mensagens.map((m) => `<p>${escapeHtml(m)}</p>`).join('')}</div>` : ''}
         ${renderFaccao(character, pastaAberta, nomeFaccao)}
         ${renderSeita(character, pastaAberta)}
+        ${ehDiscipulo(character) ? pasta('hierarquia', `Hierarquia do ${character.afiliacao.nome}`, 'líder, anciões, discípulos e desafios por vaga', renderHierarquiaSeita(character, historia), pastaAberta === 'hierarquia') : ''}
         <h3>${ehDiscipulo(character) ? 'Emprego fora da seita (opcional)' : 'Emprego atual'}</h3>
         ${renderAtual(character)}
         <p class="dica">
@@ -260,6 +263,14 @@ export function abrirOcupacao(character: Character, aoAlterar: () => void): void
     if (botaoPasta) {
       pastaAberta = pastaAberta === botaoPasta.dataset.pasta ? null : (botaoPasta.dataset.pasta ?? null);
       render();
+      return;
+    }
+
+    const desafio = tratarCliqueHierarquia(alvo, character, historia);
+    if (desafio) {
+      aoAlterar();
+      render();
+      abrirResultado(desafio.resultado, desafio.extras, desafio.titulo);
       return;
     }
 
@@ -293,7 +304,11 @@ export function abrirOcupacao(character: Character, aoAlterar: () => void): void
 
     aoAlterar();
     render();
+    avisar(mensagens);
+    mensagens = [];
   });
+
+  overlay.addEventListener('change', (evento) => tratarMudancaHierarquia(evento.target as HTMLInputElement));
 
   overlay.addEventListener('input', (evento) => {
     const campo = evento.target as HTMLInputElement;

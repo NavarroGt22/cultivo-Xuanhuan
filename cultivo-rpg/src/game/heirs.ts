@@ -15,6 +15,8 @@ import { StoryNode, StoryState } from './story';
 import { escolher, chance } from './rng';
 import { tipoOrigemDaFaccao } from './faction';
 import { getMontaria, getMoradia } from './market';
+import { crescerNoivado } from './betrothal';
+import { arquivarVida } from './journal';
 
 /**
  * Herdeiro: ao morrer, a história continua por um filho.
@@ -96,6 +98,10 @@ export function criarHerdeiro(pai: Character, historia: StoryState, filhoId: str
   // Começa aos 12 anos (ou na idade atual do filho), com a raiz já revelada.
   herdeiro.idadeMeses = Math.max(12, Math.floor(filho.idade)) * 12;
   herdeiro.flags.raizRevelada = true;
+  // O noivado arranjado no berço cresceu junto com o herdeiro.
+  if (herdeiro.noivado) crescerNoivado(herdeiro.noivado, herdeiro.idadeMeses);
+  // Uma guerra da facção continua com o novo líder.
+  if (pai.faccao && pai.guerra) herdeiro.guerra = { ...pai.guerra, lider: { ...pai.guerra.lider } };
   herdeiro.flags.pai = pai.nome;
   const conjuge = pai.relacoes.find((r) => r.tipo === 'Cônjuge' || r.tipo === 'Companheiro(a) de Dao');
   if (conjuge) herdeiro.flags.mae = conjuge.nome;
@@ -157,6 +163,8 @@ export function criarHerdeiro(pai: Character, historia: StoryState, filhoId: str
   }
 
   herdeiro.moradia = pai.moradia ?? null;
+  herdeiro.campos = (pai.campos ?? []).map(campo => ({ ...campo }));
+  if (herdeiro.campos.length) legado.push(`${herdeiro.campos.length} campo(s) espiritual(is)`);
   herdeiro.montaria = pai.montaria ?? null;
   herdeiro.fornalha = pai.fornalha;
   const casa = getMoradia(pai.moradia);
@@ -177,6 +185,7 @@ export function criarHerdeiro(pai: Character, historia: StoryState, filhoId: str
 
   const turno = historia.turno + 1;
   const novaHistoria: StoryState = {
+    ancestrais: [...(historia.ancestrais ?? []), arquivarVida(pai, historia)],
     turno,
     noAtual: noLegado(herdeiro, pai, turno, legado),
     desfecho: null,

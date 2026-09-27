@@ -16,9 +16,14 @@ import { gerarPrologo, gerarProximoEvento } from './storyEvents';
 import { processarOcupacao } from './occupations';
 import { fatorCultivoPassivo, processarDeveres } from './sect';
 import { MundoState, avancarMundo, createMundo } from './worldState';
+import { amadurecerCampos } from './fields';
 import { atualizarQuadro } from './bounties';
 import { processarFaccao } from './faction';
 import { processarPatrimonio } from './market';
+import { crescerNoivado } from './betrothal';
+import { atualizarTracosVida, getTracoVida, registrarFeito } from './lifeTraits';
+import { comecarGuerraDeclarada, processarGuerra } from './clanWar';
+import { processarMercadores } from './merchantGroups';
 import { RegistroJornada, registrarJornada } from './journal';
 
 export interface Teste {
@@ -78,6 +83,7 @@ export interface DesfechoExibido {
 }
 
 export interface StoryState {
+  ancestrais?: import('./journal').CronicaAncestral[];
   /** Campos opcionais para compatibilidade com saves anteriores. */
   diario?: RegistroJornada[];
   marcosDiario?: Record<string, string>;
@@ -209,6 +215,9 @@ export function executarEscolha(character: Character, escolha: StoryChoice): Des
       ganharXpEstilo(principal, character.estilos[principal], 5, getEffectiveAttributes(character).inteligencia, character.cultivo.rank);
     }
 
+    registrarFeito(character, resultado.vitoria ? 'vitorias' : 'derrotas');
+    if (resultado.vitoria && escolha.combate.besta) registrarFeito(character, 'bestasAbatidas');
+
     log = resultado.log;
     vitoria = resultado.vitoria;
     combate = resultado.dados;
@@ -235,10 +244,25 @@ export function executarEscolha(character: Character, escolha: StoryChoice): Des
   return { texto: desfecho.texto, resumo, mensagens, log, final, vitoria, combate, sucesso: vitoria ?? sucessoTeste };
 }
 
+/** Lutas da história que não terminam em morte: duelos, provas, tribulações. */
+const EVENTOS_SEM_MORTE = new Set([
+  'tribulacao',
+  'rival',
+  'tumulo-ancestral',
+  'noivado-rompimento',
+  'noivado-duelo',
+  'torneio',
+  'escola-estilo',
+  'missao-seita',
+]);
+
 export function resolverEscolha(character: Character, state: StoryState, indice: number): void {
   const escolha = state.noAtual.escolhas[indice];
   if (!escolha || state.desfecho || descreverEscolha(character, escolha).bloqueio) return;
   state.desfecho = executarEscolha(character, escolha);
+  if (state.desfecho.vitoria && escolha.combate && !escolha.combate.besta && !EVENTOS_SEM_MORTE.has(state.noAtual.evento)) {
+    registrarFeito(character, 'mortes');
+  }
   registrarJornada(character, state, 'historia', state.noAtual.titulo,
     `${escolha.texto}\n${state.desfecho.texto}`);
 }
@@ -277,6 +301,9 @@ function passarTempo(character: Character, meses: number): string[] {
     avisos.push(...aplicarProgresso(character.cultivo, passivo));
   }
 
+  if (character.noivado && character.noivado.status !== 'casados') crescerNoivado(character.noivado, meses);
+  avisos.push(...atualizarTracosVida(character, meses));
+
   if (character.companheira) {
     avisos.push(
       ...crescimentoPassivo(character.companheira, character.profissoes.domador.nivel, meses, character.cultivo.rank, character.cultivo.estagio),
@@ -301,11 +328,20 @@ export function continuarHistoria(character: Character, state: StoryState): void
   if (!state.desfecho || state.desfecho.final) return;
 
   const meses = state.noAtual.meses;
+  const tracosAntes = character.tracosVida?.length ?? 0;
   const avisos = passarTempo(character, meses);
+  for (const id of (character.tracosVida ?? []).slice(tracosAntes)) {
+    const traco = getTracoVida(id);
+    if (traco) registrarJornada(character, state, 'marco', `Novo traço: ${traco.nome}`, `${traco.descricao} Ajuda: ${traco.vantagem}. Atrapalha: ${traco.desvantagem}.`);
+  }
+  avisos.push(...amadurecerCampos(character, meses));
   avancarMundo(state.mundo, character, meses);
+  avisos.push(...processarGuerra(state.mundo, character, Math.max(1, Math.round(meses / 3))));
+  avisos.push(...processarMercadores(state.mundo, character, Math.max(1, Math.round(meses / 3))));
+  avisos.push(...comecarGuerraDeclarada(state.mundo, character));
   state.recentes = [state.noAtual.evento, ...state.recentes].slice(0, 5);
   state.turno += 1;
-  state.noAtual = gerarProximoEvento(character, state.turno, state.recentes);
+  state.noAtual = gerarProximoEvento(character, state.turno, state.recentes, state.mundo);
   state.desfecho = null;
   state.avisos = avisos;
   state.energia = ENERGIA_POR_ESTACAO;

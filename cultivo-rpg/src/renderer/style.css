@@ -1241,7 +1241,8 @@ button.primario:hover:not(:disabled) { background: #e0c891; border-color: #f2da9
 .intro-rodape { position: absolute; bottom: 25px; left: 35px; right: 35px; display: flex; justify-content: space-between; color: #9daf9e; font-size: .7rem; letter-spacing: .08em; }
 
 /* Estrutura principal */
-.jogo { display: grid; grid-template-columns: 222px minmax(0, 1fr); grid-template-rows: 1fr; height: 100vh; overflow: hidden; }
+.jogo { display: grid; grid-template-columns: 222px minmax(0, 1fr); grid-template-rows: 1fr; height: 100vh; overflow: hidden; width: 100%; max-width: 1560px; margin-inline: auto; border-inline: 1px solid var(--borda-escura); }
+.centro-jornada { width: 100%; max-width: 1180px; margin-inline: auto; min-width: 0; }
 .sidebar { display: flex; flex-direction: column; gap: 1.1rem; background: #101a18; border-right: 1px solid var(--borda-escura); padding: 1.8rem 1rem 1rem; overflow-y: auto; }
 .marca { display: flex; align-items: center; gap: .75rem; text-decoration: none; color: #e6d9b8; font-size: 1rem; letter-spacing: .1em; padding: 0 .25rem 1rem; }
 .marca-selo { border: 1px solid #86724b; color: var(--dourado); width: 35px; height: 40px; display: grid; place-items: center; font-size: 1.4rem; }
@@ -1256,7 +1257,7 @@ button.primario:hover:not(:disabled) { background: #e0c891; border-color: #f2da9
 .ponto-atual { width: 5px; height: 5px; border-radius: 50%; background: #d4bc82; margin-left: auto; }
 .sidebar-rodape { margin-top: auto; border-top: 1px solid var(--borda-escura); padding-top: .65rem; }
 .area-jogo { min-width: 0; overflow-y: auto; padding: 0 2rem 2rem; background: radial-gradient(ellipse at 70% 0%, #22372c22, transparent 60%); }
-.topbar { display: flex; align-items: center; justify-content: space-between; min-height: 95px; gap: 1rem; }
+.topbar { display: flex; align-items: center; justify-content: space-between; min-height: 64px; gap: 1rem; }
 .topbar .eyebrow { font-size: .55rem; }
 .topbar h1 { font-size: 1.55rem; margin-top: .2rem; letter-spacing: .02em; }
 .topbar-direita { display: flex; align-items: center; gap: 1.1rem; }
@@ -1282,15 +1283,18 @@ button.primario:hover:not(:disabled) { background: #e0c891; border-color: #f2da9
 .alinhamento-marcador { width: 8px; height: 8px; border-width: 1px; }
 .alinhamento-legenda { font-size: .57rem; }
 .conteudo-jogo { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 1.4rem; align-items: start; margin-top: 1.4rem; }
-.painel-narrativa { overflow: hidden; padding: 0; max-width: none; background: #141f1c; border: 1px solid var(--borda-escura); border-radius: 10px; }
-.banner-jornada { height: 175px; position: relative; overflow: hidden; }
+.painel-narrativa { overflow: clip; padding: 0; max-width: none; background: #141f1c; border: 1px solid var(--borda-escura); border-radius: 10px; }
+/* As escolhas grudam no rodapé da tela enquanto o texto do evento rola por cima: nunca é preciso rolar para achá-las. */
+.bloco-escolhas { position: sticky; bottom: 0; z-index: 2; margin-top: 1rem; padding: .9rem 0 .6rem; max-height: 42vh; overflow-y: auto; background: linear-gradient(to top, #141f1c 88%, #141f1cd9); box-shadow: 0 -14px 18px -14px #000c; }
+.bloco-escolhas .escolha-rotulo { margin-top: 0; }
+.banner-jornada { height: 96px; position: relative; overflow: hidden; }
 .banner-jornada .paisagem::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, #10251f99, transparent); }
 .banner-jornada .sol { width: 57px; height: 57px; top: 19%; }
-.banner-texto { position: relative; padding: 1.7rem 2rem; }
+.banner-texto { position: relative; padding: 1rem 2rem; }
 .banner-texto .eyebrow { font-size: .58rem; color: #d9c28c; }
-.banner-texto p { color: #e4e7d6; font-size: 1.6rem; line-height: 1.25; margin: .75rem 0 0; }
+.banner-texto p { color: #e4e7d6; font-size: 1.15rem; line-height: 1.25; margin: .4rem 0 0; }
 .banner-selo { position: absolute; right: 2rem; bottom: 1.6rem; font-size: 2rem; font-family: serif; color: #d8c99799; border: 1px solid #d8c99755; padding: 0 .4rem; }
-.evento-conteudo { padding: 1.8rem 2rem 2rem; }
+.evento-conteudo { padding: 1.8rem 2rem 2rem; max-width: 78ch; margin-inline: auto; overflow-wrap: anywhere; }
 .titulo-evento { font-size: 1.65rem; color: #e3d9bf; line-height: 1.3; margin-bottom: 1.1rem; }
 .texto-narrativa { font-family: Georgia, 'Times New Roman', serif; font-size: 1.02rem; line-height: 1.85; color: #c6cfc0; margin-bottom: 1.8rem; }
 .texto-narrativa strong { color: #e5d09d; }
@@ -1346,6 +1350,11 @@ button.primario:hover:not(:disabled) { background: #e0c891; border-color: #f2da9
 .preferencia input { width: 20px; height: 20px; accent-color: #aabe90; flex-shrink: 0; }
 .preferencia small { display: block; color: var(--texto-suave); font-size: .75rem; margin-top: .25rem; }
 .toast { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); z-index: 50; border: 1px solid #7f9978; color: #e6e8d6; background: #203728; padding: .8rem 1.4rem; box-shadow: 0 6px 30px #0008; border-radius: 8px; }
+.toast-mensagens { max-width: min(620px, 92vw); cursor: pointer; }
+.toast-mensagens p { margin: .2rem 0; }
+.painel-resultado { width: 100%; max-width: 720px; }
+.painel-confirmacao { width: 100%; max-width: 480px; }
+.painel-resultado .acoes, .painel-confirmacao .acoes { display: flex; justify-content: flex-end; gap: .6rem; margin-top: 1rem; }
 .erro-save { padding: .75rem; background: #492621; color: #ffd4bd; border: 1px solid #9e6456; border-radius: 6px; }
 .save-status.erro { color: #ffc2ab; }
 .save-status.erro::before { background: #ec9476; }
@@ -1398,8 +1407,8 @@ html[data-fonte="grande"] { font-size: 18px; }
   .hud-atributos { grid-template-columns: repeat(3, 1fr); }
   .hud-direita { align-items: center; }
   .hud-nome small { display: block; margin: .2rem 0; }
-  .banner-jornada { height: 155px; }
-  .banner-texto { padding: 1.5rem; }
+  .banner-jornada { height: 84px; }
+  .banner-texto { padding: 1rem 1.5rem; }
   .evento-conteudo { padding: 1.2rem; }
   .narrativa-rodape { margin: 0 1.2rem; }
   .overlay { padding: .65rem; }
@@ -1415,3 +1424,22 @@ html[data-fonte="grande"] { font-size: 18px; }
 .marca-selo svg { width: 24px; height: 26px; }
 .selo-dao svg { width: 44px; height: 44px; }
 .banner-selo svg { width: 29px; height: 30px; display: block; margin: .3rem 0; }
+
+/* Mesma régua de alinhamento para a ficha, narrativa e novos painéis. */
+.save-grid, .campos-grid { display: grid; gap: 1rem; margin-top: 1rem; }
+.campos-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); }
+.campos-grid .guia-item { margin: 0; }
+.campo-progresso { width: 100%; accent-color: var(--jade); margin: .8rem 0; }
+.mestre-card { margin-block: 1.2rem; }
+.linhagem-seletor { display: block; margin-block: 1rem; color: var(--texto-suave); }
+.linhagem-seletor select { margin-top: .5rem; }
+.hud > *, .conteudo-jogo > *, .topbar > * { min-width: 0; }
+.hud-nome, .hud-reino { overflow-wrap: anywhere; }
+@media (max-width: 600px) {
+  .jogo { border: 0; }
+  .topbar { flex-wrap: wrap; padding-block: 1rem; }
+  .topbar-direita { flex-wrap: wrap; }
+  .menu-acoes { max-width: 100%; }
+  .tela-inicial h1 { font-size: clamp(2rem, 9vw, 3rem); }
+  .preferencia { flex-wrap: wrap; gap: .6rem; }
+}

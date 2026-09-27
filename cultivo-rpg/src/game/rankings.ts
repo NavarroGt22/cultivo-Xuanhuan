@@ -3,6 +3,7 @@ import { Character, getEffectiveAttributes, idadeAnos } from './character';
 import { Npc, descreverCultivo, poderNpc } from './npcs';
 import { PROFISSAO_INFO, tituloProfissao } from './professions';
 import { MundoState, npcsDaRegiao } from './worldState';
+import type { RegiaoId } from './world';
 
 export type TipoRanking = 'forca' | 'talento' | 'alquimia';
 
@@ -82,11 +83,12 @@ function entradaNpc(npc: Npc, tipo: TipoRanking): EntradaRanking | null {
   };
 }
 
-export function ranking(mundo: MundoState, character: Character, tipo: TipoRanking): EntradaRanking[] {
-  const entradas = npcsDaRegiao(mundo, character.local.regiao)
+/** Ranking de uma região. Você só aparece no ranking da região onde está. */
+export function ranking(mundo: MundoState, character: Character, tipo: TipoRanking, regiao: RegiaoId = character.local.regiao): EntradaRanking[] {
+  const entradas = npcsDaRegiao(mundo, regiao)
     .map((npc) => entradaNpc(npc, tipo))
     .filter((e): e is EntradaRanking => e !== null);
-  const jogador = entradaJogador(character, tipo);
+  const jogador = regiao === character.local.regiao ? entradaJogador(character, tipo) : null;
   if (jogador) entradas.push(jogador);
   return entradas.sort((a, b) => b.valor - a.valor);
 }
